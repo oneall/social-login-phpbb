@@ -1,0 +1,23 @@
+<!-- IF not OA_SOCIAL_LOGIN_DISABLE -->
+	<tr>
+		<td class="row1" width="35%">
+			<b class="genmed">Social Login</b><br />
+			<span class="gensmall">Link your account to a Social Network</span>
+		</td>
+		<td class="row2">
+			<!-- IF OA_SOCIAL_LOGIN_ERROR -->
+				<div style="color:white;background-color:red;">[OneAll Social Login] {OA_SOCIAL_LOGIN_ERROR}</div>
+			<!-- ELSE -->
+				<div class="oneall_social_login_providers" id="oneall_social_login_profile_{OA_SOCIAL_LOGIN_RAND}" style="margin-top:20px"></div>
+				<script type="text/javascript">
+					oneall.api.plugins.social_link.build("oneall_social_login_profile_{OA_SOCIAL_LOGIN_RAND}", {
+						'providers' :  ['{OA_SOCIAL_LOGIN_PROVIDERS}'],
+						'user_token' : '{OA_SOCIAL_LOGIN_USER_TOKEN}',
+						'callback_uri': window.location.href
+					}); 
+				</script>
+				<!-- oneall.com / Social Login for phpBB / v{OA_SOCIAL_LOGIN_VERSION} -->
+			<!-- ENDIF -->
+		</td>
+	</tr>
+<!-- ENDIF -->

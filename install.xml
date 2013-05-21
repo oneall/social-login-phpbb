@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml-stylesheet type="text/xsl" href="modx.prosilver.en.xsl"?>
+<mod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.phpbb.com/mods/xml/modx-1.2.5.xsd">
+	<header>
+		<license>http://opensource.org/licenses/gpl-license.php GNU General Public License v2</license>
+		<title lang="en">OneAll Social Login</title>
+		<description lang="en"><![CDATA[
+			OneAll Social Login is a professionally developed and free phpBB3 module that allows your users to register and login to your phpBB with their existing social network 
+			accounts (Twitter, Facebook, LinkedIn, Google ...). OneAll Social Login integrates with your existing registration system so you and your users don't have to start 
+			from scratch. Social Login helps increasing your user registration rate by simplifying the registration process and provides permission-based social data retrieved 
+			from the social network profiles. ]]>
+		</description>
+		<author-group>
+			<author>
+				<realname>OneAll LLC</realname>
+				<username>OneAll</username>
+				<homepage>http://www.oneall.com/</homepage>
+			</author>
+		</author-group>
+		<mod-version>1.8.0</mod-version>
+		<installation>
+			<level>easy</level>
+			<time>600</time>
+			<target-version>3.0.11</target-version>
+		</installation>
+		<link-group>
+			<link type="template" href="./xml/subsilver2.xml" lang="en"><![CDATA[subsilver2 modifications]]></link>
+		</link-group>
+	</header>
+	<action-group>
+		<copy>
+			 <file from="root/*.*" to="*.*"/>		
+		</copy>		
+		<open src="styles/prosilver/template/overall_header.html">	
+			<edit>
+				<find><![CDATA[</head>]]></find>
+				<action type="before-add"><![CDATA[<!-- INCLUDE oa_social_login_library.html -->]]></action>
+			</edit>
+			<edit>
+				<find><![CDATA[<!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH -->
+ <div id="search-box">
+  <form action="{U_SEARCH}" method="get" id="search">
+   <fieldset>
+    <input name="keywords" id="keywords" type="text" maxlength="128" title="{L_SEARCH_KEYWORDS}" class="inputbox search" value="<!-- IF SEARCH_WORDS-->{SEARCH_WORDS}<!-- ELSE -->{L_SEARCH_MINI}<!
+    <input class="button2" value="{L_SEARCH}" type="submit" /><br />
+    <a href="{U_SEARCH}" title="{L_SEARCH_ADV_EXPLAIN}">{L_SEARCH_ADV}</a> {S_SEARCH_HIDDEN_FIELDS}
+   </fieldset>
+  </form>
+ </div>
+<!-- ENDIF -->]]></find>
+				<action type="after-add"><![CDATA[<!-- INCLUDE oa_social_login_widget.html -->]]></action>
+			</edit>
+		</open>		
+		
+		<open src="styles/prosilver/template/ucp_profile_profile_info.html">	
+			<edit>
+				<find><![CDATA[<!-- END profile_fields -->]]></find>
+				<action type="after-add"><![CDATA[<!-- INCLUDE oa_social_login_profile.html -->]]></action>
+			</edit>		
+		</open>	
+		<php-installer><![CDATA[install_oa_social_login.php]]></php-installer>
+		<diy-instructions lang="en">After the installation you have to setup the module. 
+		
+1) Login to your Administration Control Panel,
+2) Click on the tab General,
+3) Click on the link Social Login settings in the group CLIENT COMMUNICATION.
+		</diy-instructions>
+	</action-group>
+</mod>

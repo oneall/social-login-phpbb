@@ -1,0 +1,182 @@
+<!-- INCLUDE overall_header.html -->
+
+<link href="style/oa_social_login/css/admin.css" rel="stylesheet" type="text/css" media="screen" />
+<script type="text/javascript" src="style/oa_social_login/js/jquery.js"></script>
+<script type="text/javascript" src="style/oa_social_login/js/admin.js"></script>
+
+<div id="oa_social_login">
+
+	<!-- IF OA_SOCIAL_LOGIN_SETTINGS_SAVED -->
+		<div class="successbox">
+			<h3>Information</h3>
+			<p>Settings updated successfully.</p>
+		</div>
+	<!-- ENDIF -->
+	
+	<!-- IF S_WARNING -->
+		<div class="errorbox">
+	   	<h3>{L_WARNING}</h3>
+	   	<p>{WARNING_MSG}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<h1>OneAll Social Login</h1>
+	<div class="section">
+		<p>
+			Allow your visitors to login and register with social networks like Twitter, Facebook, LinkedIn, Hyves, VKontakte, Google and Yahoo amongst others.	
+			Social Login <strong>increases your user registration rate</strong> by simplifying the registration process and provides permission-based social 
+			<strong>data retrieved from the social network profiles</strong>. Social Login integrates with your existing registration system so you and your users 
+			don't have to start from scratch.
+		</p>
+	</div>					
+	<div class="section welcome">
+		<h3>Help, Updates &amp; Documentation</h3>
+		<ul>
+			<li><a href="http://www.twitter.com/oneall" target="_blank">Follow us</a> on Twitter to stay informed about updates;</li>
+			<li><a href="http://docs.oneall.com/plugins/" target="_blank">Read</a> the online documentation for more information about this plugin;</li>
+			<li><a href="http://docs.oneall.com/plugins/" target="_blank">Discover</a> our turnkey plugins for Drupal, Joomla, WordPress;</li>
+			<li><a href="http://www.oneall.com/company/contact-us/" target="_blank">Contact us</a> if you have feedback or need assistance!</li>			
+		</ul>
+	</div>
+	<div class="section get_started">
+		<h4>To be able to use Social Login, you first of all have to create a free account at <a target="_blank" href="https://app.oneall.com/signup/">http://www.oneall.com</a> and setup a Site.</h4>
+		<p>
+			<a target="_blank" class="button1" href="https://app.oneall.com/signup/">Setup my free account</a> |
+			<a target="_blank" class="button1" href="https://app.oneall.com/applications/" >Create and view my API Credentials</a>
+		</p>
+	</div>
+		
+	<form id="acp_oa_social_login" method="post" action="{U_ACTION}">
+		<fieldset>
+			<legend>API Connection</legend>
+			<dl>
+				<dt>
+					<label for="sl_enable">API Connection Handler:</label>
+				</dt>
+				<dd>
+					<label><input type="radio" class="radio" id="oa_social_login_api_connection_handler_curl" name="oa_social_login_api_connection_handler" value="curl"<!-- IF OA_SOCIAL_LOGIN_API_CONNECTION_HANDLER_CURL --> checked="checked"<!-- ENDIF --> /> PHP CURL</label><br />
+					<span>Using CURL is recommended but it might be disabled on some servers.</span> (<a href="http://www.php.net/manual/en/book.curl.php" target="_blank">CURL Manual</a>)<br /><br />
+					
+					<label><input type="radio" class="radio" id="oa_social_login_api_connection_handler_fsockopen" name="oa_social_login_api_connection_handler" value="fsockopen"<!-- IF OA_SOCIAL_LOGIN_API_CONNECTION_HANDLER_FSOCKOPEN --> checked="checked"<!-- ENDIF --> /> PHP FSOCKOPEN</label><br />
+					<span>Only use FSOCKOPEN if you encounter any problems with CURL.</span> (<a href="http://www.php.net/manual/en/function.fsockopen.php" target="_blank">FSOCKOPEN Manual</a>)
+				</dd>
+			</dl>
+			<dl>
+				<dt>
+					<label for="sl_enable">API Connection Port:</label>
+				</dt>
+				<dd>
+					<label><input type="radio" class="radio" id="oa_social_login_api_connection_port_443" name="oa_social_login_api_connection_port" value="443"<!-- IF OA_SOCIAL_LOGIN_API_CONNECTION_PORT_443 --> checked="checked"<!-- ENDIF --> /> Communication via HTTPS on port 443</label><br />
+					<span>Using port 443 is recommended but you might have to install OpenSSL on your server.</span><br /><br />				
+					<label><input type="radio" class="radio" id="oa_social_login_api_connection_port_80" name="oa_social_login_api_connection_port" value="80"<!-- IF OA_SOCIAL_LOGIN_API_CONNECTION_PORT_80--> checked="checked"<!-- ENDIF --> /> Communication via HTTP on port 80</label><br />
+					<span>Using port 80 is a bit faster, doesn't need OpenSSL but is less secure.</span>				
+				</dd>
+			</dl>			
+			<dl>
+				<dt>
+					<span id="oa_social_login_api_connection_handler_result"></span>
+				</dt>
+				<dd> 			
+					<input class="button2" type="button" id="oa_social_login_autodetect_api_connection_handler" value="Autodetect API Connection">               
+				</dd>
+			</dl>
+		</fieldset>	
+		<fieldset>
+			<legend>API Credentials - <a target="_blank" href="https://app.oneall.com/applications/" >Click here to create or view your API Credentials</a></legend>		
+				<dl>
+					<dt>
+						<label for="oa_social_login_api_subdomain">API Subdomain:</label>
+					</dt>
+					<dd>
+						<input type="text" id="oa_social_login_api_subdomain" name="oa_social_login_api_subdomain" value="{OA_SOCIAL_LOGIN_API_SUBDOMAIN}"  size="60" />
+					</dd>
+				</dl>
+				<dl>
+					<dt>
+						<label for="oa_social_login_api_key">API Public Key:</label>
+					</dt>
+					<dd>
+						<input type="text" id="oa_social_login_api_key" name="oa_social_login_api_key" value="{OA_SOCIAL_LOGIN_API_KEY}"  size="60" />
+					</dd>
+				</dl>
+				<dl>
+					<dt>
+						<label for="oa_social_login_api_secret">API Private Key:</label>
+					</dt>
+					<dd>
+						<input type="text" id="oa_social_login_api_secret" name="oa_social_login_api_secret" value="{OA_SOCIAL_LOGIN_API_SECRET}"  size="60" />
+					</dd>
+				</dl>
+				<dl>
+					<dt>
+						<span id="oa_social_login_api_test_result"></span>
+					</dt>
+					<dd> 			
+						<input class="button2" type="button" id="oa_social_login_test_api_settings" value="Verify API Settings">               
+					</dd>
+				</dl>
+		</fieldset>	
+		<fieldset>
+			<legend>Enable the social networks/identity providers of your choice</legend>						
+			<!-- BEGIN provider -->
+				<dl>	
+					<dt class="provider">							
+							<label for="oasl_provider_{provider.KEY}"><span class="oasl_provider oasl_provider_{provider.KEY}" title="{provider.NAME}">{provider.NAME}</span></label>						
+							<input style="cursor:pointer" type="checkbox" id="oasl_provider_{provider.KEY}" name="oa_social_login_provider_{provider.KEY}" value="1" <!-- IF provider.ENABLE --> checked="checked"<!-- ENDIF -->  />
+							<label for="oasl_provider_{provider.KEY}">{provider.NAME}</label>
+					</dt>
+					<dd></dd>
+				</dl>
+			<!-- END provider -->			
+		</fieldset>
+				
+		
+		<fieldset>
+			<legend>Enable Social Login?</legend>			
+			<dl>
+				<dt>
+					<label for="oa_social_login_disable_0">Enable Social Login?</label>
+					<br /><span>Allows you to temporarily disable Social Login without having to remove it.</span>
+				</dt>
+				<dd>
+					<label><input type="radio" class="radio" id="oa_social_login_disable_0" name="oa_social_login_disable" value="0"<!-- IF not OA_SOCIAL_LOGIN_DISABLE --> checked="checked"<!-- ENDIF --> /> Enable Social Login <strong>(Default)</strong></label><br />
+					<label><input type="radio" class="radio" id="oa_social_login_disable_1" name="oa_social_login_disable" value="1"<!-- IF OA_SOCIAL_LOGIN_DISABLE --> checked="checked"<!-- ENDIF --> /> Disable Social Login</label>
+				</dd>
+			</dl>
+		</fieldset>
+		
+		<fieldset>
+			<legend>Enable Social Network Linking?</legend>		
+			<dl>
+				<dt>
+					<label for="$oa_social_login_disable_linking_0">Automatically link Social Network accounts to existing user accounts?</label>
+					<br /><span>If enabled, social network accounts with a verified email address will be linked to existing phpBB user accounts having the same email address.</span>
+				</dt>
+				<dd>
+					<label><input type="radio" class="radio" id="$oa_social_login_disable_linking_0" name="oa_social_login_disable_linking" value="0"<!-- IF not OA_SOCIAL_LOGIN_DISABLE_LINKING --> checked="checked"<!-- ENDIF --> /> Enable account linking <strong>(Default)</strong></label><br />
+					<label><input type="radio" class="radio" id="$oa_social_login_disable_linking_1" name="oa_social_login_disable_linking" value="1"<!-- IF OA_SOCIAL_LOGIN_DISABLE_LINKING --> checked="checked"<!-- ENDIF --> /> Disable account linking</label>						
+				</dd>			
+			</dl>
+		</fieldset>
+		
+		<fieldset>	
+				<legend>Setup Redirection</legend>		
+				<dl>
+					<dt>
+						<label for="oa_social_login_redirect">Redirect users to this page after they have connected with their social network account:</label>
+						<br /><span>Enter a full URL to a page of your phpBB. If left empty the user stays on the same page.</span>
+					</dt>
+					<dd>
+						<input type="text" id="oa_social_login_redirect" name="oa_social_login_redirect" value="{OA_SOCIAL_LOGIN_REDIRECT}" size="60" />
+					</dd>
+				</dl>	
+		</fieldset>
+		
+		<fieldset class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />
+			{S_FORM_TOKEN}
+		</fieldset>
+	</form>
+	<div id="sid" style="display: none;">{CURRENT_SID}</div>
+</div>
+<!-- INCLUDE overall_footer.html -->
