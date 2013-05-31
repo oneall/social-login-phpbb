@@ -60,7 +60,7 @@ $language_file = 'info_acp_oa_social_login';
  * The version numbering must otherwise be compatible with the version_compare function - http://php.net/manual/en/function.version-compare.php
  */
 $versions = array (
-	'2.0.0' => array (
+	'2.5.0' => array (
 		'module_add' => array (
 			array (
 				'acp',
@@ -75,24 +75,29 @@ $versions = array (
 		),
 		'table_add' => array (
 			array (
-				$table_prefix . 'oa_social_login_usermeta',
+				$table_prefix . 'oasl_user',
 				array (
 					'COLUMNS' => array (
-						'umeta_id' => array (
-							'UINT:10', null, 'auto_increment'
+						'oasl_user_id' => array (
+							'UINT:10',
+							null,
+							'auto_increment'
 						),
 						'user_id' => array (
-							'UINT:10', 0
+							'UINT:10',
+							0
 						),
-						'meta_key' => array (
-							'VCHAR', ''
+						'user_token' => array (
+							'VCHAR',
+							''
 						),
-						'meta_value' => array (
-							'TEXT', 	''
+						'date_added' => array (
+							'UINT:10',
+							'0'
 						),
 					),
 					'PRIMARY_KEY' => array (
-						'umeta_id'
+						'oasl_user_id'
 					),
 					'KEYS' => array (
 						'user_id' => array (
@@ -101,14 +106,108 @@ $versions = array (
 								'user_id'
 							)
 						),
-						'meta_key' => array (
+						'user_token' => array (
 							'INDEX',
 							array (
-								'meta_key'
+								'user_token'
 							)
 						),
 					),
-				)
+				),
+			),
+			array (
+				$table_prefix . 'oasl_identity',
+				array (
+					'COLUMNS' => array (
+						'oasl_identity_id' => array (
+							'UINT:10',
+							null,
+							'auto_increment'
+						),
+						'oasl_user_id' => array (
+							'UINT:10',
+							0
+						),
+						'identity_token' => array (
+							'VCHAR',
+							''
+						),
+						'identity_provider' => array (
+							'VCHAR',
+							''
+						),
+						'num_logins' => array (
+							'UINT:10',
+							'0'
+						),
+						'date_added' => array (
+							'UINT:10',
+							'0'
+						),
+						'date_updated' => array (
+							'UINT:10',
+							'0'
+						),
+					),
+					'PRIMARY_KEY' => array (
+						'oasl_identity_id'
+					),
+					'KEYS' => array (
+						'oasl_user_id' => array (
+							'INDEX',
+							array (
+								'oasl_user_id'
+							)
+						),
+						'identity_token' => array (
+							'INDEX',
+							array (
+								'identity_token'
+							)
+						),
+					),
+				),
+			),
+			array (
+				$table_prefix . 'oasl_login_token',
+				array (
+					'COLUMNS' => array (
+						'oasl_login_token_id' => array (
+							'UINT:10',
+							null,
+							'auto_increment'
+						),
+						'login_token' => array (
+							'VCHAR',
+							''
+						),
+						'user_id' => array (
+							'UINT:10',
+							'0'
+						),
+						'date_creation' => array (
+							'UINT:10',
+							'0'
+						),
+					),
+					'PRIMARY_KEY' => array (
+						'oasl_login_token_id'
+					),
+					'KEYS' => array (
+						'user_id' => array (
+							'INDEX',
+							array (
+								'user_id'
+							)
+						),
+						'login_token' => array (
+							'INDEX',
+							array (
+								'login_token'
+							)
+						),
+					),
+				),
 			),
 		),
 	),

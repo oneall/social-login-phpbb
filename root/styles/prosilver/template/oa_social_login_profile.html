@@ -8,12 +8,15 @@
 			<!-- IF OA_SOCIAL_LOGIN_ERROR -->
 				<div style="color:white;background-color:red;">[OneAll Social Login] {OA_SOCIAL_LOGIN_ERROR}</div>
 			<!-- ELSE -->
+				<!-- IF OA_SOCIAL_LINK_ERROR -->
+						<div style="color:white;background-color:red;">{OA_SOCIAL_LINK_ERROR}</div>
+				<!-- ENDIF -->
 				<span class="oneall_social_login_providers" id="oneall_social_login_profile_{OA_SOCIAL_LOGIN_RAND}"></span>
 				<script type="text/javascript">
 					oneall.api.plugins.social_link.build("oneall_social_login_profile_{OA_SOCIAL_LOGIN_RAND}", {
 						'providers' :  ['{OA_SOCIAL_LOGIN_PROVIDERS}'],
-						'user_token' : '{OA_SOCIAL_LOGIN_USER_TOKEN}',
-						'callback_uri': window.location.href
+						'user_token' : '{OA_SOCIAL_LOGIN_USER_TOKEN}',	
+						'callback_uri': '{OA_SOCIAL_LOGIN_CALLBACK_URI}'
 					}); 
 				</script>
 				<!-- oneall.com / Social Login for phpBB / v{OA_SOCIAL_LOGIN_VERSION} -->
