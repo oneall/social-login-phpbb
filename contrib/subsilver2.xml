@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <?xml-stylesheet type="text/xsl" href="modx.prosilver.en.xsl"?>
-<mod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.phpbb.com/mods/xml/modx-1.2.5.xsd">
+<mod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://www.phpbb.com/mods/xml/modx-1.2.6.xsd">
 	<header>
 		<license>http://opensource.org/licenses/gpl-license.php GNU General Public License v2</license>
 		<title lang="en">OneAll Social Login</title>
+		<title lang="fr">OneAll Social Login</title>
 		<description lang="en"><![CDATA[
 			OneAll Social Login is a professionally developed and free phpBB3 module that allows your users to register and login to your phpBB with their existing social network 
 			accounts (Twitter, Facebook, LinkedIn, Google ...). OneAll Social Login integrates with your existing registration system so you and your users don't have to start 
 			from scratch. Social Login helps increasing your user registration rate by simplifying the registration process and provides permission-based social data retrieved 
 			from the social network profiles. ]]>
+		</description>
+		<description lang="fr"><![CDATA[
+			OneAll Social Login est un module gratuit qui permet à vos utilisateurs de s'inscire et de se connecter avec leur compte auprès d'un réseau social sur votre forum. 
+			25+ réseaux sociaux comme par example Twitter, Facebook, LinkedIn et Google inclus. Social Login s'intègre parfaitement à votre système existant et augmentera
+			le taux d'inscription en simplifiant le processus d'inscription.]]>
 		</description>
 		<author-group>
 			<author>
@@ -17,22 +23,18 @@
 				<homepage>http://www.oneall.com/</homepage>
 			</author>
 		</author-group>
-		<mod-version>1.0.0</mod-version>
+		<mod-version>3.4.0</mod-version>
 		<installation>
 			<level>easy</level>
 			<time>600</time>
-			<target-version>3.0.11</target-version>
+			<target-version>3.0.12</target-version>
 		</installation>
 		<link-group>
-			<link type="parent" href="./../install.xml" lang="en">Main installation file</link>
+			<link type="parent" href="../install.xml" lang="en">Main Installation Instructions</link>
 		</link-group>
 	</header>
 	<action-group>		
 		<open src="styles/subsilver2/template/overall_header.html">	
-			<edit>
-				<find><![CDATA[</head>]]></find>
-				<action type="before-add"><![CDATA[<!-- INCLUDE oa_social_login_library.html -->]]></action>
-			</edit>
 			<edit>
 				<find><![CDATA[<td class="genmed" align="{S_CONTENT_FLOW_END}">]]></find>
 				<action type="before-add"><![CDATA[<!-- INCLUDE oa_social_login_widget.html -->]]></action>
@@ -44,5 +46,8 @@
 				<action type="after-add"><![CDATA[<!-- INCLUDE oa_social_login_profile.html -->]]></action>
 			</edit>		
 		</open>	
-	</action-group>
+		<copy>
+			 <file from="root/styles/subsilver2/*.*" to="styles/subsilver2/*.*"/>
+		</copy>		
+		</action-group>	
 </mod>

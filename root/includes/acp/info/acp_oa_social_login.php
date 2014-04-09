@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   	OneAll Social Login Mod
- * @copyright 	Copyright 2012 http://www.oneall.com - All rights reserved.
+ * @copyright 	Copyright 2014 http://www.oneall.com - All rights reserved.
  * @license   	GNU/GPL 2 or later
  *
  * This program is free software; you can redistribute it and/or
@@ -22,43 +22,42 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *
  */
-if (!defined ('IN_PHPBB'))
+if (!defined('IN_PHPBB'))
 {
 	exit;
 }
 
 class acp_oa_social_login_info
 {
-	function module ()
+	function module()
 	{
-		return array (
+		return array(
 			'filename' => 'acp_oa_social_login',
-			'title' => 'OneAll Social Login',
-			'version' => '2.0.0',
-			'modes' => array (
-				'index' => array (
-					'title' => 'OneAll Social Login Settings',
+			'title' => 'ACP_OA_SOCIAL_LOGIN',
+			'version' => '3.4.0',
+			'modes' => array(
+				'index' => array(
+					'title' => 'ACP_OA_SOCIAL_LOGIN_SETTINGS',
 					'auth' => 'acl_a_server',
-					'cat' => array (
+					'cat' => array(
 						'ACP_CLIENT_COMMUNICATION'
-					)
+					),
 				),
 			),
 		);
-
 	}
 
 	/**
 	 * Install
 	 */
-	function install ()
+	function install()
 	{
 	}
 
 	/**
 	 * UnInstall
 	 */
-	function uninstall ()
+	function uninstall()
 	{
 	}
 }

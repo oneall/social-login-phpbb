@@ -5,7 +5,7 @@
 <!DOCTYPE xsl:stylesheet[
 	<!ENTITY nbsp "&#160;">
 ]>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" xmlns:mod="http://www.phpbb.com/mods/xml/modx-1.2.5.xsd">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" xmlns:mod="https://www.phpbb.com/mods/xml/modx-1.2.6.xsd">
 	<xsl:output method="html" omit-xml-declaration="no" indent="yes" />
 	<xsl:variable name="title" select="mod:mod/mod:header/mod:title" />
 	<xsl:variable name="version">
@@ -23,7 +23,7 @@
 /*  phpBB 3.0 Admin Style Sheet
 	–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 	Original author:	subBlue ( http://www.subblue.com/ )
-	Copyright 2007 phpBB Group ( http://www.phpbb.com/ )
+	Copyright 2007 phpBB Group ( https://www.phpbb.com/ )
 	–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 */
 
@@ -624,7 +624,7 @@ div.endMOD { padding:0 5px; }
 // The following line from http://www.ryancooper.com/resources/keycode.asp
 document.onkeydown = mod_do_keypress;
 
-var host = "http://www.phpbb.com/mods/modx/i18n/";
+var host = "https://www.phpbb.com/mods/modx/i18n/";
 
 var enStrings = "dir=ltr\n" +
 "h1=Installation instructions for\n" +
@@ -646,6 +646,7 @@ var enStrings = "dir=ltr\n" +
 "a-e=Email:\n" +
 "a-n=Name:\n" +
 "a-h=WWW:\n" +
+"a-git=Github:\n" +
 "a-c=Contributions:\n" +
 "a-c-f=From\n" +
 "a-c-t=to\n" +
@@ -654,9 +655,9 @@ var enStrings = "dir=ltr\n" +
 "icf=Included files\n" +
 "icfn=No files have been included with this MOD.\n" +
 "dcl=Disclaimer\n" +
-"dclt=For security purposes, please check: <a href=\"http://www.phpbb.com/mods/\">http://www.phpbb.com/mods/</a> for the latest version of this MOD. Downloading this MOD from other sites could cause malicious code to enter into your phpBB Forum. As such, phpBB will not offer support for MODs not offered in our MODs database, located at: <a href=\"http://www.phpbb.com/mods/\">http://www.phpbb.com/mods/</a>\n" +
+"dclt=For security purposes, please check: <a href=\"https://www.phpbb.com/mods/\">https://www.phpbb.com/mods/</a> for the latest version of this MOD. Downloading this MOD from other sites could cause malicious code to enter into your phpBB Forum. As such, phpBB will not offer support for MODs not offered in our MODs database, located at: <a href=\"https://www.phpbb.com/mods/\">https://www.phpbb.com/mods/</a>\n" +
 "isp=and English support\n" +
-"ispt=English support can be obtained at <a href=\"http://www.phpbb.com/mods/\">http://www.phpbb.com/mods/</a> for released MODs.\n" +
+"ispt=English support can be obtained at <a href=\"https://www.phpbb.com/mods/\">https://www.phpbb.com/mods/</a> for released MODs.\n" +
 "ant=Author notes:\n" +
 "lic=License\n" +
 "lict=This MOD has been licensed under the following license:\n" +
@@ -709,8 +710,8 @@ var enStrings = "dir=ltr\n" +
 "regex=This find contains an advanced feature known as regular expressions.\n" +
 "mhe-v=- Version\n" +
 "mh=MOD history\n" +
-"addtl-modx=Additional MODX files\n" +
-"imn=This MOD has no additional MODX files.\n" +
+"addtl-modx=Additional file(s)\n" +
+"imn=This MOD has no additional file(s).\n" +
 "link-c=Contrib\n" +
 "link-d=Dependency\n" +
 "link-l=Language\n" +
@@ -722,7 +723,7 @@ var enStrings = "dir=ltr\n" +
 "installer-h2=PHP install file\n" +
 "installer-exp1=There is a PHP install file that needs to be run in order to complete the installation.\n" +
 "installer-exp2=To run it point your browser to, for example,\n" +
-"ispt-int=Support in your language <strong>might</strong> be available at a <a href=\"http://www.phpbb.com/support/intl/\">international support site</a>.\n" +
+"ispt-int=Support in your language <strong>might</strong> be available at a <a href=\"https://www.phpbb.com/support/intl/\">international support site</a>.\n" +
 "del-heads=Delete files\n" +
 "del-head=Delete file\n" +
 "del-file=Delete\n" +
@@ -741,14 +742,14 @@ var arrClasCnt = [
 	['cde-'	, codes_ll			],
 	['edt-'	, edits_ll			],
 	['fnd'	, finds_ll			],
-	['fnd'	, removes_ll			],
+	['rem'	, removes_ll			],
 	['regex', regex_ll			],
 	['rplw'	, replacewiths_ll	],
 	['aft'	, addafters_ll		],
 	['bef'	, addbefores_ll		],
 	['inc'	, increments_ll		],
 	['ifnd'	, ifinds_ll			],
-	['ifnd'	, iremoves_ll			],
+	['irem'	, iremoves_ll			],
 	['regex', iregex_ll			],
 	['irplw', ireplacewiths_ll	],
 	['iaft'	, iaddafters_ll		],
@@ -780,6 +781,8 @@ function changeLanguage(langCode)
 		applyLanguage(enStrings.split("\n"));
 	}
 	xslLanguage(langCode);
+
+	show_title(langCode);
 }
 
 function load_languages()
@@ -806,6 +809,71 @@ function load_language()
 	$output = 'load_language';
 	cachernd = parseInt(Math.random() * 99999999); // cache
 	send('', host + currentLanguage + '.txt?rnd=' + cachernd);
+}
+
+/**
+* From http://stackoverflow.com/questions/1280903/javascript-ie-and-getelementsbyclassname-problems/8472488#8472488
+*/
+if (typeof document.getElementsByClassName != 'function')
+{
+	document.getElementsByClassName = function()
+	{
+		var elms = document.getElementsByTagName('*');
+		var ei = new Array();
+		for (i = 0; i < elms.length; i++)
+		{
+			if (elms[i].getAttribute('class'))
+			{
+				ecl = elms[i].getAttribute('class').split(' ');
+				for (j = 0; j < ecl.length; j++)
+				{
+					if (ecl[j].toLowerCase() == arguments[0].toLowerCase())
+					{
+						ei.push(elms[i]);
+					}
+				}
+			}
+			else if (elms[i].className)
+			{
+				ecl = elms[i].className.split(' ');
+				for (j = 0; j < ecl.length; j++)
+				{
+					if (ecl[j].toLowerCase() == arguments[0].toLowerCase())
+					{
+						ei.push(elms[i]);
+					}
+				}
+			}
+		}
+		return ei;
+	}
+}
+
+function show_title(langCode)
+{
+	var sel_title = document.getElementById('title-' + langCode);
+
+	if (sel_title == null)
+	{
+		// A title in English is required.
+		sel_title = document.getElementById('title-en')
+
+		if (sel_title == null)
+		{
+			// No title in English or the selected language.
+			return;
+		}
+	}
+
+	var hide_title = document.getElementsByClassName('hide-title');
+
+	for (var i = 0; i < hide_title.length; i++)
+	{
+		hide_title[i].style.display='none';
+	}
+
+	sel_title.style.display='inline';
+	document.title = "phpBB MOD » " + sel_title.innerHTML;
 }
 
 /*****************
@@ -1425,7 +1493,7 @@ function change_dbms($form)
 		'mssql',
 		'oracle',
 		'postgres',
-		'sqllite'
+		'sqlite'
 	];
 	$exists = 0;
 	$tags = document.getElementsByTagName('dbms');
@@ -1440,7 +1508,7 @@ function change_dbms($form)
 	{
 		for ($i = 0; $i < $tags.length; $i++)
 		{
-			if (!($dbms = $tags[$i].attributes['type'].nodeValue))
+			if (!($dbms = $tags[$i].attributes['type'].value))
 			{
 				continue;
 			}
@@ -1472,7 +1540,7 @@ function sql_display($value)
 	// show the dbms of type we have selected, hide all others except for non dbms specific
 	for ($i = 0; $i < $tags.length; $i++)
 	{
-		if (!($dbms = $tags[$i].attributes['type'].nodeValue))
+		if (!($dbms = $tags[$i].attributes['type'].value))
 		{
 			continue;
 		}
@@ -1520,7 +1588,7 @@ function sql_dropdown()
 		'mssql',
 		'oracle',
 		'postgres',
-		'sqllite'
+		'sqlite'
 	];
 	$options = [];
 	$ie_options = [];
@@ -1530,7 +1598,7 @@ function sql_dropdown()
 	// Show the dbms of type we have selected, hide all others except for non dbms specific
 	for ($i = 0; $i < $tags.length; $i++)
 	{
-		if (!($dbms = $tags[$i].attributes['type'].nodeValue))
+		if (!($dbms = $tags[$i].attributes['type'].value))
 		{
 			continue;
 		}
@@ -1628,7 +1696,14 @@ function toggle_edit(o)
 		<div id="debug"></div>
 		<div id="wrap">
 			<div id="page-header">
-				<h1><span id="lang-h1">Installation instructions for</span> '<xsl:value-of select="$title" />' <span id="lang-V">version</span>&nbsp;<xsl:value-of select="$version" /></h1>
+				<h1>
+					<span id="lang-h1">Installation instructions for</span>
+					<span class="hide-title" lang="{@lang}"> '<xsl:value-of select="$title" />' </span>
+					<xsl:for-each select="mod:header/mod:title">
+						<span class="hide-title" lang="{@lang}" id="title-{@lang}" style="display: none;"> '<xsl:value-of select="current()" />' </span>
+					</xsl:for-each>
+					<span id="lang-V">version</span>&nbsp;<xsl:value-of select="$version" />
+				</h1>
 				<form method="post" action="" id="lang-selector" style="display: none;">
 				<fieldset class="nobg">
 					<label for="language"><span id="lang-slg">Select language:</span></label>&nbsp;<select id="language" name="language" onclick="load_languages()"><option value="en" selected="selected">English</option></select>
@@ -1666,6 +1741,7 @@ function toggle_edit(o)
 		</body>
 		</html>
 	</xsl:template>
+
 
 	<xsl:template name="give-header">
 		<fieldset>
@@ -1750,6 +1826,12 @@ function toggle_edit(o)
 							</xsl:if>
 						</dd>
 					</xsl:if>
+					<xsl:if test="mod:github != 'N/A' and mod:github != 'n/a' and mod:github != ''">
+						<xsl:if test="contains(mod:github, 'https://github.com/')">
+							<dt id="lang-a-git[{generate-id()}]">Github:</dt>
+							<dd name="author-dd"><a href="{mod:github}" dir="ltr"><xsl:value-of select="mod:github" /></a></dd>
+						</xsl:if>
+					</xsl:if>
 				</dl>
 				<span class="corners-bottom"><span></span></span>
 			</div>
@@ -1778,9 +1860,9 @@ function toggle_edit(o)
 		<xsl:for-each select="../mod:action-group">
 			<xsl:call-template name="give-files-included"></xsl:call-template>
 		</xsl:for-each>
-		<h3 id="lang-addtl-modx">Additional MODX files</h3>
+		<h3 id="lang-addtl-modx">Additional file(s)</h3>
 		<xsl:if test="count(mod:link-group/mod:link) = 0">
-			<p id="lang-imn">This MOD has no additional MODX files.</p>
+			<p id="lang-imn">This MOD has no additional file(s).</p>
 		</xsl:if>
 
 		<ul class="link-group" id="link-group">
@@ -1823,7 +1905,7 @@ function toggle_edit(o)
 			<div class="mod-about">
 				<span class="corners-top"><span></span></span>
 				<div class="mod-about-padding">
-					<p><span id="lang-dclt">For security purposes, please check: <a href="http://www.phpbb.com/mods/">http://www.phpbb.com/mods/</a> for the latest version of this MOD. Downloading this MOD from other sites could cause malicious code to enter into your phpBB Forum. As such, phpBB will not offer support for MODs not offered in our MODs database, located at: <a href="http://www.phpbb.com/mods/">http://www.phpbb.com/mods/</a></span></p>
+					<p><span id="lang-dclt">For security purposes, please check: <a href="https://www.phpbb.com/mods/">https://www.phpbb.com/mods/</a> for the latest version of this MOD. Downloading this MOD from other sites could cause malicious code to enter into your phpBB Forum. As such, phpBB will not offer support for MODs not offered in our MODs database, located at: <a href="https://www.phpbb.com/mods/">https://www.phpbb.com/mods/</a></span></p>
 					<p><span id="lang-ontt1">Before adding this MOD to your forum, you should back up all files and databases related to this MOD.</span></p>
 					<p><span id="lang-ontt2">This MOD was designed for phpBB</span><xsl:text> </xsl:text><xsl:value-of select="mod:installation/mod:target-version" /><xsl:text> </xsl:text>&nbsp;<span id="lang-ontt3">and may not function as stated on other phpBB versions. MODs for phpBB 3.0 will <strong>not</strong> work on phpBB 2.0 and vice versa.</span></p>
 					<xsl:for-each select="./mod:mod-version">
@@ -1842,8 +1924,8 @@ function toggle_edit(o)
 				<div class="mod-about-padding">
 					<p><span id="lang-lict">This MOD has been licensed under the following license:</span></p>
 					<p style='white-space:pre;'><a href="license.txt"><xsl:value-of select="mod:license" /></a></p>
-					<p><span id="lang-ispt">English support can be obtained at <a href="http://www.phpbb.com/mods/">http://www.phpbb.com/mods/</a> for released MODs.</span></p>
-					<p><span id="lang-ispt-int">Support in your language <strong>might</strong> be available at a <a href="http://www.phpbb.com/support/intl/">international support site</a>.</span></p>
+					<p><span id="lang-ispt">English support can be obtained at <a href="https://www.phpbb.com/mods/">https://www.phpbb.com/mods/</a> for released MODs.</span></p>
+					<p><span id="lang-ispt-int">Support in your language <strong>might</strong> be available at a <a href="https://www.phpbb.com/support/intl/">international support site</a>.</span></p>
 				</div>
 				<span class="corners-bottom"><span></span></span>
 			</div>
@@ -1882,10 +1964,10 @@ function toggle_edit(o)
 													<xsl:with-param name="string-in" select="string($authorurl)"/>
 												</xsl:call-template>
 											</xsl:variable>
-											<dd name="author-dd"><a dir="ltr" href="http://www.phpbb.com/community/memberlist.php?mode=viewprofile&amp;un={$operaurl}"><xsl:value-of select="$authorname" /></a></dd>
+											<dd name="author-dd"><a dir="ltr" href="https://www.phpbb.com/community/memberlist.php?mode=viewprofile&amp;un={$operaurl}"><xsl:value-of select="$authorname" /></a></dd>
 										</xsl:when>
 										<xsl:otherwise>
-											<dd name="author-dd"><a dir="ltr" href="http://www.phpbb.com/community/memberlist.php?mode=viewprofile&amp;un={$authorurl}"><xsl:value-of select="$authorname" /></a></dd>
+											<dd name="author-dd"><a dir="ltr" href="https://www.phpbb.com/community/memberlist.php?mode=viewprofile&amp;un={$authorurl}"><xsl:value-of select="$authorname" /></a></dd>
 										</xsl:otherwise>
 
 									</xsl:choose>
@@ -2083,7 +2165,7 @@ function toggle_edit(o)
 						<option value="mssql">MSSQL</option>
 						<option value="oracle">Oracle</option>
 						<option value="postgres">Postgres</option>
-						<option value="sqllite">SQLLite</option>
+						<option value="sqlite">SQLite</option>
 					</select>
 				</fieldset>
 			</form>

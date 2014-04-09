@@ -1,23 +1,26 @@
 <!-- IF not OA_SOCIAL_LOGIN_DISABLE -->
 	<tr>
 		<td class="row1" width="35%">
-			<b class="genmed">Social Login</b><br />
-			<span class="gensmall">Link your account to a Social Network</span>
+			<b class="genmed">{L_OASL_PROFILE_TITLE}</b><br />
+			<span class="gensmall">{L_OASL_PROFILE_DESC}</span>
 		</td>
 		<td class="row2">
 			<!-- IF OA_SOCIAL_LOGIN_ERROR -->
-				<div style="color:white;background-color:red;">[OneAll Social Login] {OA_SOCIAL_LOGIN_ERROR}</div>
+				<div style="color:white;background-color:red;">[{L_OASL_TITLE}] {OA_SOCIAL_LOGIN_ERROR}</div>
 			<!-- ELSE -->
 				<!-- IF OA_SOCIAL_LINK_ERROR -->
 						<div style="color:white;background-color:red;">{OA_SOCIAL_LINK_ERROR}</div>
 				<!-- ENDIF -->
 				<div class="oneall_social_login_providers" id="oneall_social_login_profile_{OA_SOCIAL_LOGIN_RAND}" style="margin-top:20px"></div>
+				<!-- INCLUDE oa_social_login_library.html -->	
 				<script type="text/javascript">
-					oneall.api.plugins.social_link.build("oneall_social_login_profile_{OA_SOCIAL_LOGIN_RAND}", {
-						'providers' :  ['{OA_SOCIAL_LOGIN_PROVIDERS}'],
-						'user_token' : '{OA_SOCIAL_LOGIN_USER_TOKEN}',
-						'callback_uri': '{OA_SOCIAL_LOGIN_CALLBACK_URI}'
-					}); 
+					// <![CDATA[					            
+							var _oneall = _oneall || [];
+							_oneall.push(['social_link', 'set_providers', ['{OA_SOCIAL_LOGIN_PROVIDERS}']]);	
+							_oneall.push(['social_link', 'set_user_token', '{OA_SOCIAL_LOGIN_USER_TOKEN}']);
+							_oneall.push(['social_link', 'set_callback_uri', '{OA_SOCIAL_LOGIN_CALLBACK_URI}']);
+							_oneall.push(['social_link', 'do_render_ui', 'oneall_social_login_profile_{OA_SOCIAL_LOGIN_RAND}']);
+					// ]]>
 				</script>
 				<!-- oneall.com / Social Login for phpBB / v{OA_SOCIAL_LOGIN_VERSION} -->
 			<!-- ENDIF -->

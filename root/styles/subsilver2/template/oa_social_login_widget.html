@@ -2,18 +2,22 @@
 	<!-- IF not OA_SOCIAL_LOGIN_DISABLE -->
 		<td class="genmed" align="right">
 			<!-- IF OA_SOCIAL_LOGIN_ERROR -->
-				<div style="color:white;background-color:red;">[OneAll Social Login] {OA_SOCIAL_LOGIN_ERROR}</div>
+				<div style="color:white;background-color:red;">[{L_OASL_TITLE}] {OA_SOCIAL_LOGIN_ERROR}</div>
 			<!-- ELSE -->
 				<div style="height:40px;width:200px;text-align:left; ">
-					Login with a social network:
-					<script src="{OA_SOCIAL_LOGIN_LIBRARY}" type="text/javascript"></script>
+					<span style="padding-left:15px">{L_OASL_WIDGET_TITLE}</span>
 					<span class="oneall_social_login_providers" id="oneall_social_login_providers_{OA_SOCIAL_LOGIN_RAND}"></span>
+					<!-- INCLUDE oa_social_login_library.html -->				
 					<script type="text/javascript">
-						oneall.api.plugins.social_login.build("oneall_social_login_providers_{OA_SOCIAL_LOGIN_RAND}", {
-							'providers' :  ['{OA_SOCIAL_LOGIN_PROVIDERS}'],
-							'callback_uri': window.location.href,
-							'css_theme_uri' : (("https:" == "{OA_SOCIAL_LOGIN_PROTOCOL}") ? "https://secure." : "http://public.") + 'oneallcdn.com/css/api/socialize/themes/phpbb/small.css'
-						});
+						// <![CDATA[					            
+								var _oneall = _oneall || [];
+								_oneall.push(['social_login', 'set_providers', ['{OA_SOCIAL_LOGIN_PROVIDERS}']]);	
+								_oneall.push(['social_login', 'set_callback_uri', window.location.href]);
+								_oneall.push(['social_login', 'do_render_ui', 'oneall_social_login_providers_{OA_SOCIAL_LOGIN_RAND}']);							
+								<!-- IF OA_SOCIAL_LOGIN_CSS_THEME -->
+								_oneall.push(['social_login', 'set_custom_css_uri','{OA_SOCIAL_LOGIN_CSS_THEME}']);
+								<!-- ENDIF -->
+						// ]]>
 					</script>
 					<!-- oneall.com / Social Login for phpBB / v{OA_SOCIAL_LOGIN_VERSION} -->
 				</div>

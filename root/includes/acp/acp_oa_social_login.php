@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   	OneAll Social Login Mod
- * @copyright 	Copyright 2012 http://www.oneall.com - All rights reserved.
+ * @copyright 	Copyright 2014 http://www.oneall.com - All rights reserved.
  * @license   	GNU/GPL 2 or later
  *
  * This program is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *
  */
-if (!defined ('IN_PHPBB'))
+if (!defined('IN_PHPBB'))
 {
 	exit;
 }
@@ -35,138 +35,144 @@ class acp_oa_social_login
 	/**
 	 * Main Function
 	 */
-	public function main ($id, $mode)
+	public function main($id, $mode)
 	{
 		//Tasks
-		switch (request_var ('task', ''))
+		switch (request_var('task', ''))
 		{
 			case 'verify_api_settings':
-				return $this->admin_ajax_verify_api_settings ();
-				break;
+				return $this->admin_ajax_verify_api_settings();
 
 			case 'autodetect_api_connection':
-				return $this->admin_ajax_autodetect_api_connection ();
-				break;
+				return $this->admin_ajax_autodetect_api_connection();
 
 			default:
-				return $this->admin_main ();
-				break;
+				return $this->admin_main();
 		}
 	}
+
 
 	/**
 	 * Admin Main Page
 	 */
-	public function admin_main ()
+	public function admin_main()
 	{
 		global $db, $user, $auth, $template, $config, $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
+		//Add language file.
+		$user->add_lang('info_acp_oa_social_login');
+
+		// Include the OneAll toolbox.
+		if (!class_exists('oa_social_login'))
+		{
+			include($phpbb_root_path . 'includes/functions_oa_social_login.' . $phpEx);
+		}
+
 		// Set up the page
 		$this->tpl_name = 'acp_oa_social_login';
-		$this->page_title = 'Social Login Settings';
-
-		//Required Class
-		include_once ($phpbb_root_path . 'includes/functions_oa_social_login.' . $phpEx);
+		$this->page_title = $user->lang['OASL_SETTINGS'];
 
 		//API Connection
-		$oa_social_login_api_connection_handler = ((isset ($config ['oa_social_login_api_connection_handler']) && $config ['oa_social_login_api_connection_handler'] == 'fsockopen') ? 'fsockopen' : 'curl');
-		$oa_social_login_api_connection_port = ((isset ($config ['oa_social_login_api_connection_port']) && $config ['oa_social_login_api_connection_port'] == '80') ? '80' : '443');
-		$oa_social_login_api_subdomain = (isset ($config ['oa_social_login_api_subdomain']) ? $config ['oa_social_login_api_subdomain'] : '');
-		$oa_social_login_api_key = (isset ($config ['oa_social_login_api_key']) ? $config ['oa_social_login_api_key'] : '');
-		$oa_social_login_api_secret = (isset ($config ['oa_social_login_api_secret']) ? $config ['oa_social_login_api_secret'] : '');
-		$oa_social_login_providers = (isset ($config ['oa_social_login_providers']) ? explode (",", $config ['oa_social_login_providers']) : array ());
-		$oa_social_login_disable = ((isset ($config ['oa_social_login_disable']) && $config ['oa_social_login_disable'] == '1') ? '1' : '0');
-		$oa_social_login_disable_linking = ((isset ($config ['oa_social_login_disable_linking']) && $config ['oa_social_login_disable_linking'] == '1') ? '1' : '0');
-		$oa_social_login_redirect = (isset ($config ['oa_social_login_redirect']) ? $config ['oa_social_login_redirect'] : '');
+		$oa_social_login_api_connection_handler = ((isset($config['oa_social_login_api_connection_handler']) && $config['oa_social_login_api_connection_handler'] == 'fsockopen') ? 'fsockopen' : 'curl');
+		$oa_social_login_api_connection_port = ((isset($config['oa_social_login_api_connection_port']) && $config['oa_social_login_api_connection_port'] == 80) ? 80 : 443);
+		$oa_social_login_api_subdomain = (isset($config['oa_social_login_api_subdomain']) ? $config['oa_social_login_api_subdomain'] : '');
+		$oa_social_login_api_key = (isset($config['oa_social_login_api_key']) ? $config['oa_social_login_api_key'] : '');
+		$oa_social_login_api_secret = (isset($config['oa_social_login_api_secret']) ? $config['oa_social_login_api_secret'] : '');
+		$oa_social_login_providers = (isset($config['oa_social_login_providers']) ? explode(",", $config['oa_social_login_providers']) : array());
+		$oa_social_login_disable = ((isset($config['oa_social_login_disable']) && $config['oa_social_login_disable'] == '1') ? '1' : '0');
+		$oa_social_login_disable_linking = ((isset($config['oa_social_login_disable_linking']) && $config['oa_social_login_disable_linking'] == '1') ? '1' : '0');
+		$oa_social_login_redirect = (isset($config['oa_social_login_redirect']) ? $config['oa_social_login_redirect'] : '');
 
 		//Triggers a form message
 		$oa_social_login_settings_saved = false;
 
 		//Security Check
-		add_form_key ('acp_oa_social_login');
+		add_form_key('acp_oa_social_login');
 
 		//Form submitted
-		if (!empty ($_POST ['submit']))
+		if (!empty($_POST['submit']))
 		{
 			//Triggers a form message
 			$oa_social_login_settings_saved = true;
 
 			//Security Check
-			if (!check_form_key ('acp_oa_social_login'))
+			if (!check_form_key('acp_oa_social_login'))
 			{
-				trigger_error ($user->lang ['FORM_INVALID'] . adm_back_link ($this->u_action), E_USER_WARNING);
+				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			//API Connection
-			$oa_social_login_api_connection_handler = (request_var ('oa_social_login_api_connection_handler', 'curl') == 'fsockopen' ? 'fsockopen' : 'curl');
-			$oa_social_login_api_connection_port = (request_var ('oa_social_login_api_connection_port', '443') == '80' ? '80' : '443');
-			$oa_social_login_api_subdomain = request_var ('oa_social_login_api_subdomain', '');
-			$oa_social_login_api_key = request_var ('oa_social_login_api_key', '');
-			$oa_social_login_api_secret = request_var ('oa_social_login_api_secret', '');
+			//Gather API Connection details.
+			$oa_social_login_api_connection_handler = (request_var('oa_social_login_api_connection_handler', 'curl') == 'fsockopen' ? 'fsockopen' : 'curl');
+			$oa_social_login_api_connection_port = (request_var('oa_social_login_api_connection_port', 443) == 80 ? 80 : 443);
+			$oa_social_login_api_subdomain = request_var('oa_social_login_api_subdomain', '');
+			$oa_social_login_api_key = request_var('oa_social_login_api_key', '');
+			$oa_social_login_api_secret = request_var('oa_social_login_api_secret', '');
 
-			//Check for full subdomain
-			if (preg_match ("/([a-z0-9\-]+)\.api\.oneall\.com/i", $oa_social_login_api_subdomain, $matches))
+			//Check for full subdomain.
+			if (preg_match("/([a-z0-9\-]+)\.api\.oneall\.com/i", $oa_social_login_api_subdomain, $matches))
 			{
-				$oa_social_login_api_subdomain = $matches [1];
+				$oa_social_login_api_subdomain = $matches[1];
 			}
 
 			//Social Networks
-			$oa_social_login_providers = array ();
-			foreach (oa_social_login::get_providers () AS $provider_key => $provider_data)
+			$oa_social_login_providers = array();
+			foreach (oa_social_login::get_providers() AS $provider_key => $provider_data)
 			{
-				if (request_var ('oa_social_login_provider_' . $provider_key, 0) == 1)
+				if (request_var('oa_social_login_provider_' . $provider_key, 0) == 1)
 				{
-					$oa_social_login_providers [] = $provider_key;
+					$oa_social_login_providers[] = $provider_key;
 				}
 			}
 
-			//Options
-			$oa_social_login_disable = ((request_var ('oa_social_login_disable', 0) == 1) ? 1 : 0);
-			$oa_social_login_disable_linking = ((request_var ('oa_social_login_disable_linking', 0) == 1) ? 1 : 0);
-			$oa_social_login_redirect = request_var ('oa_social_login_redirect', '');
+			//Other options.
+			$oa_social_login_disable = ((request_var('oa_social_login_disable', 0) == 1) ? 1 : 0);
+			$oa_social_login_disable_linking = ((request_var('oa_social_login_disable_linking', 0) == 1) ? 1 : 0);
+			$oa_social_login_redirect = request_var('oa_social_login_redirect', '');
 
 
-			//Save Config
-			set_config ('oa_social_login_disable', $oa_social_login_disable);
-			set_config ('oa_social_login_disable_linking', $oa_social_login_disable_linking);
-			set_config ('oa_social_login_redirect', $oa_social_login_redirect);
-			set_config ('oa_social_login_api_subdomain', $oa_social_login_api_subdomain);
-			set_config ('oa_social_login_api_key', $oa_social_login_api_key);
-			set_config ('oa_social_login_api_secret', $oa_social_login_api_secret);
-			set_config ('oa_social_login_providers', implode (",", $oa_social_login_providers));
-			set_config ('oa_social_login_api_connection_handler', $oa_social_login_api_connection_handler);
-			set_config ('oa_social_login_api_connection_port', $oa_social_login_api_connection_port);
+			//Save configuration.
+			set_config('oa_social_login_disable', $oa_social_login_disable);
+			set_config('oa_social_login_disable_linking', $oa_social_login_disable_linking);
+			set_config('oa_social_login_redirect', $oa_social_login_redirect);
+			set_config('oa_social_login_api_subdomain', $oa_social_login_api_subdomain);
+			set_config('oa_social_login_api_key', $oa_social_login_api_key);
+			set_config('oa_social_login_api_secret', $oa_social_login_api_secret);
+			set_config('oa_social_login_providers', implode(",", $oa_social_login_providers));
+			set_config('oa_social_login_api_connection_handler', $oa_social_login_api_connection_handler);
+			set_config('oa_social_login_api_connection_port', $oa_social_login_api_connection_port);
 		}
 
 
 		//Setup Social Network Vars
-		foreach (oa_social_login::get_providers () AS $key => $data)
+		foreach (oa_social_login::get_providers() AS $key => $data)
 		{
-			$template->assign_block_vars ('provider', array (
+			$template->assign_block_vars('provider', array(
 				'KEY' => $key,
-				'NAME' => $data ['name'],
-				'ENABLE' => in_array ($key, $oa_social_login_providers)
+				'NAME' => $data['name'],
+				'ENABLE' => in_array($key, $oa_social_login_providers)
 			));
 		}
 
+
 		//Setup Vars
-		$template->assign_vars (array (
-			'U_ACTION' => $this->u_action,
-			'CURRENT_SID' => $user->data ['session_id'],
-			'OA_SOCIAL_LOGIN_SETTINGS_SAVED' => $oa_social_login_settings_saved,
-			'OA_SOCIAL_LOGIN_DISABLE' => ($oa_social_login_disable == '1'),
-			'OA_SOCIAL_LOGIN_DISABLE_LINKING' => ($oa_social_login_disable_linking == '1'),
-			'OA_SOCIAL_LOGIN_REDIRECT' => $oa_social_login_redirect,
-			'OA_SOCIAL_LOGIN_API_SUBDOMAIN' => $oa_social_login_api_subdomain,
-			'OA_SOCIAL_LOGIN_API_KEY' => $oa_social_login_api_key,
-			'OA_SOCIAL_LOGIN_API_SECRET' => $oa_social_login_api_secret,
-			'OA_SOCIAL_LOGIN_API_CONNECTION_HANDLER' => $oa_social_login_api_connection_handler,
-			'OA_SOCIAL_LOGIN_API_CONNECTION_HANDLER_CURL' => ($oa_social_login_api_connection_handler <> 'fsockopen'),
-			'OA_SOCIAL_LOGIN_API_CONNECTION_HANDLER_FSOCKOPEN' => ($oa_social_login_api_connection_handler == 'fsockopen'),
-			'OA_SOCIAL_LOGIN_API_CONNECTION_PORT' => $oa_social_login_api_connection_port,
-			'OA_SOCIAL_LOGIN_API_CONNECTION_PORT_443' => ($oa_social_login_api_connection_port <> '80'),
-			'OA_SOCIAL_LOGIN_API_CONNECTION_PORT_80' => ($oa_social_login_api_connection_port == '80'),
-		));
+		$template->assign_vars(
+			array(
+				'U_ACTION' => $this->u_action,
+				'CURRENT_SID' => $user->data['session_id'],
+				'OA_SOCIAL_LOGIN_SETTINGS_SAVED' => $oa_social_login_settings_saved,
+				'OA_SOCIAL_LOGIN_DISABLE' => ($oa_social_login_disable == '1'),
+				'OA_SOCIAL_LOGIN_DISABLE_LINKING' => ($oa_social_login_disable_linking == '1'),
+				'OA_SOCIAL_LOGIN_REDIRECT' => $oa_social_login_redirect,
+				'OA_SOCIAL_LOGIN_API_SUBDOMAIN' => $oa_social_login_api_subdomain,
+				'OA_SOCIAL_LOGIN_API_KEY' => $oa_social_login_api_key,
+				'OA_SOCIAL_LOGIN_API_SECRET' => $oa_social_login_api_secret,
+				'OA_SOCIAL_LOGIN_API_CONNECTION_HANDLER' => $oa_social_login_api_connection_handler,
+				'OA_SOCIAL_LOGIN_API_CONNECTION_HANDLER_CURL' => ($oa_social_login_api_connection_handler != 'fsockopen'),
+				'OA_SOCIAL_LOGIN_API_CONNECTION_HANDLER_FSOCKOPEN' => ($oa_social_login_api_connection_handler == 'fsockopen'),
+				'OA_SOCIAL_LOGIN_API_CONNECTION_PORT' => $oa_social_login_api_connection_port,
+				'OA_SOCIAL_LOGIN_API_CONNECTION_PORT_443' => ($oa_social_login_api_connection_port != '80'),
+				'OA_SOCIAL_LOGIN_API_CONNECTION_PORT_80' => ($oa_social_login_api_connection_port == '80'),
+			));
 
 		//Done
 		return true;
@@ -176,195 +182,171 @@ class acp_oa_social_login
 	/**
 	 * AutoDetect API Settings - Ajax Call
 	 */
-	public function admin_ajax_autodetect_api_connection ()
+	public function admin_ajax_autodetect_api_connection()
 	{
-		global $template, $phpbb_root_path, $phpEx;
+		global $phpbb_root_path, $phpEx, $user;
 
-		// Set up the page
-		$this->tpl_name = 'acp_oa_social_login_ajax_result';
+		//Add the language file.
+		$user->add_lang('info_acp_oa_social_login');
 
-		//Required Class
-		include_once ($phpbb_root_path . 'includes/functions_oa_social_login.' . $phpEx);
+		//Include the OneAll toolbox.
+		if (!class_exists('oa_social_login'))
+		{
+			include($phpbb_root_path . 'includes/functions_oa_social_login.' . $phpEx);
+		}
 
-		//Status
-		$status_message = '';
-		$status_is_error = null;
-
-		//Check CURL HTTPS - Port 443
-		if (oa_social_login::check_curl (true) === true)
+		//Check CURL HTTPS - Port 443.
+		if (oa_social_login::check_curl(true) === true)
 		{
-			$status_is_error = false;
-			$status_message = 'success_autodetect_api_curl_443';
+			$status_message = 'success|curl_443|' . sprintf($user->lang['OASL_API_DETECT_CURL'], 443);
 		}
-		//Check CURL HTTP - Port 80
-		elseif (oa_social_login::check_curl (false) === true)
+		//Check CURL HTTP - Port 80.
+		elseif (oa_social_login::check_curl(false) === true)
 		{
-			$status_is_error = false;
-			$status_message = 'success_autodetect_api_curl_80';
+			$status_message = 'success|curl_80|' . sprintf($user->lang['OASL_API_DETECT_CURL'], 80);
 		}
-		//Check FSOCKOPEN HTTPS - Port 443
-		elseif (oa_social_login::check_fsockopen (true) == true)
+		//Check FSOCKOPEN HTTPS - Port 443.
+		elseif (oa_social_login::check_fsockopen(true) == true)
 		{
-			$status_is_error = false;
-			$status_message = 'success_autodetect_api_fsockopen_443';
+			$status_message = 'success|fsockopen_443|' . sprintf($user->lang['OASL_API_DETECT_FSOCKOPEN'], 443);
 		}
-		//Check FSOCKOPEN HTTP - Port 80
-		elseif (oa_social_login::check_fsockopen (false) == true)
+		//Check FSOCKOPEN HTTP - Port 80.
+		elseif (oa_social_login::check_fsockopen(false) == true)
 		{
-			$status_is_error = false;
-			$status_message = 'success_autodetect_api_fsockopen_80';
+			$status_message = 'success|fsockopen_80|' . sprintf($user->lang['OASL_API_DETECT_FSOCKOPEN'], 443);
 		}
-		//No working handler found
+		// No working handler found.
 		else
 		{
-			$status_is_error = true;
-			$status_message = 'error_autodetect_api_no_handler';
+			$status_message = 'error|none|' . $user->lang['OASL_API_DETECT_NONE'];
 		}
 
-		//Setup Vars
-		$template->assign_vars (array (
-			'OA_SOCIAL_LOGIN_STATUS_IS_ERROR' => $status_is_error,
-			'OA_SOCIAL_LOGIN_STATUS_MESSAGE' => $status_message
-		));
+		//Call the garbage collector.
+		garbage_collection();
 
-		//Done
-		return true;
+		//Output for AJAX.
+		die($status_message);
 	}
 
 
 	/**
 	 * Check API Settings - Ajax Call
 	 */
-	public function admin_ajax_verify_api_settings ()
+	public function admin_ajax_verify_api_settings()
 	{
-		global $template, $phpbb_root_path, $phpEx;
+		global $phpbb_root_path, $phpEx, $user;
 
-		// Set up the page
-		$this->tpl_name = 'acp_oa_social_login_ajax_result';
+		//Add language file.
+		$user->add_lang('info_acp_oa_social_login');
 
-		//Required Class
-		include_once ($phpbb_root_path . 'includes/functions_oa_social_login.' . $phpEx);
-
-		//Status
-		$status_message = '';
-		$status_is_error = null;
-
-		//Read arguments
-		$api_subdomain = trim (strtolower (request_var ('api_subdomain', '')));
-		$api_key = trim (request_var ('api_key', ''));
-		$api_secret = trim (request_var ('api_secret', ''));
-		$api_connection_port = request_var ('api_connection_port', '');
-		$api_connection_handler = request_var ('api_connection_handler', '');
-
-		//Check if all fields have been filled out
-		if (strlen ($api_subdomain) == 0 || strlen ($api_key) == 0 || strlen ($api_secret) == 0)
+		//Include the OneAll toolbox.
+		if (!class_exists('oa_social_login'))
 		{
-			$status_is_error = true;
-			$status_message = 'error_not_all_fields_filled_out';
+			include($phpbb_root_path . 'includes/functions_oa_social_login.' . $phpEx);
+		}
+
+		//Read arguments.
+		$api_subdomain = trim(strtolower(request_var('api_subdomain', '')));
+		$api_key = trim(request_var('api_key', ''));
+		$api_secret = trim(request_var('api_secret', ''));
+		$api_connection_port = request_var('api_connection_port', '');
+		$api_connection_handler = request_var('api_connection_handler', '');
+
+		//Init status message.
+		$status_message = null;
+
+		//Check if all fields have been filled out.
+		if (strlen($api_subdomain) == 0 || strlen($api_key) == 0 || strlen($api_secret) == 0)
+		{
+			$status_message = 'error_|' . $user->lang['OASL_API_CREDENTIALS_FILL_OUT'];
 		}
 		else
 		{
 			//Check the handler
-			$api_connection_handler = ($api_connection_handler <> 'fsockopen' ? 'curl' : 'fsockopen');
-			$api_connection_use_https = ($api_connection_port <> '80' ? true : false);
+			$api_connection_handler = ($api_connection_handler != 'fsockopen' ? 'curl' : 'fsockopen');
+			$api_connection_use_https = ($api_connection_port != '80' ? true : false);
 
 			//FSOCKOPEN
 			if ($api_connection_handler == 'fsockopen')
 			{
-				if (!oa_social_login::check_fsockopen ($api_connection_use_https))
+				if (!oa_social_login::check_fsockopen($api_connection_use_https))
 				{
-					$status_is_error = true;
-					$status_message = 'error_selected_handler_faulty';
+					$status_message = 'error|' . $user->lang['OASL_API_CREDENTIALS_USE_AUTO'];
 				}
 			}
 			//CURL
 			else
 			{
-				if (!oa_social_login::check_curl ($api_connection_use_https))
+				if (!oa_social_login::check_curl($api_connection_use_https))
 				{
-					$status_is_error = true;
-					$status_message = 'error_selected_handler_faulty';
+					$status_message = 'error|' . $user->lang['OASL_API_CREDENTIALS_USE_AUTO'];
 				}
 			}
 
-			//No errors until now
-			if ($status_is_error !== true)
+			//No errors until now.
+			if (empty($status_message))
 			{
-				//Full domain entered
-				if (preg_match ("/([a-z0-9\-]+)\.api\.oneall\.com/i", $api_subdomain, $matches))
+				//The full domain has been entered.
+				if (preg_match("/([a-z0-9\-]+)\.api\.oneall\.com/i", $api_subdomain, $matches))
 				{
-					$api_subdomain = $matches [1];
+					$api_subdomain = $matches[1];
 				}
 
-				//Check subdomain format
-				if (!preg_match ("/^[a-z0-9\-]+$/i", $api_subdomain))
+				//Check format of the subdomain.
+				if (!preg_match("/^[a-z0-9\-]+$/i", $api_subdomain))
 				{
-					$status_is_error = true;
-					$status_message = 'error_subdomain_wrong_syntax';
+					$status_message = 'error|' . $user->lang['OASL_API_CREDENTIALS_SUBDOMAIN_WRONG'];
 				}
 				else
 				{
-					//Domain
+					// Construct full API Domain.
 					$api_domain = $api_subdomain . '.api.oneall.com';
-
-					//Connection to
 					$api_resource_url = ($api_connection_use_https ? 'https' : 'http') . '://' . $api_domain . '/tools/ping.json';
 
-					//Get connection details
-					$result = oa_social_login::do_api_request ($api_connection_handler, $api_resource_url, array (
+					// Try to establish a connection.
+					$result = oa_social_login::do_api_request($api_connection_handler, $api_resource_url, array(
 						'api_key' => $api_key,
 						'api_secret' => $api_secret
-					), 15);
+					));
 
-					//Parse result
-					if (is_object ($result) && property_exists ($result, 'http_code') && property_exists ($result, 'http_data'))
+					// Parse result.
+					if (is_object($result) && property_exists($result, 'http_code') && property_exists($result, 'http_data'))
 					{
 						switch ($result->http_code)
 						{
-							//Success
+							// Connection successfull.
 							case 200:
-								$status_is_error = false;
-								$status_message = 'success';
+								$status_message = 'success|' . $user->lang['OASL_API_CREDENTIALS_OK'];
 								break;
 
-							//Authentication Error
+							// Authentication Error.
 							case 401:
-								$status_is_error = true;
-								$status_message = 'error_authentication_credentials_wrong';
+								$status_message = 'error|' . $user->lang['OASL_API_CREDENTIALS_KEYS_WRONG'];
 								break;
 
-							//Wrong Subdomain
+							// Wrong Subdomain.
 							case 404:
-								$status_is_error = true;
-								$status_message = 'error_subdomain_wrong';
+								$status_message = 'error|' . $user->lang['OASL_API_CREDENTIALS_SUBDOMAIN_WRONG'];
 								break;
 
-							//Other error
+							// Other error.
 							default:
-								$status_is_error = true;
-								$status_message = 'error_communication';
+								$status_message = 'error|' . $user->lang['OASL_API_CREDENTIALS_CHECK_COM'];
 								break;
 						}
 					}
 					else
 					{
-						$status_is_error = true;
-						$status_message = 'error_communication';
+						$status_message = 'error|' . $user->lang['OASL_API_CREDENTIALS_CHECK_COM'];
 					}
 				}
 			}
 		}
 
-		//Save Status
-		set_config ('oa_social_login_api_settings_ok', ($status_is_error ? '0' : '1'));
+		// Garbage Collector.
+		garbage_collection();
 
-		//Setup Vars
-		$template->assign_vars (array (
-			'OA_SOCIAL_LOGIN_STATUS_IS_ERROR' => $status_is_error,
-			'OA_SOCIAL_LOGIN_STATUS_MESSAGE' => $status_message
-		));
-
-		//Done
-		return true;
+		// Output for Ajax.
+		die($status_message);
 	}
 }

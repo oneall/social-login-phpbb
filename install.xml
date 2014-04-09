@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <?xml-stylesheet type="text/xsl" href="modx.prosilver.en.xsl"?>
-<mod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.phpbb.com/mods/xml/modx-1.2.5.xsd">
+<mod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://www.phpbb.com/mods/xml/modx-1.2.6.xsd">
 	<header>
 		<license>http://opensource.org/licenses/gpl-license.php GNU General Public License v2</license>
 		<title lang="en">OneAll Social Login</title>
+		<title lang="fr">OneAll Social Login</title>		
 		<description lang="en"><![CDATA[
 			OneAll Social Login is a professionally developed and free phpBB3 module that allows your users to register and login to your phpBB with their existing social network 
 			accounts (Twitter, Facebook, LinkedIn, Google ...). OneAll Social Login integrates with your existing registration system so you and your users don't have to start 
 			from scratch. Social Login helps increasing your user registration rate by simplifying the registration process and provides permission-based social data retrieved 
-			from the social network profiles. ]]>
-		</description>
+			from the social network profiles.]]>
+		</description>		
+		<description lang="fr"><![CDATA[
+			OneAll Social Login est un module gratuit qui permet à vos utilisateurs de s'inscire et de se connecter avec leur compte auprès d'un réseau social sur votre forum. 
+			25+ réseaux sociaux comme par example Twitter, Facebook, LinkedIn et Google inclus. Social Login s'intègre parfaitement à votre système existant et augmentera
+			le taux d'inscription en simplifiant le processus d'inscription.]]>
+		</description>		
 		<author-group>
 			<author>
 				<realname>OneAll LLC</realname>
@@ -17,25 +23,161 @@
 				<homepage>http://www.oneall.com/</homepage>
 			</author>
 		</author-group>
-		<mod-version>1.8.0</mod-version>
+		<github><![CDATA[https://github.com/oneall/social-login-phpbb]]></github>
+		<mod-version>3.4.0</mod-version>
+		<history>
+			<entry>
+				<date>2014-04-02</date>
+				<rev-version>3.4.0</rev-version>
+				<changelog lang="en">
+					<change>PHP self replace for PHP4 compatibility</change>
+					<change>Switched to Asynchronous JavaScript</change>
+					<change>Whitespaces formatted</change>
+					<change>Social Network 'Instagram' added</change>
+					<change>Social Network 'Vimeo' added</change>
+					<change>Social Network 'Amazon' added</change>
+					<change>Social Network 'Reddit' added</change>					
+				</changelog>
+				<changelog lang="fr">
+					<change>PHP self remplacé pour la compatibilité avec PHP4</change>
+					<change>JavaScript en mode asynchrone</change>
+					<change>Formattage du code</change>
+					<change>Réseau social 'Instagram' ajouté</change>
+					<change>Réseau social 'Vimeo' ajouté</change>
+					<change>Réseau social 'Amazon' ajouté</change>
+					<change>Réseau social 'Reddit' ajouté</change>					
+				</changelog>
+			</entry>		
+			<entry>
+				<date>2014-01-06</date>
+				<rev-version>3.3.0</rev-version>
+				<changelog lang="en">
+					<change>Users added with the correct language</change>
+					<change>Notification sent in the correct language</change>
+					<change>Social Network 'Twitch' added</change>
+					<change>French language added</change>
+				</changelog>
+				<changelog lang="en">
+					<change>Utilisateur crées avec le bon language</change>
+					<change>Email envoyés avec le bon language</change>
+					<change>Réseau social 'Twitch' ajouté</change>
+					<change>Langue française ajoutée</change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2013-11-18</date>
+				<rev-version>3.2.0</rev-version>
+				<changelog lang="en">
+					<change>ACP is now W3C compliant</change>
+					<change>Social Login is no longer being displayed if mode=logout</change>					
+					<change>ACLs now re-initialised on login</change>
+					<change>CDATA for JavaScript added</change>
+				</changelog>
+				<changelog lang="fr">
+					<change>ACP correpondant au normes W3C</change>
+					<change>Social Login n'est plus affiché si mode=logout</change>					
+					<change>ACLs re-initialisée lors de la connexion</change>
+					<change>CDATA pour le JavaScript ajouté</change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2013-10-15</date>
+				<rev-version>3.1.0</rev-version>
+				<changelog lang="en">
+					<change>Subsilver2 instructions moved to contrib</change>
+					<change>Installation instructions improved</change>
+				</changelog>
+				<changelog lang="fr">
+					<change>Instructions Subsilver2 déplacées vers le répertoire contrib</change>
+					<change>Instructions d'installation améliorées</change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2013-10-14</date>
+				<rev-version>3.0.0</rev-version>
+				<changelog lang="en">
+					<change>$_SERVER usage removed</change>
+					<change>Subsilver2 templates removed from default installation</change>
+				</changelog>
+				<changelog lang="fr">
+					<change>$_SERVER remplacé</change>
+					<change>Fichiers Subsilver2 supprimés de l'installation par défaut</change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2013-09-04</date>
+				<rev-version>2.9.0</rev-version>
+				<changelog lang="en">
+					<change>Removed hardcoded language</change>
+					<change>Moved subsilver instructions to folder contrib</change>
+					<change>Added garbage collector calls</change>
+					<change>Updated to jQuery 1.10.2</change>
+				</changelog>
+				<changelog lang="fr">
+					<change>Expressions de langue remplacés</change>
+					<change>Instructions Subsilver2 déplacées vers le répertoire contrib</change>
+					<change>Appel au Garbage Collector ajouté</change>
+					<change>Mise à jour de jQuery 1.10.2</change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2013-07-17</date>
+				<rev-version>2.8.0</rev-version>
+				<changelog lang="en">
+					<change>Removed backticks from queries</change>
+					<change>Using table constants in queries</change>
+					<change>MODX updated</change>
+				</changelog>
+				<changelog lang="fr">
+					<change>Backticks supprimés des requêtes SQL</change>
+					<change>Utilisation de constantes pour les noms de table</change>
+					<change>MODX mis à jour</change>
+				</changelog>
+			</entry>
+		</history>
 		<installation>
 			<level>easy</level>
 			<time>600</time>
-			<target-version>3.0.11</target-version>
+			<target-version>3.0.12</target-version>
 		</installation>
 		<link-group>
-			<link type="template" href="./xml/subsilver2.xml" lang="en"><![CDATA[subsilver2 modifications]]></link>
+			<link type="template" href="contrib/subsilver2.xml" lang="en">Subsilver2 Template Modifications</link>
 		</link-group>
 	</header>
 	<action-group>
 		<copy>
-			 <file from="root/*.*" to="*.*"/>		
-		</copy>		
-		<open src="styles/prosilver/template/overall_header.html">	
+			<file from="root/adm/*.*" to="adm/*.*"/>
+			<file from="root/includes/*.*" to="includes/*.*"/>
+			<file from="root/language/en/*.*" to="language/en/*.*"/>			
+			<file from="root/styles/prosilver/*.*" to="styles/prosilver/*.*"/>
+			<file from="root/umil/*.*" to="umil/*.*"/>
+			<file from="root/install_oa_social_login.php" to="install_oa_social_login.php"/>
+		</copy>				
+
+		<open src="language/en/acp/common.php">
 			<edit>
-				<find><![CDATA[</head>]]></find>
-				<action type="before-add"><![CDATA[<!-- INCLUDE oa_social_login_library.html -->]]></action>
+				<find><![CDATA[?>]]></find>
+				<action type="before-add"><![CDATA[// OneAll Social Login
+$lang = array_merge($lang, array(
+	'ACP_OA_SOCIAL_LOGIN' => 'OneAll Social Login',
+	'ACP_OA_SOCIAL_LOGIN_SETTINGS' => 'OneAll Social Login Settings',
+));	
+]]></action>
 			</edit>
+		</open>
+		
+				
+		<open src="includes/constants.php">
+			<edit>
+				<find><![CDATA[// Additional tables]]></find>
+				<action type="after-add"><![CDATA[// OneAll Social Login
+define('OASL_LOGIN_TOKEN_TABLE',    $table_prefix . 'oasl_login_token');
+define('OASL_IDENTITY_TABLE',       $table_prefix . 'oasl_identity');
+define('OASL_USER_TABLE',           $table_prefix . 'oasl_user');]]></action>
+			</edit>
+		</open>
+		
+		<open src="styles/prosilver/template/overall_header.html">	
 			<edit>
 				<find><![CDATA[<!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH -->
  <div id="search-box">
@@ -58,12 +200,30 @@
 				<action type="after-add"><![CDATA[<!-- INCLUDE oa_social_login_profile.html -->]]></action>
 			</edit>		
 		</open>	
-		<php-installer><![CDATA[install_oa_social_login.php]]></php-installer>
-		<diy-instructions lang="en">After the installation you have to setup the module. 
 		
-1) Login to your Administration Control Panel,
-2) Click on the tab General,
-3) Click on the link Social Login settings in the group CLIENT COMMUNICATION.
+		<php-installer><![CDATA[install_oa_social_login.php]]></php-installer>
+		<diy-instructions lang="en">*** Purge the cache ***
+ After having modified your templates you must clear the phpBB cache or phpBB will continue displaying the old, cached version of the files.
+
+ Login to your phpBB ACP and click on the 'General' tab on top of the page. Below the 'Board statistics' is an area titled 'Resynchronise or reset statistics'.
+ This area features a series of 'Run now' buttons. Press the button next to 'Purge the cache', confirm your decision and your cache will be refreshed. 
+				
+*** Setup Social Login *** 		
+ To setup the modification login to your phpBB ACP and click on the 'General' tab on the top of the page.
+ Then click on 'OneAll Social Login' in the group 'CLIENT COMMUNICATION' on the left side of the page.
+ 
+*** Additional information ***
+http://docs.oneall.com/plugins/guide/social-login-phpbb/
+		</diy-instructions>
+				<diy-instructions lang="fr">*** Purgez le cache ***
+ Après avoir installé le module vous devez vider le cache de votre forum, sinon phpBB continuera à afficher les anciennes versions des fichiers.
+ Connectez-vous en tant qu'administrateur, ouvrez l'onglet 'General' de l'ACP et cliquez sur le lien "Vider le cacher" qui se trouve à la fin de la page.
+ 			
+*** Configuration de Social Login *** 		
+ Connectez-vous en tant qu'administrateur, ouvrez l'onglet 'General' de l'ACP et cliquez sur le lien 'OneAll Social Login' dans le navigation sur votre gauche.
+  
+*** D'autres informations ***
+http://docs.oneall.com/plugins/guide/social-login-phpbb/
 		</diy-instructions>
 	</action-group>
 </mod>

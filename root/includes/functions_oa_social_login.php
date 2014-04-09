@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   	OneAll Social Login Mod
- * @copyright 	Copyright 2012 http://www.oneall.com - All rights reserved.
+ * @copyright 	Copyright 2014 http://www.oneall.com - All rights reserved.
  * @license   	GNU/GPL 2 or later
  *
  * This program is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@
  *
  */
 
-if (!defined ('IN_PHPBB'))
+if (!defined('IN_PHPBB'))
 {
 	exit;
 }
@@ -32,70 +32,77 @@ if (!defined ('IN_PHPBB'))
 //Oneall Social Login
 class oa_social_login
 {
-	const OA_SOCIAL_LOGIN_VERSION = '2.5.0';
+	const OA_SOCIAL_LOGIN_VERSION = '3.4.0';
 
 	/**
 	 * Inject variables into template
 	 */
-	public function setup_template ($template)
+	public function setup_template($template)
 	{
 		global $config, $user;
 
-		//Enabled
-		if (empty ($config ['oa_social_login_disable']))
+		// Add our language file.
+		$user->add_lang('info_acp_oa_social_login');
+
+		// Social Login is enabled and the user is not logging out.
+		if (empty($config['oa_social_login_disable']) && request_var('mode', '') != 'logout')
 		{
-			$template->assign_var ('OA_SOCIAL_LOGIN_DISABLE', false);
+			// This will flag the widget to be shown.
+			$template->assign_var('OA_SOCIAL_LOGIN_DISABLE', false);
 
 			//Subdomain is required
-			if (!empty ($config ['oa_social_login_api_subdomain']))
+			if (!empty($config['oa_social_login_api_subdomain']))
 			{
 				//Providers are required
-				if (!empty ($config ['oa_social_login_providers']))
+				if (!empty($config['oa_social_login_providers']))
 				{
-					$oa_social_login_providers = explode (",", $config ['oa_social_login_providers']);
+					$oa_social_login_providers = explode(",", $config['oa_social_login_providers']);
 
 					//HTTP / HTTPS
-					$server_protocol = (!empty ($config ['server_protocol'])) ? (str_replace ('://', '', $config ['server_protocol'])) : ($config ['cookie_secure'] ? 'https' : 'http');
+					$server_protocol = (!empty($config['server_protocol'])) ? (str_replace('://', '', $config['server_protocol'])) : ($config['cookie_secure'] ? 'https' : 'http');
 
 					//Set Placeholders
-					$template->assign_var ('OA_SOCIAL_LOGIN_CALLBACK_URI', self::get_current_url ());
-					$template->assign_var ('OA_SOCIAL_LOGIN_VERSION', self::OA_SOCIAL_LOGIN_VERSION);
-					$template->assign_var ('OA_SOCIAL_LOGIN_RAND', mt_rand (99999, 9999999));
-					$template->assign_var ('OA_SOCIAL_LOGIN_PROTOCOL', $server_protocol);
-					$template->assign_var ('OA_SOCIAL_LOGIN_LIBRARY', ($server_protocol . '://' . trim ($config ['oa_social_login_api_subdomain']) . '.api.oneall.com/socialize/library.js'));
-					$template->assign_var ('OA_SOCIAL_LOGIN_PROVIDERS', implode ("','", $oa_social_login_providers));
+					$template->assign_var('OA_SOCIAL_LOGIN_CALLBACK_URI', oa_social_login::get_current_url());
+					$template->assign_var('OA_SOCIAL_LOGIN_VERSION', oa_social_login::OA_SOCIAL_LOGIN_VERSION);
+					$template->assign_var('OA_SOCIAL_LOGIN_RAND', mt_rand(99999, 9999999));
+					$template->assign_var('OA_SOCIAL_LOGIN_PROTOCOL', $server_protocol);
+					$template->assign_var('OA_SOCIAL_LOGIN_LIBRARY', ($server_protocol . '://' . trim($config['oa_social_login_api_subdomain']) . '.api.oneall.com/socialize/library.js'));
+					$template->assign_var('OA_SOCIAL_LOGIN_PROVIDERS', implode("','", $oa_social_login_providers));
+
+					//Small Icons
+					// $template->assign_var ('OA_SOCIAL_LOGIN_CSS_THEME', ($server_protocol == "https" ? "https://secure." : "http://public.") . 'oneallcdn.com/css/api/socialize/themes/phpbb/small.css');
 
 					//User must be logged in and not a bot
-					if (is_object ($user) AND empty ($user->data ['isbot']) AND (!empty ($user->data ['user_id']) AND $user->data ['user_id'] <> ANONYMOUS))
+					if (is_object($user) && empty($user->data['isbot']) && (!empty($user->data['user_id']) && $user->data['user_id'] != ANONYMOUS))
 					{
 						//Only display this in the UCP
-						if (!empty ($user->page ['page_name']) AND strpos ($user->page ['page_name'], 'ucp') !== false)
+						if (!empty($user->page['page_name']) && strpos($user->page['page_name'], 'ucp') !== false)
 						{
 							//User token
-							if (($user_token = self::get_user_token_for_user_id ($user->data ['user_id'])) !== false)
+							if (($user_token = oa_social_login::get_user_token_for_user_id($user->data['user_id'])) !== false)
 							{
-								$template->assign_var ('OA_SOCIAL_LOGIN_USER_TOKEN', $user_token);
+								$template->assign_var('OA_SOCIAL_LOGIN_USER_TOKEN', $user_token);
 							}
 
 							//Link token
-							$template->assign_var ('OA_SOCIAL_LOGIN_CALLBACK_URI', self::get_current_url () . '&amp;oa_social_login_login_token=' . self::create_login_token_for_user_id ($user->data ['user_id']));
+							$template->assign_var('OA_SOCIAL_LOGIN_CALLBACK_URI', oa_social_login::get_current_url() . '&amp;oa_social_login_login_token=' . oa_social_login::create_login_token_for_user_id($user->data['user_id']));
 						}
 					}
 				}
 				else
 				{
-					$template->assign_var ('OA_SOCIAL_LOGIN_ERROR', 'You have to enable at least one social network');
+					$template->assign_var('OA_SOCIAL_LOGIN_ERROR', $user->lang['OASL_ENABLE_SOCIAL_NETWORK']);
 				}
 			}
 			else
 			{
-				$template->assign_var ('OA_SOCIAL_LOGIN_ERROR', 'You have to setup your API Credentials');
+				$template->assign_var('OA_SOCIAL_LOGIN_ERROR', $user->lang['OASL_ENTER_CREDENTIALS']);
 			}
 		}
 		//Disabled
 		else
 		{
-			$template->assign_var ('OA_SOCIAL_LOGIN_DISABLE', true);
+			$template->assign_var('OA_SOCIAL_LOGIN_DISABLE', true);
 		}
 
 		//Done
@@ -106,74 +113,77 @@ class oa_social_login
 	/**
 	 * Callback Handler
 	 */
-	public function handle_callback ()
+	public function handle_callback()
 	{
 		//Global Variables
-		global $db, $auth, $user, $config, $user, $template;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $auth, $user, $config, $template, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		//Callback Handler
-		if (isset ($_POST) && !empty ($_POST ['oa_action']) && !empty ($_POST ['connection_token']))
+		if (isset($_POST) && !empty($_POST['oa_action']) && !empty($_POST['connection_token']))
 		{
-			//Language file
-			$user->add_lang ('info_acp_oa_social_login');
+			//Read arguments
+			$connection_token = request_var('connection_token', '');
+			$login_token = request_var('oa_social_login_login_token', '');
+			$oa_action = strtolower(request_var('oa_action', ''));
+
+			//Add language file
+			$user->add_lang('info_acp_oa_social_login');
 
 			//Check if enabled
-			if (empty ($config ['oa_social_login_disable']))
+			if (empty($config['oa_social_login_disable']))
 			{
 				//Required settings
-				if (!empty ($config ['oa_social_login_api_subdomain']) && !empty ($config ['oa_social_login_api_key']) && !empty ($config ['oa_social_login_api_secret']))
+				if (!empty($config['oa_social_login_api_subdomain']) && !empty($config['oa_social_login_api_key']) && !empty($config['oa_social_login_api_secret']))
 				{
-
 					//API Settings
-					$api_connection_handler = ((!empty ($config ['oa_social_login_api_connection_handler']) && $config ['oa_social_login_api_connection_handler'] == 'fsockopen') ? 'fsockopen' : 'curl');
-					$api_connection_use_https = ((!empty ($config ['oa_social_login_api_connection_port']) && $config ['oa_social_login_api_connection_port'] == '80') ? false : true);
+					$api_connection_handler = ((!empty($config['oa_social_login_api_connection_handler']) && $config['oa_social_login_api_connection_handler'] == 'fsockopen') ? 'fsockopen' : 'curl');
+					$api_connection_use_https = ((!empty($config['oa_social_login_api_connection_port']) && $config['oa_social_login_api_connection_port'] == '80') ? false : true);
 
 					//API Resource
-					$api_connection_url = ($api_connection_use_https ? 'https' : 'http') . '://' . $config ['oa_social_login_api_subdomain'] . '.api.oneall.com/connections/' . $_POST ['connection_token'] . '.json';
+					$api_connection_url = ($api_connection_use_https ? 'https' : 'http') . '://' . $config['oa_social_login_api_subdomain'] . '.api.oneall.com/connections/' . $connection_token . '.json';
 
 					//API Credentials
-					$api_credentials = array ();
-					$api_credentials ['api_key'] = $config ['oa_social_login_api_key'];
-					$api_credentials ['api_secret'] = $config ['oa_social_login_api_secret'];
+					$api_credentials = array();
+					$api_credentials['api_key'] = $config['oa_social_login_api_key'];
+					$api_credentials['api_secret'] = $config['oa_social_login_api_secret'];
 
 					//Make Request
-					$result = self::do_api_request ($api_connection_handler, $api_connection_url, $api_credentials);
+					$result = oa_social_login::do_api_request($api_connection_handler, $api_connection_url, $api_credentials);
 
 					//Parse result
-					if (is_object ($result) AND property_exists ($result, 'http_code') AND $result->http_code == 200)
+					if (is_object($result) && property_exists($result, 'http_code') && $result->http_code == 200)
 					{
 						//Extract data
-						if (($user_data = self::extract_social_network_profile ($result)) !== false)
+						if (($user_data = oa_social_login::extract_social_network_profile($result)) !== false)
 						{
 							//This is the user to process
 							$user_id = null;
 
 							//Social Login
-							if (strtolower ($_POST ['oa_action']) == 'social_login')
+							if ($oa_action == 'social_login')
 							{
 								// Get user_id by token.
-								$user_id_tmp = self::get_user_id_for_user_token ($user_data ['user_token']);
+								$user_id_tmp = oa_social_login::get_user_id_for_user_token($user_data['user_token']);
 
 								// We already have a user for this token.
-								if (is_numeric ($user_id_tmp))
+								if (is_numeric($user_id_tmp))
 								{
 									// Process this user.
 									$user_id = $user_id_tmp;
 
 									// Load user data.
-									$user_profile = self::get_user_data_by_user_id ($user_id);
+									$user_profile = oa_social_login::get_user_data_by_user_id($user_id);
 
 									// The user account needs to be activated.
-									if (!empty ($user_profile ['user_inactive_reason']))
+									if (!empty($user_profile['user_inactive_reason']))
 									{
-										if ($config ['require_activation'] == USER_ACTIVATION_ADMIN)
+										if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 										{
-											$error_message = $user->lang ['ACP_OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_ADMIN'];
+											$error_message = $user->lang['OASL_ACCOUNT_INACTIVE_ADMIN'];
 										}
 										else
 										{
-											$error_message = $user->lang ['ACP_OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE'];
+											$error_message = $user->lang['OASL_ACCOUNT_INACTIVE_OTHER'];
 										}
 									}
 								}
@@ -181,19 +191,19 @@ class oa_social_login
 								else
 								{
 									// Make sur that account linking is enabled.
-									if (empty ($config ['oa_social_login_disable_linking']))
+									if (empty($config['oa_social_login_disable_linking']))
 									{
 										// Make sure that the email has been verified.
-										if (!empty ($user_data ['user_email']) AND isset ($user_data ['user_email_is_verified']) AND $user_data ['user_email_is_verified'] === true)
+										if (!empty($user_data['user_email']) && isset($user_data['user_email_is_verified']) && $user_data['user_email_is_verified'] === true)
 										{
 											// Read existing user
-											$user_id_tmp = self::get_user_id_by_email ($user_data ['user_email']);
+											$user_id_tmp = oa_social_login::get_user_id_by_email($user_data['user_email']);
 
 											// Existing user found
-											if (is_numeric ($user_id_tmp))
+											if (is_numeric($user_id_tmp))
 											{
 												// Link the user to this social network.
-												if (self::link_tokens_to_user_id ($user_id_tmp, $user_data ['user_token'], $user_data ['identity_token'], $user_data ['identity_provider']) !== false)
+												if (oa_social_login::link_tokens_to_user_id($user_id_tmp, $user_data['user_token'], $user_data['identity_token'], $user_data['identity_provider']) !== false)
 												{
 													$user_id = $user_id_tmp;
 												}
@@ -201,133 +211,141 @@ class oa_social_login
 										}
 									}
 
-
-									//No user has been linked to this token
-									if (!is_numeric ($user_id))
+									//No user has been linked to this token yet.
+									if (!is_numeric($user_id))
 									{
-										//Custom profile fields
-										if (!class_exists ('custom_profile'))
-										{
-											//	require_once($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
-										}
-
 										//User functions
-										if (!function_exists ('user_add'))
+										if (!function_exists('user_add'))
 										{
-											require_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+											require($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 										}
 
-										//Username is mandatory
-										if (!isset ($user_data ['user_login']) || strlen (trim ($user_data ['user_login'])) == 0)
+										//Username is mandatory.
+										if (!isset($user_data['user_login']) || strlen(trim($user_data['user_login'])) == 0)
 										{
-											$user_data ['user_login'] = $user_data ['identity_provider'] . 'User';
+											$user_data['user_login'] = $user_data['identity_provider'] . 'User';
 										}
 
-										//Username must be unique
-										if (self::get_user_id_by_username ($user_data ['user_login']) !== false)
+										//Username must be unique.
+										if (oa_social_login::get_user_id_by_username($user_data['user_login']) !== false)
 										{
 											$i = 1;
-											$user_login_tmp = $user_data ['user_login'] . ($i);
-											while (self::get_user_id_by_username ($user_login_tmp) !== false)
+											$user_login_tmp = $user_data['user_login'] . ($i);
+											while (oa_social_login::get_user_id_by_username($user_login_tmp) !== false)
 											{
-												$user_login_tmp = $user_data ['user_login'] . ($i++);
+												$user_login_tmp = $user_data['user_login'] . ($i++);
 											}
-											$user_data ['user_login'] = $user_login_tmp;
+											$user_data['user_login'] = $user_login_tmp;
 										}
 
 										//Email must be unique
-										if (!isset ($user_data ['user_email']) || self::get_user_id_by_email ($user_data ['user_email']) !== false)
+										if (!isset($user_data['user_email']) || oa_social_login::get_user_id_by_email($user_data['user_email']) !== false)
 										{
 											//Create a random email
-											$user_data ['user_email'] = self::generate_random_email ();
+											$user_data['user_email'] = oa_social_login::generate_random_email();
 
-											//Used below
+											//This is a random email (the flag is used further down)
 											$user_random_email = true;
 										}
 										else
 										{
+											//This is not a random email.
 											$user_random_email = false;
 										}
 
-										//Default group_id is required
-										$group_id = self::get_default_group_id ();
-										if (!is_numeric ($group_id))
+										//Detect the default language of the forum.
+										if (!empty($config['default_lang']))
 										{
-											trigger_error ('NO_GROUP');
+											$user_row['user_lang'] = trim($config['default_lang']);
+										}
+										//Use english
+										else
+										{
+											$user_row['user_lang'] = 'en';
 										}
 
-										//Activation Required
-										if (!$user_random_email AND ($config ['require_activation'] == USER_ACTIVATION_SELF || $config ['require_activation'] == USER_ACTIVATION_ADMIN) AND $config ['email_enable'])
+										//Default group_id is required.
+										$group_id = oa_social_login::get_default_group_id();
+										if (!is_numeric($group_id))
+										{
+											trigger_error('NO_GROUP');
+										}
+
+										//Activation Required.
+										if (!$user_random_email && ($config['require_activation'] == USER_ACTIVATION_SELF || $config['require_activation'] == USER_ACTIVATION_ADMIN) && $config['email_enable'])
 										{
 											$user_type = USER_INACTIVE;
-											$user_actkey = gen_rand_string (mt_rand (6, 10));
+											$user_actkey = gen_rand_string(mt_rand(6, 10));
+
 											$user_inactive_reason = INACTIVE_REGISTER;
-											$user_inactive_time = time ();
+											$user_inactive_time = time();
 										}
-										//No Activation Required
+										//No Activation Required.
 										else
 										{
 											$user_type = USER_NORMAL;
 											$user_actkey = '';
+
 											$user_inactive_reason = 0;
 											$user_inactive_time = 0;
 										}
 
-										//Generate a random password
-										$new_password = self::generate_hash ($config ['min_pass_chars'] + rand (3, 5));
+										//Generate a random password.
+										$new_password = oa_social_login::generate_hash($config['min_pass_chars'] + rand(3, 5));
 
-										//User Details
-										$user_row = array (
+										//Setup user details.
+										$user_row = array(
 											'group_id' => $group_id,
 											'user_type' => $user_type,
 											'user_actkey' => $user_actkey,
-											'user_password' => phpbb_hash ($new_password),
+											'user_password' => phpbb_hash($new_password),
 											'user_ip' => $user->ip,
 											'user_inactive_reason' => $user_inactive_reason,
 											'user_inactive_time' => $user_inactive_time,
-											'user_lastvisit' => time (),
-											'username' => $user_data ['user_login'],
-											'user_email' => $user_data ['user_email'],
-											'user_from' => $user_data ['user_location'],
-											'user_interests' => $user_data ['users_interests'],
-											'user_website' => $user_data ['user_website']
+											'user_lastvisit' => time(),
+											'user_lang' => $user_row['user_lang'],
+											'username' => $user_data['user_login'],
+											'user_email' => $user_data['user_email'],
+											'user_from' => $user_data['user_location'],
+											'user_interests' => $user_data['users_interests'],
+											'user_website' => $user_data['user_website']
 										);
 
-										// Register user
-										$user_id_tmp = user_add ($user_row, false);
+										//Register user.
+										$user_id_tmp = user_add($user_row, false);
 
-										// This should not happen, because the required variables are listed above...
+										//This should not happen, because the required variables are listed above.
 										if ($user_id_tmp === false)
 										{
-											trigger_error ('NO_USER', E_USER_ERROR);
+											trigger_error('NO_USER', E_USER_ERROR);
 										}
-										//User Added
+										//User added successfully.
 										else
 										{
 											// Link the user to this social network.
-											if (self::link_tokens_to_user_id ($user_id_tmp, $user_data ['user_token'], $user_data ['identity_token'], $user_data ['identity_provider']) !== false)
+											if (oa_social_login::link_tokens_to_user_id($user_id_tmp, $user_data['user_token'], $user_data['identity_token'], $user_data['identity_provider']) !== false)
 											{
 												// Process this user.
 												$user_id = $user_id_tmp;
 
-												//Send Email
-												if ($config ['email_enable'] AND !$user_random_email)
+												//Send Email (Only if it is not a random email address).
+												if ($config['email_enable'] && !$user_random_email)
 												{
-													//Include Messenger
-													if (!class_exists ('messenger'))
+													//Do we have to include messenger?
+													if (!class_exists('messenger'))
 													{
-														require_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+														require($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 													}
 
-													//Activation Type
-													if ($config ['require_activation'] == USER_ACTIVATION_SELF)
+													//Activation Type.
+													if ($config['require_activation'] == USER_ACTIVATION_SELF)
 													{
-														$error_message = $user->lang ['ACP_OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE'];
+														$error_message = $user->lang['OASL_ACCOUNT_INACTIVE_OTHER'];
 														$email_template = 'user_welcome_inactive';
 													}
-													else if ($config ['require_activation'] == USER_ACTIVATION_ADMIN)
+													else if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 													{
-														$error_message = $user->lang ['ACP_OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_ADMIN'];
+														$error_message = $user->lang['OASL_ACCOUNT_INACTIVE_ADMIN'];
 														$email_template = 'admin_welcome_inactive';
 													}
 													else
@@ -335,53 +353,55 @@ class oa_social_login
 														$email_template = 'user_welcome';
 													}
 
-													//Current url
-													$server_url = generate_board_url ();
+													//Url for activation.
+													$server_url = generate_board_url();
 
 													//Send email to new user
-													$messenger = new messenger (false);
-													$messenger->template ($email_template, 'en');
-													$messenger->to ($user_row ['user_email'], $user_row ['username']);
-													$messenger->anti_abuse_headers ($config, $user);
-													$messenger->assign_vars (array (
-														'WELCOME_MSG' => htmlspecialchars_decode (sprintf ($user->lang ['WELCOME_SUBJECT'], $config ['sitename'])),
-														'USERNAME' => htmlspecialchars_decode ($user_row ['username']),
-														'PASSWORD' => htmlspecialchars_decode ($new_password),
+													$messenger = new messenger(false);
+													$messenger->template($email_template, $user_row['user_lang']);
+													$messenger->to($user_row['user_email'], $user_row['username']);
+													$messenger->anti_abuse_headers($config, $user);
+													$messenger->assign_vars(array(
+														'WELCOME_MSG' => htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
+														'USERNAME' => htmlspecialchars_decode($user_row['username']),
+														'PASSWORD' => htmlspecialchars_decode($new_password),
 														'U_ACTIVATE' => $server_url . '/ucp.' . $phpEx . '?mode=activate&u=' . $user_id . '&k=' . $user_actkey
 													));
-													$messenger->send (NOTIFY_EMAIL);
+													$messenger->send(NOTIFY_EMAIL);
 
-													//Send email to administrators
-													if ($config ['require_activation'] == USER_ACTIVATION_ADMIN)
+													//Send email to administrators.
+													if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 													{
-														// Grab an array of user_id's with a_user permissions ... these users can activate a user
-														$acl_admins = $auth->acl_get_list (false, 'a_user', false);
-														$acl_admins = (!empty ($acl_admins [0] ['a_user'])) ? $acl_admins [0] ['a_user'] : array ();
+														//Grab an array of user_id's with a_user permissions ... these users can activate a user.
+														$acl_admins = $auth->acl_get_list(false, 'a_user', false);
+														$acl_admins = (!empty($acl_admins[0]['a_user'])) ? $acl_admins[0]['a_user'] : array();
 
-														// Read administrators
-														$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type FROM ' . USERS_TABLE . ' WHERE user_type = ' . USER_FOUNDER;
+														//Read administrator data.
+														$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
+																		FROM ' . USERS_TABLE . '
+																		WHERE user_type = ' . USER_FOUNDER;
 
-														if (is_array ($acl_admins) AND count ($acl_admins) > 0)
+														if (is_array($acl_admins) && count($acl_admins) > 0)
 														{
-															$sql .= ' OR ' . $db->sql_in_set ('user_id', $acl_admins);
+															$sql .= ' OR ' . $db->sql_in_set('user_id', $acl_admins);
 														}
 
-														$query = $db->sql_query ($sql);
-														while ($row = $db->sql_fetchrow ($query))
+														$query = $db->sql_query($sql);
+														while ($row = $db->sql_fetchrow($query))
 														{
-															$messenger->template ('admin_activate', $row ['user_lang']);
-															$messenger->to ($row ['user_email'], $row ['username']);
-															$messenger->im ($row ['user_jabber'], $row ['username']);
+															$messenger->template('admin_activate', $row['user_lang']);
+															$messenger->to($row['user_email'], $row['username']);
+															$messenger->im($row['user_jabber'], $row['username']);
 
-															$messenger->assign_vars (array (
-																'USERNAME' => htmlspecialchars_decode ($user_row ['username']),
+															$messenger->assign_vars(array(
+																'USERNAME' => htmlspecialchars_decode($user_row['username']),
 																'U_USER_DETAILS' => $server_url . '/memberlist.' . $phpEx . '?mode=viewprofile&u=' . $user_id,
 																'U_ACTIVATE' => $server_url . '/ucp.' . $phpEx . '?mode=activate&u=' . $user_id . '&k=' . $user_actkey
 															));
 
-															$messenger->send ($row ['user_notify_type']);
+															$messenger->send($row['user_notify_type']);
 														}
-														$db->sql_freeresult ($query);
+														$db->sql_freeresult($query);
 													}
 												}
 											}
@@ -390,56 +410,56 @@ class oa_social_login
 								}
 
 								//Display an error message
-								if (isset ($error_message))
+								if (isset($error_message))
 								{
-									$error_message = $error_message . '<br /><br />' . sprintf ($user->lang ['RETURN_INDEX'], '<a href="' . append_sid ("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
-									trigger_error ($error_message);
+									$error_message = $error_message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+									trigger_error($error_message);
 								}
 								//Process
 								else
 								{
-									if (isset ($user_id) AND is_numeric ($user_id))
+									if (isset($user_id) && is_numeric($user_id))
 									{
 										//Update statistics
-										self::count_login_identity_token ($user_data ['identity_token']);
+										oa_social_login::count_login_identity_token($user_data['identity_token']);
 
 										//Log the user in
-										$user->session_create ($user_id);
+										oa_social_login::do_login($user_id);
 
 										//Redirect to a custom page
-										if (!empty ($config ['oa_social_login_redirect']))
+										if (!empty($config['oa_social_login_redirect']))
 										{
-											redirect ($config ['oa_social_login_redirect'], false, true);
+											redirect($config['oa_social_login_redirect'], false, true);
 										}
 									}
 								}
 							}
 							//Social Link
-							elseif (strtolower ($_POST ['oa_action']) == 'social_link')
+							elseif ($oa_action == 'social_link')
 							{
 								// This argument is required.
-								if (!empty ($_REQUEST ['oa_social_login_login_token']))
+								if (!empty($login_token))
 								{
 									// Read the user_id for this login_token.
-									$user_id_login_token = self::get_user_id_for_login_token ($_REQUEST ['oa_social_login_login_token']);
+									$user_id_login_token = oa_social_login::get_user_id_for_login_token($login_token);
 
 									//We have a user for this login token
-									if (is_numeric ($user_id_login_token))
+									if (is_numeric($user_id_login_token))
 									{
 										//Update the tokens?
 										$update_tokens = true;
 
 										//Read the user_id for this user_token
-										$user_id_user_token = self::get_user_id_for_user_token ($user_data ['user_token']);
+										$user_id_user_token = oa_social_login::get_user_id_for_user_token($user_data['user_token']);
 
 										// There is already a user_id for this token
-										if (!empty ($user_id_user_token))
+										if (!empty($user_id_user_token))
 										{
 											// The existing user_id does not match the logged in user
-											if ($user_id_user_token <> $user_id_login_token)
+											if ($user_id_user_token != $user_id_login_token)
 											{
 												// Show an error to the user.
-												$template->assign_var ('OA_SOCIAL_LINK_ERROR', 'This social network account is already linked to another forum user.');
+												$template->assign_var('OA_SOCIAL_LINK_ERROR', $user->lang['OASL_ACCOUNT_ALREADY_LINKED']);
 
 												// Do not updated the tokens.
 												$update_tokens = false;
@@ -449,18 +469,18 @@ class oa_social_login
 										// Update token?
 										if ($update_tokens === true)
 										{
-											if (!empty ($user_data ['plugin_action']) AND $user_data ['plugin_action'] == 'link_identity')
+											if (!empty($user_data['plugin_action']) && $user_data['plugin_action'] == 'link_identity')
 											{
-												self::link_tokens_to_user_id ($user_id_login_token, $user_data ['user_token'], $user_data ['identity_token'], $user_data ['identity_provider']);
+												oa_social_login::link_tokens_to_user_id($user_id_login_token, $user_data['user_token'], $user_data['identity_token'], $user_data['identity_provider']);
 											}
 											else
 											{
-												self::unlink_identity_token ($user_data ['identity_token']);
+												oa_social_login::unlink_identity_token($user_data['identity_token']);
 											}
 										}
 
-										//Relogin the user
-										$user->session_create ($user_id_login_token);
+										//Log the user in
+										oa_social_login::do_login($user_id_login_token);
 									}
 								}
 							}
@@ -475,136 +495,136 @@ class oa_social_login
 	/**
 	 * Extracts the social network data from a result-set returned by the OneAll API.
 	 */
-	public static function extract_social_network_profile ($social_data)
+	public static function extract_social_network_profile($social_data)
 	{
 		// Check API result.
-		if (is_object ($social_data) && property_exists ($social_data, 'http_code') && $social_data->http_code == 200 && property_exists ($social_data, 'http_data'))
+		if (is_object($social_data) && property_exists($social_data, 'http_code') && $social_data->http_code == 200 && property_exists($social_data, 'http_data'))
 		{
 			// Decode the social network profile Data.
-			$social_data = json_decode ($social_data->http_data);
+			$social_data = json_decode($social_data->http_data);
 
 			// Make sur that the data has beeen decoded properly
-			if (is_object ($social_data))
+			if (is_object($social_data))
 			{
 				// Container for user data
-				$data = array ();
+				$data = array();
 
 				// Parse plugin data.
-				if (isset ($social_data->response->result->data->plugin))
+				if (isset($social_data->response->result->data->plugin))
 				{
 					$plugin = $social_data->response->result->data->plugin;
-					$data ['plugin_key'] = $plugin->key;
-					$data ['plugin_action'] = (isset ($plugin->data->action) ? $plugin->data->action : null);
-					$data ['plugin_operation'] = (isset ($plugin->data->operation) ? $plugin->data->operation : null);
-					$data ['plugin_reason'] = (isset ($plugin->data->reason) ? $plugin->data->reason : null);
-					$data ['plugin_status'] = (isset ($plugin->data->status) ? $plugin->data->status : null);
+					$data['plugin_key'] = $plugin->key;
+					$data['plugin_action'] = (isset($plugin->data->action) ? $plugin->data->action : null);
+					$data['plugin_operation'] = (isset($plugin->data->operation) ? $plugin->data->operation : null);
+					$data['plugin_reason'] = (isset($plugin->data->reason) ? $plugin->data->reason : null);
+					$data['plugin_status'] = (isset($plugin->data->status) ? $plugin->data->status : null);
 				}
 
 				// Parse Social Profile Data.
 				$identity = $social_data->response->result->data->user->identity;
 
-				$data ['identity_token'] = $identity->identity_token;
-				$data ['identity_provider'] = $identity->source->name;
+				$data['identity_token'] = $identity->identity_token;
+				$data['identity_provider'] = $identity->source->name;
 
-				$data ['user_token'] = $social_data->response->result->data->user->user_token;
-				$data ['user_first_name'] = !empty ($identity->name->givenName) ? $identity->name->givenName : '';
-				$data ['user_last_name'] = !empty ($identity->name->familyName) ? $identity->name->familyName : '';
-				$data ['user_location'] = !empty ($identity->currentLocation) ? $identity->currentLocation : '';
-				$data ['user_constructed_name'] = trim ($data ['user_first_name'] . ' ' . $data ['user_last_name']);
-				$data ['user_picture'] = !empty ($identity->pictureUrl) ? $identity->pictureUrl : '';
-				$data ['user_thumbnail'] = !empty ($identity->thumbnailUrl) ? $identity->thumbnailUrl : '';
-				$data ['user_about_me'] = !empty ($identity->aboutMe) ? $identity->aboutMe : '';
+				$data['user_token'] = $social_data->response->result->data->user->user_token;
+				$data['user_first_name'] = !empty($identity->name->givenName) ? $identity->name->givenName : '';
+				$data['user_last_name'] = !empty($identity->name->familyName) ? $identity->name->familyName : '';
+				$data['user_location'] = !empty($identity->currentLocation) ? $identity->currentLocation : '';
+				$data['user_constructed_name'] = trim($data['user_first_name'] . ' ' . $data['user_last_name']);
+				$data['user_picture'] = !empty($identity->pictureUrl) ? $identity->pictureUrl : '';
+				$data['user_thumbnail'] = !empty($identity->thumbnailUrl) ? $identity->thumbnailUrl : '';
+				$data['user_about_me'] = !empty($identity->aboutMe) ? $identity->aboutMe : '';
 
 				//User Interests
-				$data ['users_interests'] = '';
-				if (isset ($identity->interests) AND is_array ($identity->interests))
+				$data['users_interests'] = '';
+				if (isset($identity->interests) && is_array($identity->interests))
 				{
-					$data ['users_interests'] = array ();
+					$data['users_interests'] = array();
 					foreach ($identity->interests AS $interest)
 					{
-						$data ['users_interests'] [] = $interest->value;
+						$data['users_interests'][] = $interest->value;
 					}
-					$data ['users_interests'] = implode (", ", $data ['users_interests']);
+					$data['users_interests'] = implode(", ", $data['users_interests']);
 				}
 
 				// Birthdate - MM/DD/YYYY
-				if (!empty ($identity->birthday) && preg_match ('/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/', $identity->birthday, $matches))
+				if (!empty($identity->birthday) && preg_match('/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/', $identity->birthday, $matches))
 				{
-					$data ['user_birthdate'] = str_pad ($matches [2], 2, '0', STR_PAD_LEFT);
-					$data ['user_birthdate'] .= '/' . str_pad ($matches [1], 2, '0', STR_PAD_LEFT);
-					$data ['user_birthdate'] .= '/' . str_pad ($matches [3], 4, '0', STR_PAD_LEFT);
+					$data['user_birthdate'] = str_pad($matches[2], 2, '0', STR_PAD_LEFT);
+					$data['user_birthdate'] .= '/' . str_pad($matches[1], 2, '0', STR_PAD_LEFT);
+					$data['user_birthdate'] .= '/' . str_pad($matches[3], 4, '0', STR_PAD_LEFT);
 				}
 				else
 				{
-					$data ['user_birthdate'] = '';
+					$data['user_birthdate'] = '';
 				}
 
 				// Fullname.
-				if (!empty ($identity->name->formatted))
+				if (!empty($identity->name->formatted))
 				{
-					$data ['user_full_name'] = $identity->name->formatted;
+					$data['user_full_name'] = $identity->name->formatted;
 				}
-				elseif (!empty ($identity->name->displayName))
+				elseif (!empty($identity->name->displayName))
 				{
-					$data ['user_full_name'] = $identity->name->displayName;
+					$data['user_full_name'] = $identity->name->displayName;
 				}
 				else
 				{
-					$data ['user_full_name'] = $data ['user_constructed_name'];
+					$data['user_full_name'] = $data['user_constructed_name'];
 				}
 
 				// Preferred Username.
-				if (!empty ($identity->preferredUsername))
+				if (!empty($identity->preferredUsername))
 				{
-					$data ['user_login'] = $identity->preferredUsername;
+					$data['user_login'] = $identity->preferredUsername;
 				}
-				elseif (!empty ($identity->displayName))
+				elseif (!empty($identity->displayName))
 				{
-					$data ['user_login'] = $identity->displayName;
+					$data['user_login'] = $identity->displayName;
 				}
 				else
 				{
-					$data ['user_login'] = $data ['user_full_name'];
+					$data['user_login'] = $data['user_full_name'];
 				}
 
 				//phpBB does not like spaces here
-				$data ['user_login'] = str_replace (' ', '', trim ($data ['user_login']));
+				$data['user_login'] = str_replace(' ', '', trim($data['user_login']));
 
 				// Email Address.
-				$data ['user_email'] = '';
-				if (property_exists ($identity, 'emails') && is_array ($identity->emails))
+				$data['user_email'] = '';
+				if (property_exists($identity, 'emails') && is_array($identity->emails))
 				{
-					$data ['user_email_is_verified'] = false;
-					while ($data ['user_email_is_verified'] !== true && (list(, $obj) = each ($identity->emails)))
+					$data['user_email_is_verified'] = false;
+					while ($data['user_email_is_verified'] !== true && (list(, $obj) = each($identity->emails)))
 					{
-						$data ['user_email'] = $obj->value;
-						$data ['user_email_is_verified'] = !empty ($obj->is_verified);
+						$data['user_email'] = $obj->value;
+						$data['user_email_is_verified'] = !empty($obj->is_verified);
 					}
 				}
 
 				// Website/Homepage.
-				$data ['user_website'] = '';
-				if (!empty ($identity->profileUrl))
+				$data['user_website'] = '';
+				if (!empty($identity->profileUrl))
 				{
-					$data ['user_website'] = $identity->profileUrl;
+					$data['user_website'] = $identity->profileUrl;
 				}
-				elseif (!empty ($identity->urls [0]->value))
+				elseif (!empty($identity->urls[0]->value))
 				{
-					$data ['user_website'] = $identity->urls [0]->value;
+					$data['user_website'] = $identity->urls[0]->value;
 				}
 
 				// Gender.
-				$data ['user_gender'] = '';
-				if (!empty ($identity->gender))
+				$data['user_gender'] = '';
+				if (!empty($identity->gender))
 				{
 					switch ($identity->gender)
 					{
 						case 'male':
-							$data ['user_gender'] = 'm';
+							$data['user_gender'] = 'm';
 							break;
 
 						case 'female':
-							$data ['user_gender'] = 'f';
+							$data['user_gender'] = 'f';
 							break;
 					}
 				}
@@ -615,168 +635,157 @@ class oa_social_login
 		return false;
 	}
 
-
 	/**
-	 * Check if the current connection is being made over https
+	 * Returns the current url
 	 */
-	private static function is_https_on ()
+	private static function get_current_url()
 	{
-		if (!empty ($_SERVER ['SERVER_PORT']))
+		global $user;
+
+		//Read the current url.
+		$current_url = generate_board_url() . '/' . $user->page['page'];
+
+		//Check if it contains the oa_social_login_login_token argument.
+		if (strpos($current_url, 'oa_social_login_login_token') !== false)
 		{
-			if (trim ($_SERVER ['SERVER_PORT']) == '443')
+			//Break up the url.
+			list($url_part, $query_part) = array_pad(explode('?', $current_url), 2, '');
+			parse_str($query_part, $query_vars);
+
+			//Remove the oa_social_login_source argument.
+			if (is_array($query_vars) && isset($query_vars['oa_social_login_login_token']))
 			{
-				return true;
-			}
-		}
-
-		if (!empty ($_SERVER ['HTTP_X_FORWARDED_PROTO']))
-		{
-			if (strtolower (trim ($_SERVER ['HTTP_X_FORWARDED_PROTO'])) == 'https')
-			{
-				return true;
-			}
-		}
-
-		if (!empty ($_SERVER ['HTTPS']))
-		{
-			if (strtolower (trim ($_SERVER ['HTTPS'])) == 'on' OR trim ($_SERVER ['HTTPS']) == '1')
-			{
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-
-	/**
-	 * Return the current url
-	 */
-	private static function get_current_url ()
-	{
-		//Get request URI - Should work on Apache + IIS
-		$request_uri = ((!isset ($_SERVER ['REQUEST_URI'])) ? $_SERVER ['PHP_SELF'] : $_SERVER ['REQUEST_URI']);
-		$request_port = ((!empty ($_SERVER ['SERVER_PORT']) AND $_SERVER ['SERVER_PORT'] <> '80') ? (":" . $_SERVER ['SERVER_PORT']) : '');
-		$request_protocol = (self::is_https_on () ? 'https' : 'http') . "://";
-		$redirect_to = $request_protocol . $_SERVER ['SERVER_NAME'] . $request_port . $request_uri;
-
-		//Remove the oa_social_login_login_token argument
-		if (strpos ($redirect_to, 'oa_social_login_login_token') !== false)
-		{
-			//Break up url
-			list($url_part, $query_part) = array_pad (explode ('?', $redirect_to), 2, '');
-			parse_str ($query_part, $query_vars);
-
-			//Remove oa_social_login_source argument
-			if (is_array ($query_vars) AND isset ($query_vars ['oa_social_login_login_token']))
-			{
-				unset ($query_vars ['oa_social_login_login_token']);
+				unset($query_vars['oa_social_login_login_token']);
 			}
 
-			//Build new url
-			$redirect_to = $url_part . ((is_array ($query_vars) AND count ($query_vars) > 0) ? ('?' . http_build_query ($query_vars)) : '');
+			//Build a new url.
+			$current_url = $url_part . ((is_array($query_vars) && count($query_vars) > 0) ? ('?' . http_build_query($query_vars)) : '');
 		}
 
-		return $redirect_to;
+		return $current_url;
 	}
 
 
 	/**
 	 * Counts a login for the identity token
 	 */
-	public static function count_login_identity_token ($identity_token)
+	public static function count_login_identity_token($identity_token)
 	{
-		global $db, $table_prefix;
+		global $db;
 
-		// Delete the identity_token.
-		$sql = "UPDATE `" . $table_prefix . "oasl_identity` SET `num_logins`=`num_logins`+1, `date_updated`='" . time () . "' WHERE `identity_token` = '" . $db->sql_escape ($identity_token) . "'";
-		$query = $db->sql_query ($sql);
+		// Update the counter for the given identity_token.
+		$sql = "UPDATE " . OASL_IDENTITY_TABLE . " SET num_logins=num_logins+1, date_updated='" . time() . "'
+						WHERE identity_token = '" . $db->sql_escape($identity_token) . "'";
+		$query = $db->sql_query($sql);
 	}
+
 
 	/**
 	 * Unlinks the identity token
 	 */
-	public static function unlink_identity_token ($identity_token)
+	public static function unlink_identity_token($identity_token)
 	{
-		global $db, $table_prefix;
+		global $db;
 
 		// Delete the identity_token.
-		$sql = "DELETE FROM `" . $table_prefix . "oasl_identity` WHERE  `identity_token` = '" . $db->sql_escape ($identity_token) . "'";
-		$query = $db->sql_query ($sql);
+		$sql = "DELETE FROM " . OASL_IDENTITY_TABLE . "
+						WHERE  identity_token = '" . $db->sql_escape($identity_token) . "'";
+		$query = $db->sql_query($sql);
 	}
+
 
 	/**
 	 * Links the user/identity tokens to a user
 	 */
-	public static function link_tokens_to_user_id ($user_id, $user_token, $identity_token, $identity_provider)
+	public static function link_tokens_to_user_id($user_id, $user_token, $identity_token, $identity_provider)
 	{
-		global $db, $table_prefix;
+		global $db;
 
 		// Make sure that that the user exists.
-		$sql = "SELECT user_id FROM " . USERS_TABLE . " WHERE user_id  = '" . intval ($user_id) . "' LIMIT 1";
-		$query = $db->sql_query ($sql);
-		$result = $db->sql_fetchrow ($query);
+		$sql = "SELECT user_id
+						FROM " . USERS_TABLE . "
+						WHERE user_id  = " . intval($user_id) . "";
+		$query = $db->sql_query_limit($sql, 1);
+		$result = $db->sql_fetchrow($query);
+		$db->sql_freeresult($query);
 
 		// The user exists.
-		if (is_array ($result) AND !empty ($result ['user_id']))
+		if (is_array($result) && !empty($result['user_id']))
 		{
-			$user_id = $result ['user_id'];
+			$user_id = $result['user_id'];
 
 			$oasl_user_id = null;
 			$oasl_identity_id = null;
 
 			// Delete superfluous user_token.
-			$sql = "SELECT `oasl_user_id` FROM `" . $table_prefix . "oasl_user` WHERE `user_id` = '" . intval ($user_id) . "' AND `user_token` <> '" . $db->sql_escape ($user_token) . "'";
-			$query = $db->sql_query ($sql);
-			while ($row = $db->sql_fetchrow ($query))
+			$sql = "SELECT oasl_user_id
+							FROM " . OASL_USER_TABLE . "
+							WHERE user_id = " . intval($user_id) . " AND user_token <> '" . $db->sql_escape($user_token) . "'";
+			$query = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($query))
 			{
 				// Delete the wrongly linked user_token.
-				$sql = "DELETE FROM `" . $table_prefix . "oasl_user` WHERE `oasl_user_id` = '" . $db->sql_escape ($row ['oasl_user_id']) . "'";
-				$query = $db->sql_query ($sql);
+				$sql = "DELETE FROM " . OASL_USER_TABLE . "
+								WHERE oasl_user_id = '" . $db->sql_escape($row['oasl_user_id']) . "'";
+				$query = $db->sql_query($sql);
 
 				// Delete the wrongly linked identity_token.
-				$sql = "DELETE FROM `" . $table_prefix . "oasl_identity` WHERE `oasl_user_id` = '" . $db->sql_escape ($row ['oasl_user_id']) . "'";
-				$query = $db->sql_query ($sql);
+				$sql = "DELETE FROM " . OASL_IDENTITY_TABLE . "
+								WHERE oasl_user_id = '" . $db->sql_escape($row['oasl_user_id']) . "'";
+				$query = $db->sql_query($sql);
 			}
+			$db->sql_freeresult($query);
 
 			// Read the entry for the given user_token.
-			$sql = "SELECT `oasl_user_id`, `user_id` FROM `" . $table_prefix . "oasl_user` WHERE `user_token` = '" . $db->sql_escape ($user_token) . "'";
-			$query = $db->sql_query ($sql);
-			$result = $db->sql_fetchrow ($query);
+			$sql = "SELECT oasl_user_id, user_id
+							FROM " . OASL_USER_TABLE . "
+							WHERE user_token = '" . $db->sql_escape($user_token) . "'";
+			$query = $db->sql_query($sql);
+			$result = $db->sql_fetchrow($query);
+			$db->sql_freeresult($query);
 
 			// The user_token exists
-			if (is_array ($result) AND !empty ($result ['oasl_user_id']))
+			if (is_array($result) && !empty($result['oasl_user_id']))
 			{
-				$oasl_user_id = $result ['oasl_user_id'];
+				$oasl_user_id = $result['oasl_user_id'];
 			}
 
 			// The user_token either does not exist or has been reset.
-			if (empty ($oasl_user_id))
+			if (empty($oasl_user_id))
 			{
 				// Add new link.
-				$sql = "INSERT INTO `" . $table_prefix . "oasl_user` SET `user_id` = '" . intval ($user_id) . "', `user_token` = '" . $db->sql_escape ($user_token) . "', `date_added`='" . time () . "'";
-				$query = $db->sql_query ($sql);
+				$sql_arr = array(
+					'user_id' => intval($user_id),
+					'user_token' => $user_token,
+					'date_added' => time()
+				);
+				$sql = "INSERT INTO " . OASL_USER_TABLE . " " . $db->sql_build_array('INSERT', $sql_arr);
+				$query = $db->sql_query($sql);
 
 				// Identifier of the newly created user_token entry.
-				$oasl_user_id = $db->sql_nextid ();
+				$oasl_user_id = $db->sql_nextid();
 			}
 
 			// Read the entry for the given identity_token.
-			$sql = "SELECT `oasl_identity_id`, `oasl_user_id`, `identity_token` FROM `" . $table_prefix . "oasl_identity` WHERE `identity_token` = '" . $db->sql_escape ($identity_token) . "'";
-			$query = $db->sql_query ($sql);
-			$result = $db->sql_fetchrow ($query);
+			$sql = "SELECT oasl_identity_id, oasl_user_id, identity_token
+							FROM " . OASL_IDENTITY_TABLE . "
+							WHERE identity_token = '" . $db->sql_escape($identity_token) . "'";
+			$query = $db->sql_query($sql);
+			$result = $db->sql_fetchrow($query);
+			$db->sql_freeresult($query);
 
 			// The identity_token exists
-			if (is_array ($result) AND !empty ($result ['oasl_identity_id']))
+			if (is_array($result) && !empty($result['oasl_identity_id']))
 			{
-				$oasl_identity_id = $result ['oasl_identity_id'];
+				$oasl_identity_id = $result['oasl_identity_id'];
 
 				// The identity_token is linked to another user_token.
-				if (!empty ($result ['oasl_user_id']) AND $result ['oasl_user_id'] <> $oasl_user_id)
+				if (!empty($result['oasl_user_id']) && $result['oasl_user_id'] != $oasl_user_id)
 				{
 					// Delete the wrongly linked identity_token.
-					$sql = "DELETE FROM `" . $table_prefix . "oasl_identity` WHERE `oasl_identity_id` = '" . intval ($oasl_identity_id) . "' LIMIT 1";
-					$query = $db->sql_query ($sql);
+					$sql = "DELETE FROM " . OASL_IDENTITY_TABLE . "
+									WHERE oasl_identity_id = " . intval($oasl_identity_id) . " LIMIT 1";
+					$query = $db->sql_query_limit($sql, 1);
 
 					// Reset the identifier
 					$oasl_identity_id = null;
@@ -784,14 +793,22 @@ class oa_social_login
 			}
 
 			// The identity_token either does not exist or has been reset.
-			if (empty ($oasl_identity_id))
+			if (empty($oasl_identity_id))
 			{
 				// Add new link.
-				$sql = "INSERT INTO `" . $table_prefix . "oasl_identity` SET `oasl_user_id` = '" . intval ($oasl_user_id) . "', `identity_token` = '" . $db->sql_escape ($identity_token) . "', `identity_provider` = '" . $db->sql_escape ($identity_provider) . "', `num_logins`=1, `date_added`='" . time () . "', `date_updated`='" . time () . "'";
-				$query = $db->sql_query ($sql);
+				$sql_arr = array(
+					'oasl_user_id' => intval($oasl_user_id),
+					'identity_token' => $identity_token,
+					'identity_provider' => $identity_provider,
+					'num_logins' => 1,
+					'date_added' => time(),
+					'date_updated' => time()
+				);
+				$sql = "INSERT INTO " . OASL_IDENTITY_TABLE . " " . $db->sql_build_array('INSERT', $sql_arr);
+				$query = $db->sql_query($sql);
 
 				// Identifier of the newly created identity_token entry.
-				$oasl_identity_id = $db->sql_nextid ();
+				$oasl_identity_id = $db->sql_nextid();
 			}
 
 			// Done.
@@ -804,15 +821,15 @@ class oa_social_login
 
 
 	/**
-	 * Generate a random email address
+	 * Generates a random email address
 	 */
-	protected static function generate_random_email ()
+	protected static function generate_random_email()
 	{
 		do
 		{
-			$email = self::generate_hash (10) . "@example.com";
+			$email = oa_social_login::generate_hash(10) . "@example.com";
 		}
-		while (self::get_user_id_by_email ($email) !== false);
+		while (oa_social_login::get_user_id_by_email($email) !== false);
 
 		//Done
 		return $email;
@@ -820,9 +837,9 @@ class oa_social_login
 
 
 	/**
-	 * Generate a random hash of the given length
+	 * Generates a random hash of the given length
 	 */
-	protected static function generate_hash ($length)
+	protected static function generate_hash($length)
 	{
 		$hash = '';
 
@@ -830,9 +847,9 @@ class oa_social_login
 		{
 			do
 			{
-				$char = chr (mt_rand (48, 122));
+				$char = chr(mt_rand(48, 122));
 			}
-			while (!preg_match ('/[a-zA-Z0-9]/', $char));
+			while (!preg_match('/[a-zA-Z0-9]/', $char));
 			$hash .= $char;
 		}
 
@@ -842,21 +859,86 @@ class oa_social_login
 
 
 	/**
+	 * Login the current user with the give $user_id.
+	 */
+	protected static function do_login($user_id, $check_admin = false)
+	{
+		global $auth, $db, $user;
+
+		// Grab the list of admins to check if this user is an administrator.
+		if ($check_admin === true)
+		{
+			$admin_user_ids = $auth->acl_get_list(false, 'a_user', false);
+			$admin_user_ids = (!empty($admin_user_ids[0]['a_user'])) ? $admin_user_ids[0]['a_user'] : array();
+			$is_admin = (in_array($user_id, $admin_user_ids) ? true : false);
+
+			// Store the old session id for later use.
+			$old_session_id = $user->session_id;
+
+			// This user is an administrator.
+			if ($is_admin === true)
+			{
+				global $SID, $_SID;
+
+				// Refresh the cookie.
+				$cookie_expire = time() - 31536000;
+				$user->set_cookie('u', '', $cookie_expire);
+				$user->set_cookie('sid', '', $cookie_expire);
+
+				// Refresh the session id.
+				$SID = '?sid=';
+				$user->session_id = $_SID = '';
+			}
+		}
+		else
+		{
+			$is_admin = false;
+		}
+
+		// Log the user in.
+		$result = $user->session_create($user_id, $is_admin);
+
+		// Session created successfully.
+		if ($result === true)
+		{
+			// For admins we remove the old session entry because a new one has been created.
+			if ($is_admin === true)
+			{
+				$sql = 'DELETE FROM ' . SESSIONS_TABLE . " WHERE session_id = '" . $db->sql_escape($old_session_id) . "' AND session_user_id = " . intval($user_id) . "";
+				$db->sql_query($sql);
+			}
+
+			// We re-init the auth array to get correct results on login/logout.
+			$auth->acl($user->data);
+
+			// Done.
+			return true;
+		}
+
+		// An error has occurred.
+		return false;
+	}
+
+
+	/**
 	 * Get the user_id for a given email address.
 	 */
-	protected static function get_user_id_by_email ($email)
+	protected static function get_user_id_by_email($email)
 	{
-		global $db, $table_prefix;
+		global $db;
 
 		// Read  the user_id for this email address.
-		$sql = "SELECT `user_id` FROM " . USERS_TABLE . " WHERE `user_email`  = '" . $db->sql_escape ($email) . "' LIMIT 1";
-		$query = $db->sql_query ($sql);
-		$result = $db->sql_fetchrow ($query);
+		$sql = "SELECT user_id
+						FROM " . USERS_TABLE . "
+						WHERE user_email  = '" . $db->sql_escape($email) . "'";
+		$query = $db->sql_query_limit($sql, 1);
+		$result = $db->sql_fetchrow($query);
+		$db->sql_freeresult($query);
 
 		// We have found an user_id.
-		if (is_array ($result) AND !empty ($result ['user_id']))
+		if (is_array($result) && !empty($result['user_id']))
 		{
-			return $result ['user_id'];
+			return $result['user_id'];
 		}
 
 		// Not found.
@@ -867,19 +949,22 @@ class oa_social_login
 	/**
 	 * Get the user_id for a given a username.
 	 */
-	protected static function get_user_id_by_username ($user_login)
+	protected static function get_user_id_by_username($user_login)
 	{
-		global $db, $table_prefix;
+		global $db;
 
 		// Read  the user_id for this login
-		$sql = "SELECT `user_id` FROM " . USERS_TABLE . " WHERE `username` = '" . $db->sql_escape ($user_login) . "' LIMIT 1";
-		$query = $db->sql_query ($sql);
-		$result = $db->sql_fetchrow ($query);
+		$sql = "SELECT user_id
+						FROM " . USERS_TABLE . "
+						WHERE username = '" . $db->sql_escape($user_login) . "'";
+		$query = $db->sql_query_limit($sql, 1);
+		$result = $db->sql_fetchrow($query);
+		$db->sql_freeresult($query);
 
 		// We have found an user_id.
-		if (is_array ($result) AND !empty ($result ['user_id']))
+		if (is_array($result) && !empty($result['user_id']))
 		{
-			return $result ['user_id'];
+			return $result['user_id'];
 		}
 
 		// Not found.
@@ -890,46 +975,54 @@ class oa_social_login
 	/**
 	 * Returns the user_id for a given token.
 	 */
-	protected static function get_user_id_for_user_token ($user_token)
+	protected static function get_user_id_for_user_token($user_token)
 	{
-		global $db, $table_prefix;
+		global $db;
 
 		// Make sure it is not empty.
-		$user_token = trim ($user_token);
-		if (strlen ($user_token) == 0)
+		$user_token = trim($user_token);
+		if (strlen($user_token) == 0)
 		{
 			return false;
 		}
 
 		// Read the user_id for this user_token.
-		$sql = "SELECT `oasl_user_id`, `user_id` FROM `" . $table_prefix . "oasl_user` WHERE `user_token` = '" . $db->sql_escape ($user_token) . "'";
-		$query = $db->sql_query ($sql);
-		$result = $db->sql_fetchrow ($query);
+		$sql = "SELECT oasl_user_id, user_id
+						FROM " . OASL_USER_TABLE . "
+						WHERE user_token = '" . $db->sql_escape($user_token) . "'";
+		$query = $db->sql_query($sql);
+		$result = $db->sql_fetchrow($query);
+		$db->sql_freeresult($query);
 
 		// The user_token exists
-		if (is_array ($result) AND !empty ($result ['oasl_user_id']))
+		if (is_array($result) && !empty($result['oasl_user_id']))
 		{
-			$user_id = intval ($result ['user_id']);
-			$oasl_user_id = intval ($result ['oasl_user_id']);
+			$user_id = intval($result['user_id']);
+			$oasl_user_id = intval($result['oasl_user_id']);
 
 			// Check if the user account exists.
-			$sql = "SELECT `user_id` FROM " . USERS_TABLE . " WHERE `user_id` = '" . intval ($user_id) . "' LIMIT 1";
-			$query = $db->sql_query ($sql);
-			$result = $db->sql_fetchrow ($query);
+			$sql = "SELECT user_id
+							FROM " . USERS_TABLE . "
+							WHERE user_id = " . intval($user_id) . "";
+			$query = $db->sql_query_limit($sql, 1);
+			$result = $db->sql_fetchrow($query);
+			$db->sql_freeresult($query);
 
 			// The user account exists, return it's identifier.
-			if (is_array ($result) AND !empty ($result ['user_id']))
+			if (is_array($result) && !empty($result['user_id']))
 			{
-				return $result ['user_id'];
+				return $result['user_id'];
 			}
 
 			// Delete the wrongly linked user_token.
-			$sql = "DELETE FROM `" . $table_prefix . "oasl_user` WHERE `user_token` = '" . $db->sql_escape ($user_token) . "' LIMIT 1";
-			$query = $db->sql_query ($sql);
+			$sql = "DELETE FROM " . OASL_USER_TABLE . "
+							WHERE user_token = '" . $db->sql_escape($user_token) . "'";
+			$query = $db->sql_query_limit($sql, 1);
 
 			// Delete the wrongly linked identity_token.
-			$sql = "DELETE FROM `" . $table_prefix . "oasl_identity` WHERE `oasl_user_id` = '" . intval ($oasl_user_id) . "'";
-			$query = $db->sql_query ($sql);
+			$sql = "DELETE FROM " . OASL_IDENTITY_TABLE . "
+							WHERE oasl_user_id = " . intval($oasl_user_id) . "";
+			$query = $db->sql_query($sql);
 		}
 
 		// No entry found.
@@ -940,19 +1033,22 @@ class oa_social_login
 	/**
 	 * Get the user_token from a user_id
 	 */
-	private static function get_user_token_for_user_id ($user_id)
+	private static function get_user_token_for_user_id($user_id)
 	{
-		global $db, $table_prefix;
+		global $db;
 
 		// Read the user_id for this user_token.
-		$sql = "SELECT `user_token` FROM `" . $table_prefix . "oasl_user` WHERE `user_id` = '" . intval ($user_id) . "'";
-		$query = $db->sql_query ($sql);
-		$result = $db->sql_fetchrow ($query);
+		$sql = "SELECT user_token
+						FROM " . OASL_USER_TABLE . "
+						WHERE user_id = " . intval($user_id) . "";
+		$query = $db->sql_query($sql);
+		$result = $db->sql_fetchrow($query);
+		$db->sql_freeresult($query);
 
 		// The user_token exists
-		if (is_array ($result) AND !empty ($result ['user_token']))
+		if (is_array($result) && !empty($result['user_token']))
 		{
-			return $result ['user_token'];
+			return $result['user_token'];
 		}
 
 		//Not found
@@ -961,21 +1057,24 @@ class oa_social_login
 
 
 	/**
-	 * Return the user_id for a login token
+	 * Returns the user_id for a login token
 	 */
-	protected static function get_user_id_for_login_token ($login_token)
+	protected static function get_user_id_for_login_token($login_token)
 	{
-		global $db, $table_prefix;
+		global $db;
 
 		//Read the user_id for this login_token
-		$sql = "SELECT `user_id` FROM `" . $table_prefix . "oasl_login_token` WHERE `login_token` = '" . $db->sql_escape ($login_token) . "' LIMIT 1";
-		$query = $db->sql_query ($sql);
-		$result = $db->sql_fetchrow ($query);
+		$sql = "SELECT user_id
+						FROM " . OASL_LOGIN_TOKEN_TABLE . "
+						WHERE login_token = '" . $db->sql_escape($login_token) . "'";
+		$query = $db->sql_query_limit($sql, 1);
+		$result = $db->sql_fetchrow($query);
+		$db->sql_freeresult($query);
 
 		//The login_token exists
-		if (is_array ($result) AND !empty ($result ['user_id']))
+		if (is_array($result) && !empty($result['user_id']))
 		{
-			return $result ['user_id'];
+			return $result['user_id'];
 		}
 
 		//Not found
@@ -986,24 +1085,30 @@ class oa_social_login
 	/**
 	 * Create a login token for a user_id
 	 */
-	private static function create_login_token_for_user_id ($user_id)
+	private static function create_login_token_for_user_id($user_id)
 	{
-		global $db, $table_prefix;
+		global $db;
 
 		//Remove old or existing login token
-		$sql = "DELETE FROM `" . $table_prefix . "oasl_login_token` WHERE (`user_id` = '" . intval ($user_id) . "' OR `date_creation` < '" . (time () - 60 * 5) . "')";
-		$query = $db->sql_query ($sql);
+		$sql = "DELETE FROM " . OASL_LOGIN_TOKEN_TABLE . "
+						WHERE (user_id = " . intval($user_id) . " OR date_creation < " . (time() - 60 * 5) . ")";
+		$query = $db->sql_query($sql);
 
 		//Create a new and unique token
 		do
 		{
-			$login_token = self::get_uuid_v4 ();
+			$login_token = oa_social_login::get_uuid_v4();
 		}
-		while (self::get_user_id_for_login_token ($login_token) !== false);
+		while (oa_social_login::get_user_id_for_login_token($login_token) !== false);
 
-		//Add the new token
-		$sql = "INSERT INTO `" . $table_prefix . "oasl_login_token` (`login_token`, `user_id`, `date_creation`)" . " VALUES ( '" . $db->sql_escape ($login_token) . "', '" . intval ($user_id) . "', '" . time () . "' )";
-		$query = $db->sql_query ($sql);
+		//Add the new token.
+		$sql_arr = array(
+			'login_token' => $login_token,
+			'user_id' => $user_id,
+			'date_creation' => time()
+		);
+		$sql = "INSERT INTO " . OASL_LOGIN_TOKEN_TABLE . " " . $db->sql_build_array('INSERT', $sql_arr);
+		$query = $db->sql_query($sql);
 
 		//Done
 		return $login_token;
@@ -1013,19 +1118,22 @@ class oa_social_login
 	/**
 	 * Get the default group_id for new users
 	 */
-	private static function get_default_group_id ()
+	private static function get_default_group_id()
 	{
-		global $db, $table_prefix;
+		global $db;
 
 		// Read the default group.
-		$sql = "SELECT `group_id` FROM " . GROUPS_TABLE . " WHERE `group_name` = 'REGISTERED' AND `group_type` = " . GROUP_SPECIAL;
-		$query = $db->sql_query ($sql);
-		$result = $db->sql_fetchrow ($query);
+		$sql = "SELECT group_id
+						FROM " . GROUPS_TABLE . "
+						WHERE group_name = 'REGISTERED' AND group_type = " . GROUP_SPECIAL;
+		$query = $db->sql_query($sql);
+		$result = $db->sql_fetchrow($query);
+		$db->sql_freeresult($query);
 
 		//Group found;
-		if (is_array ($result) AND isset ($result ['group_id']))
+		if (is_array($result) && isset($result['group_id']))
 		{
-			return $result ['group_id'];
+			return $result['group_id'];
 		}
 
 		//Not found
@@ -1036,122 +1144,139 @@ class oa_social_login
 	/**
 	 * Get the user data for a user_id
 	 */
-	private static function get_user_data_by_user_id ($user_id)
+	private static function get_user_data_by_user_id($user_id)
 	{
-		global $db, $table_prefix;
+		global $db;
 
 		// Read the user data.
-		$sql = "SELECT * FROM " . USERS_TABLE . " WHERE `user_id` = '" . intval ($user_id) . "' LIMIT 1";
-		$query = $db->sql_query ($sql);
-		$result = $db->sql_fetchrow ($query);
+		$sql = "SELECT *
+						FROM " . USERS_TABLE . "
+						WHERE user_id = " . intval($user_id) . "";
+		$query = $db->sql_query_limit($sql, 1);
+		$result = $db->sql_fetchrow($query);
+		$db->sql_freeresult($query);
 
 		// The user has been found.
-		if (is_array ($result))
+		if (is_array($result))
 		{
 			return $result;
 		}
 
 		// Not found.
-		return array ();
+		return array();
 	}
 
 	/**
 	 * Generates a v4 UUID
 	 */
-	private static function get_uuid_v4 ()
+	private static function get_uuid_v4()
 	{
-		return sprintf ('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand (0, 0xffff), mt_rand (0, 0xffff), mt_rand (0, 0xffff), mt_rand (0, 0x0fff) | 0x4000, mt_rand (0, 0x3fff) | 0x8000, mt_rand (0, 0xffff), mt_rand (0, 0xffff), mt_rand (0, 0xffff));
+		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0x0fff) | 0x4000, mt_rand(0, 0x3fff) | 0x8000, mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
 	}
 
 	/**
 	 * Return the list of available providers
 	 */
-	public static function get_providers ()
+	public static function get_providers()
 	{
-		return array (
-			'facebook' => array (
-				'name' => 'Facebook'
+		$providers = array(
+			'amazon' => array(
+				'name' => 'Amazon'
 			),
-			'twitter' => array (
-				'name' => 'Twitter'
-			),
-			'google' => array (
-				'name' => 'Google'
-			),
-			'linkedin' => array (
-				'name' => 'LinkedIn'
-			),
-			'yahoo' => array (
-				'name' => 'Yahoo'
-			),
-			'github' => array (
-				'name' => 'Github.com'
-			),
-			'foursquare' => array (
-				'name' => 'Foursquare'
-			),
-			'youtube' => array (
-				'name' => 'YouTube'
-			),
-			'skyrock' => array (
-				'name' => 'Skyrock.com'
-			),
-			'openid' => array (
-				'name' => 'OpenID'
-			),
-			'wordpress' => array (
-				'name' => 'Wordpress.com'
-			),
-			'hyves' => array (
-				'name' => 'Hyves'
-			),
-			'paypal' => array (
-				'name' => 'PayPal'
-			),
-			'livejournal' => array (
-				'name' => 'LiveJournal'
-			),
-			'steam' => array (
-				'name' => 'Steam Community'
-			),
-			'windowslive' => array (
-				'name' => 'Windows Live'
-			),
-			'blogger' => array (
+			'blogger' => array(
 				'name' => 'Blogger'
 			),
-			'disqus' => array (
+			'disqus' => array(
 				'name' => 'Disqus'
 			),
-			'stackexchange' => array (
+			'facebook' => array(
+				'name' => 'Facebook'
+			),
+			'foursquare' => array(
+				'name' => 'Foursquare'
+			),
+			'github' => array(
+				'name' => 'Github.com'
+			),
+			'google' => array(
+				'name' => 'Google'
+			),
+			'instagram' => array(
+				'name' => 'Instagram'
+			),
+			'linkedin' => array(
+				'name' => 'LinkedIn'
+			),
+			'livejournal' => array(
+				'name' => 'LiveJournal'
+			),
+			'mailru' => array(
+				'name' => 'Mail.ru'
+			),
+			'odnoklassniki' => array(
+				'name' => 'Odnoklassniki'
+			),
+			'openid' => array(
+				'name' => 'OpenID'
+			),
+			'paypal' => array(
+				'name' => 'PayPal'
+			),
+			'reddit' => array(
+				'name' => 'Reddit'
+			),
+			'skyrock' => array(
+				'name' => 'Skyrock.com'
+			),
+			'stackexchange' => array(
 				'name' => 'StackExchange'
 			),
-			'vkontakte' => array (
-				'name' => 'VKontakte (Вконтакте)'
+			'steam' => array(
+				'name' => 'Steam'
 			),
-			'odnoklassniki' => array (
-				'name' => 'Odnoklassniki.ru'
+			'twitch' => array(
+				'name' => 'Twitch.tv'
 			),
-			'mailru' => array (
-				'name' => 'Mail.ru'
-			)
+			'twitter' => array(
+				'name' => 'Twitter'
+			),
+			'vimeo' => array(
+				'name' => 'Vimeo'
+			),
+			'vkontakte' => array(
+				'name' => 'VKontakte'
+			),
+			'windowslive' => array(
+				'name' => 'Windows Live'
+			),
+			'wordpress' => array(
+				'name' => 'WordPress.com'
+			),
+			'yahoo' => array(
+				'name' => 'Yahoo'
+			),
+			'youtube' => array(
+				'name' => 'YouTube'
+			),
 		);
+		return $providers;
 	}
+
 
 	/**
 	 * Returns a list of disabled functions.
 	 */
-	protected static function get_php_disabled_functions ()
+	protected static function get_php_disabled_functions()
 	{
-		$disabled_functions = trim (ini_get ('disable_functions'));
-		if (strlen ($disabled_functions) == 0)
+		$disabled_functions = trim(ini_get('disable_functions'));
+		if (strlen($disabled_functions) == 0)
 		{
-			$disabled_functions = array ();
+			$disabled_functions = array();
 		}
 		else
 		{
-			$disabled_functions = explode (',', $disabled_functions);
-			$disabled_functions = array_map ('trim', $disabled_functions);
+			$disabled_functions = explode(',', $disabled_functions);
+			$disabled_functions = array_map('trim', $disabled_functions);
 		}
 		return $disabled_functions;
 	}
@@ -1160,17 +1285,17 @@ class oa_social_login
 	/**
 	 * Send an API request by using the given handler
 	 */
-	public static function do_api_request ($handler, $url, $options = array (), $timeout = 30)
+	public static function do_api_request($handler, $url, $options = array(), $timeout = 30)
 	{
 		//FSOCKOPEN
 		if ($handler == 'fsockopen')
 		{
-			return self::fsockopen_request ($url, $options, $timeout);
+			return oa_social_login::fsockopen_request($url, $options, $timeout);
 		}
 		//CURL
 		else
 		{
-			return self::curl_request ($url, $options, $timeout);
+			return oa_social_login::curl_request($url, $options, $timeout);
 		}
 	}
 
@@ -1178,16 +1303,16 @@ class oa_social_login
 	/**
 	 * Check if CURL can be used
 	 */
-	public static function check_curl ($secure = true)
+	public static function check_curl($secure = true)
 	{
-		if (in_array ('curl', get_loaded_extensions ()) AND function_exists ('curl_exec') AND !in_array ('curl_exec', self::get_php_disabled_functions ()))
+		if (in_array('curl', get_loaded_extensions()) && function_exists('curl_exec') && !in_array('curl_exec', oa_social_login::get_php_disabled_functions()))
 		{
-			$result = self::curl_request (($secure ? 'https' : 'http') . '://www.oneall.com/ping.html');
-			if (is_object ($result) AND property_exists ($result, 'http_code') AND $result->http_code == 200)
+			$result = oa_social_login::curl_request(($secure ? 'https' : 'http') . '://www.oneall.com/ping.html');
+			if (is_object($result) && property_exists($result, 'http_code') && $result->http_code == 200)
 			{
-				if (property_exists ($result, 'http_data'))
+				if (property_exists($result, 'http_data'))
 				{
-					if (strtolower ($result->http_data) == 'ok')
+					if (strtolower($result->http_data) == 'ok')
 					{
 						return true;
 					}
@@ -1201,16 +1326,16 @@ class oa_social_login
 	/**
 	 * Check if fsockopen can be used
 	 */
-	public static function check_fsockopen ($secure = true)
+	public static function check_fsockopen($secure = true)
 	{
-		if (function_exists ('fsockopen') && !in_array ('fsockopen', self::get_php_disabled_functions ()))
+		if (function_exists('fsockopen') && !in_array('fsockopen', oa_social_login::get_php_disabled_functions()))
 		{
-			$result = self::fsockopen_request (($secure ? 'https' : 'http') . '://www.oneall.com/ping.html');
-			if (is_object ($result) AND property_exists ($result, 'http_code') AND $result->http_code == 200)
+			$result = oa_social_login::fsockopen_request(($secure ? 'https' : 'http') . '://www.oneall.com/ping.html');
+			if (is_object($result) && property_exists($result, 'http_code') && $result->http_code == 200)
 			{
-				if (property_exists ($result, 'http_data'))
+				if (property_exists($result, 'http_data'))
 				{
-					if (strtolower ($result->http_data) == 'ok')
+					if (strtolower($result->http_data) == 'ok')
 					{
 						return true;
 					}
@@ -1224,32 +1349,32 @@ class oa_social_login
 	/**
 	 * Sends a CURL request
 	 */
-	protected static function curl_request ($url, $options = array (), $timeout = 30)
+	protected static function curl_request($url, $options = array(), $timeout = 30)
 	{
 		//Store the result
-		$result = new stdClass ();
+		$result = new stdClass();
 
 		//Send request
-		$curl = curl_init ();
-		curl_setopt ($curl, CURLOPT_URL, $url);
-		curl_setopt ($curl, CURLOPT_HEADER, 0);
-		curl_setopt ($curl, CURLOPT_TIMEOUT, $timeout);
-		curl_setopt ($curl, CURLOPT_VERBOSE, 0);
-		curl_setopt ($curl, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt ($curl, CURLOPT_SSL_VERIFYPEER, 0);
-		curl_setopt ($curl, CURLOPT_SSL_VERIFYHOST, 0);
-		curl_setopt ($curl, CURLOPT_USERAGENT, 'SocialLogin ' . self::OA_SOCIAL_LOGIN_VERSION . ' phpBB3 (+http://www.oneall.com/)');
+		$curl = curl_init();
+		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($curl, CURLOPT_HEADER, 0);
+		curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
+		curl_setopt($curl, CURLOPT_VERBOSE, 0);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($curl, CURLOPT_USERAGENT, 'SocialLogin ' . oa_social_login::OA_SOCIAL_LOGIN_VERSION . ' phpBB3 (+http://www.oneall.com/)');
 
 		// BASIC AUTH?
-		if (isset ($options ['api_key']) AND isset ($options ['api_secret']))
+		if (isset($options['api_key']) && isset($options['api_secret']))
 		{
-			curl_setopt ($curl, CURLOPT_USERPWD, $options ['api_key'] . ":" . $options ['api_secret']);
+			curl_setopt($curl, CURLOPT_USERPWD, $options['api_key'] . ":" . $options['api_secret']);
 		}
 
 		//Make request
-		if (($http_data = curl_exec ($curl)) !== false)
+		if (($http_data = curl_exec($curl)) !== false)
 		{
-			$result->http_code = curl_getinfo ($curl, CURLINFO_HTTP_CODE);
+			$result->http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 			$result->http_data = $http_data;
 			$result->http_error = null;
 		}
@@ -1257,7 +1382,7 @@ class oa_social_login
 		{
 			$result->http_code = -1;
 			$result->http_data = null;
-			$result->http_error = curl_error ($curl);
+			$result->http_error = curl_error($curl);
 		}
 
 		//Done
@@ -1268,13 +1393,13 @@ class oa_social_login
 	/**
 	 * Send an fsockopen request
 	 */
-	protected static function fsockopen_request ($url, $options = array (), $timeout = 30)
+	protected static function fsockopen_request($url, $options = array(), $timeout = 30)
 	{
 		//Store the result
-		$result = new stdClass ();
+		$result = new stdClass();
 
 		//Make that this is a valid URL
-		if (($uri = parse_url ($url)) == false)
+		if (($uri = parse_url($url)) == false)
 		{
 			$result->http_code = -1;
 			$result->http_data = null;
@@ -1283,18 +1408,18 @@ class oa_social_login
 		}
 
 		//Make sure we can handle the schema
-		switch ($uri ['scheme'])
+		switch ($uri['scheme'])
 		{
 			case 'http':
-				$port = (isset ($uri ['port']) ? $uri ['port'] : 80);
-				$host = ($uri ['host'] . ($port != 80 ? ':' . $port : ''));
-				$fp = @fsockopen ($uri ['host'], $port, $errno, $errstr, $timeout);
+				$port = (isset($uri['port']) ? $uri['port'] : 80);
+				$host = ($uri['host'] . ($port != 80 ? ':' . $port : ''));
+				$fp = @fsockopen($uri['host'], $port, $errno, $errstr, $timeout);
 				break;
 
 			case 'https':
-				$port = (isset ($uri ['port']) ? $uri ['port'] : 443);
-				$host = ($uri ['host'] . ($port != 443 ? ':' . $port : ''));
-				$fp = @fsockopen ('ssl://' . $uri ['host'], $port, $errno, $errstr, $timeout);
+				$port = (isset($uri['port']) ? $uri['port'] : 443);
+				$host = ($uri['host'] . ($port != 443 ? ':' . $port : ''));
+				$fp = @fsockopen('ssl://' . $uri['host'], $port, $errno, $errstr, $timeout);
 				break;
 
 			default:
@@ -1310,50 +1435,50 @@ class oa_social_login
 		{
 			$result->http_code = -$errno;
 			$result->http_data = null;
-			$result->http_error = trim ($errstr);
+			$result->http_error = trim($errstr);
 			return $result;
 		}
 
 		//Construct the path to act on
-		$path = (isset ($uri ['path']) ? $uri ['path'] : '/');
-		if (isset ($uri ['query']))
+		$path = (isset($uri['path']) ? $uri['path'] : '/');
+		if (isset($uri['query']))
 		{
-			$path .= '?' . $uri ['query'];
+			$path .= '?' . $uri['query'];
 		}
 
 		//Create HTTP request
-		$defaults = array ();
-		$defaults ['Host'] = 'Host: ' . $host;
-		$defaults ['User-Agent'] = 'User-Agent: SocialLogin ' . self::OA_SOCIAL_LOGIN_VERSION . ' phpBB3 (+http://www.oneall.com/)';
+		$defaults = array();
+		$defaults['Host'] = 'Host: ' . $host;
+		$defaults['User-Agent'] = 'User-Agent: SocialLogin ' . oa_social_login::OA_SOCIAL_LOGIN_VERSION . ' phpBB3 (+http://www.oneall.com/)';
 
 		// BASIC AUTH?
-		if (isset ($options ['api_key']) AND isset ($options ['api_secret']))
+		if (isset($options['api_key']) && isset($options['api_secret']))
 		{
-			$defaults ['Authorization'] = 'Authorization: Basic ' . base64_encode ($options ['api_key'] . ":" . $options ['api_secret']);
+			$defaults['Authorization'] = 'Authorization: Basic ' . base64_encode($options['api_key'] . ":" . $options['api_secret']);
 		}
 
 		//Build and send request
 		$request = 'GET ' . $path . " HTTP/1.0\r\n";
-		$request .= implode ("\r\n", $defaults);
+		$request .= implode("\r\n", $defaults);
 		$request .= "\r\n\r\n";
-		fwrite ($fp, $request);
+		fwrite($fp, $request);
 
 		//Fetch response
 		$response = '';
-		while (!feof ($fp))
+		while (!feof($fp))
 		{
-			$response .= fread ($fp, 1024);
+			$response .= fread($fp, 1024);
 		}
 
 		//Close connection
-		fclose ($fp);
+		fclose($fp);
 
 		//Parse response
-		list($response_header, $response_body) = explode ("\r\n\r\n", $response, 2);
+		list($response_header, $response_body) = explode("\r\n\r\n", $response, 2);
 
 		//Parse header
-		$response_header = preg_split ("/\r\n|\n|\r/", $response_header);
-		list($header_protocol, $header_code, $header_status_message) = explode (' ', trim (array_shift ($response_header)), 3);
+		$response_header = preg_split("/\r\n|\n|\r/", $response_header);
+		list($header_protocol, $header_code, $header_status_message) = explode(' ', trim(array_shift($response_header)), 3);
 
 		//Build result
 		$result->http_code = $header_code;
