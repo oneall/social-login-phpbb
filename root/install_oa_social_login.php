@@ -240,6 +240,12 @@ $versions = array(
 	'3.4.0' => array(
 	// No database changes.
 	),
+	'3.5.0' => array(
+		// No database changes.
+	),
+	'3.6.0' => array(
+		// No database changes.
+	),
 );
 
 // Include the UMIL Auto file, it handles the rest

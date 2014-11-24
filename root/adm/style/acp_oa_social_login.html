@@ -43,6 +43,21 @@
 	</div>
 		
 	<form id="acp_oa_social_login" method="post" action="{U_ACTION}">
+	
+		<fieldset>
+			<legend>{L_OASL_DO_ENABLE}</legend>			
+			<dl>
+				<dt>
+					<label for="oa_social_login_disable_0">{L_OASL_DO_ENABLE}</label>
+					<br /><span>{L_OASL_DO_ENABLE_DESC}</span>
+				</dt>
+				<dd>
+					<label><input type="radio" class="radio" id="oa_social_login_disable_0" name="oa_social_login_disable" value="0"<!-- IF not OA_SOCIAL_LOGIN_DISABLE --> checked="checked"<!-- ENDIF --> /> {L_OASL_DO_ENABLE_YES} <strong>({L_OASL_DEFAULT})</strong></label><br />
+					<label><input type="radio" class="radio" id="oa_social_login_disable_1" name="oa_social_login_disable" value="1"<!-- IF OA_SOCIAL_LOGIN_DISABLE --> checked="checked"<!-- ENDIF --> /> {L_OASL_DO_ENABLE_NO}</label>
+				</dd>
+			</dl>
+		</fieldset>
+		
 		<fieldset>
 			<legend>{L_OASL_API_CONNECTION}</legend>
 			<dl>
@@ -110,35 +125,23 @@
 						<input class="button2" type="button" id="oa_social_login_test_api_settings" value="{L_OASL_API_VERIFY}" />               
 					</dd>
 				</dl>
-		</fieldset>	
+		</fieldset>				
+
 		<fieldset>
-			<legend>{L_OASL_ENABLE_NETWORKS}</legend>						
-			<!-- BEGIN provider -->
-				<dl>	
-					<dt class="provider">							
-							<label for="oasl_provider_{provider.KEY}"><span class="oasl_provider oasl_provider_{provider.KEY}" title="{provider.NAME}">{provider.NAME}</span></label>						
-							<input style="cursor:pointer" type="checkbox" id="oasl_provider_{provider.KEY}" name="oa_social_login_provider_{provider.KEY}" value="1" <!-- IF provider.ENABLE --> checked="checked"<!-- ENDIF -->  />
-							<label for="oasl_provider_{provider.KEY}">{provider.NAME}</label>
-					</dt>
-					<dd></dd>
-				</dl>
-			<!-- END provider -->			
-		</fieldset>
-				
-		
-		<fieldset>
-			<legend>{L_OASL_DO_ENABLE}</legend>			
+			<legend>{L_OASL_DO_AVATARS}</legend>			
 			<dl>
 				<dt>
-					<label for="oa_social_login_disable_0">{L_OASL_DO_ENABLE}</label>
-					<br /><span>{L_OASL_DO_ENABLE_DESC}</span>
+					<label for="oa_social_login_disable_0">{L_OASL_DO_AVATARS}</label>
+					<br /><span>{L_OASL_DO_AVATARS_DESC}</span>
 				</dt>
 				<dd>
-					<label><input type="radio" class="radio" id="oa_social_login_disable_0" name="oa_social_login_disable" value="0"<!-- IF not OA_SOCIAL_LOGIN_DISABLE --> checked="checked"<!-- ENDIF --> /> {L_OASL_DO_ENABLE_YES} <strong>({L_OASL_DEFAULT})</strong></label><br />
-					<label><input type="radio" class="radio" id="oa_social_login_disable_1" name="oa_social_login_disable" value="1"<!-- IF OA_SOCIAL_LOGIN_DISABLE --> checked="checked"<!-- ENDIF --> /> {L_OASL_DO_ENABLE_NO}</label>
+					<label><input type="radio" class="radio" id="oa_social_login_avatars_enable_1" name="oa_social_login_avatars_enable" value="1"<!-- IF OA_SOCIAL_LOGIN_AVATARS_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_OASL_DO_AVATARS_ENABLE_YES} <strong>({L_OASL_DEFAULT})</strong></label><br />
+					<label><input type="radio" class="radio" id="oa_social_login_avatars_enable_0" name="oa_social_login_avatars_enable" value="0"<!-- IF not OA_SOCIAL_LOGIN_AVATARS_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_OASL_DO_AVATARS_ENABLE_NO}</label>
 				</dd>
 			</dl>
 		</fieldset>
+		
+		
 		
 		<fieldset>
 			<legend>{L_OASL_DO_LINKING}</legend>		
@@ -165,6 +168,20 @@
 						<input type="text" id="oa_social_login_redirect" name="oa_social_login_redirect" value="{OA_SOCIAL_LOGIN_REDIRECT}" size="60" />
 					</dd>
 				</dl>	
+		</fieldset>
+		
+		<fieldset>
+			<legend>{L_OASL_ENABLE_NETWORKS}</legend>						
+			<!-- BEGIN provider -->
+				<dl>	
+					<dt class="provider">							
+							<label for="oasl_provider_{provider.KEY}"><span class="oasl_provider oasl_provider_{provider.KEY}" title="{provider.NAME}">{provider.NAME}</span></label>						
+							<input style="cursor:pointer" type="checkbox" id="oasl_provider_{provider.KEY}" name="oa_social_login_provider_{provider.KEY}" value="1" <!-- IF provider.ENABLE --> checked="checked"<!-- ENDIF -->  />
+							<label for="oasl_provider_{provider.KEY}">{provider.NAME}</label>
+					</dt>
+					<dd></dd>
+				</dl>
+			<!-- END provider -->			
 		</fieldset>
 		
 		<fieldset class="submit-buttons">

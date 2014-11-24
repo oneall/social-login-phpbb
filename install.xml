@@ -24,8 +24,28 @@
 			</author>
 		</author-group>
 		<github><![CDATA[https://github.com/oneall/social-login-phpbb]]></github>
-		<mod-version>3.4.0</mod-version>
+		<mod-version>3.6.0</mod-version>
 		<history>
+			<entry>
+				<date>2014-12-24</date>
+				<rev-version>3.6.0</rev-version>
+				<changelog lang="en">
+					<change>Avatars from social networks added</change>			
+				</changelog>
+				<changelog lang="fr">
+					<change>Avatars des réseaux sociaux ajoutés</change>			
+				</changelog>
+			</entry>
+			<entry>
+				<date>2014-11-04</date>
+				<rev-version>3.5.0</rev-version>
+				<changelog lang="en">
+					<change>Custom CSS in widget fixed</change>			
+				</changelog>
+				<changelog lang="fr">
+					<change>Correction CSS personalisé dans le widget</change>			
+				</changelog>
+			</entry>			
 			<entry>
 				<date>2014-04-02</date>
 				<rev-version>3.4.0</rev-version>

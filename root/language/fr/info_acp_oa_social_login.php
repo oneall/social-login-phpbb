@@ -45,6 +45,10 @@ if (!isset ($lang) || !is_array ($lang))
 // in a URL you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 $lang = array_merge ($lang,
 	array (
+		'OASL_DO_AVATARS' => 'Utiliser les avatars des réseaux sociaux?',
+		'OASL_DO_AVATARS_DESC' => 'Télécharge l\'avatar du profile social de l\'utilisateur et enregistre l\'image dans votre répertoire d\'avatars.',
+		'OASL_DO_AVATARS_ENABLE_YES' => 'Oui, télécharger les avatars des réseaux sociaux',
+		'OASL_DO_AVATARS_ENABLE_NO' => 'Oui, ne pas télécharger les avatars',
 		'OASL_PROFILE_TITLE' => 'Connexion avec Social Login',
 		'OASL_PROFILE_DESC' => 'Liez votre compte à un réseau social',
 		'OASL_WIDGET_TITLE' => 'Connexion avec un réseau social:',

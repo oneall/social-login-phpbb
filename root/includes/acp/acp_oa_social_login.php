@@ -81,6 +81,7 @@ class acp_oa_social_login
 		$oa_social_login_providers = (isset($config['oa_social_login_providers']) ? explode(",", $config['oa_social_login_providers']) : array());
 		$oa_social_login_disable = ((isset($config['oa_social_login_disable']) && $config['oa_social_login_disable'] == '1') ? '1' : '0');
 		$oa_social_login_disable_linking = ((isset($config['oa_social_login_disable_linking']) && $config['oa_social_login_disable_linking'] == '1') ? '1' : '0');
+		$oa_social_login_avatars_enable = ((isset($config['oa_social_login_avatars_enable']) && $config['oa_social_login_avatars_enable'] == '1') ? '1' : '0');
 		$oa_social_login_redirect = (isset($config['oa_social_login_redirect']) ? $config['oa_social_login_redirect'] : '');
 
 		//Triggers a form message
@@ -127,12 +128,14 @@ class acp_oa_social_login
 			//Other options.
 			$oa_social_login_disable = ((request_var('oa_social_login_disable', 0) == 1) ? 1 : 0);
 			$oa_social_login_disable_linking = ((request_var('oa_social_login_disable_linking', 0) == 1) ? 1 : 0);
+			$oa_social_login_avatars_enable = ((request_var('oa_social_login_avatars_enable', 0) == 1) ? 1 : 0);
 			$oa_social_login_redirect = request_var('oa_social_login_redirect', '');
 
 
 			//Save configuration.
 			set_config('oa_social_login_disable', $oa_social_login_disable);
 			set_config('oa_social_login_disable_linking', $oa_social_login_disable_linking);
+			set_config('oa_social_login_avatars_enable', $oa_social_login_avatars_enable);
 			set_config('oa_social_login_redirect', $oa_social_login_redirect);
 			set_config('oa_social_login_api_subdomain', $oa_social_login_api_subdomain);
 			set_config('oa_social_login_api_key', $oa_social_login_api_key);
@@ -162,6 +165,7 @@ class acp_oa_social_login
 				'OA_SOCIAL_LOGIN_SETTINGS_SAVED' => $oa_social_login_settings_saved,
 				'OA_SOCIAL_LOGIN_DISABLE' => ($oa_social_login_disable == '1'),
 				'OA_SOCIAL_LOGIN_DISABLE_LINKING' => ($oa_social_login_disable_linking == '1'),
+				'OA_SOCIAL_LOGIN_AVATARS_ENABLE' => ($oa_social_login_avatars_enable == '1'),
 				'OA_SOCIAL_LOGIN_REDIRECT' => $oa_social_login_redirect,
 				'OA_SOCIAL_LOGIN_API_SUBDOMAIN' => $oa_social_login_api_subdomain,
 				'OA_SOCIAL_LOGIN_API_KEY' => $oa_social_login_api_key,

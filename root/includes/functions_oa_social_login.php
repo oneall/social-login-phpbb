@@ -32,7 +32,7 @@ if (!defined('IN_PHPBB'))
 //Oneall Social Login
 class oa_social_login
 {
-	const OA_SOCIAL_LOGIN_VERSION = '3.4.0';
+	const OA_SOCIAL_LOGIN_VERSION = '3.6.0';
 
 	/**
 	 * Inject variables into template
@@ -109,6 +109,151 @@ class oa_social_login
 		return $template;
 	}
 
+	/**
+	 * Upload a new avatar
+	 */
+	public function upload_user_avatar ($user_id, $user_data)
+	{
+		global $db, $phpbb_root_path, $phpEx, $user, $config;
+
+		//Make sure avatars are allowed
+		if ($config['allow_avatar_upload'])
+		{
+			//Check format
+			if (is_array ($user_data) && (! empty ($user_data['user_thumbnail']) || ! empty ($user_data['user_picture'])))
+			{
+				// Use this avatar
+				$user_avatar_url = (! empty ($user_data['user_picture']) ? $user_data['user_picture'] : $user_data['user_thumbnail']);
+
+				// Which connection handler do we have to use?
+				$api_connection_handler = ((!empty($config['oa_social_login_api_connection_handler']) && $config['oa_social_login_api_connection_handler'] == 'fsockopen') ? 'fsockopen' : 'curl');
+
+				// Retrieve file data
+				$api_result = self::do_api_request ($api_connection_handler, $user_avatar_url);
+
+				// Success?
+				if (is_object($api_result) && property_exists($api_result, 'http_code') && $api_result->http_code == 200)
+				{
+					//File data
+					$file_data = $api_result->http_data;
+
+					//Temporary filename
+					$file_tmp_path = (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') ? false : $phpbb_root_path . 'cache';
+					$file_tmp_name = tempnam($file_tmp_path, unique_id() . '-');
+
+					//Save file
+					if (($fp = @fopen($file_tmp_name, 'wb')) !== false)
+					{
+						//Write file
+						$avatar_size = fwrite ($fp, $file_data);
+						fclose ($fp);
+
+						//Allowed file extensions
+						$file_exts = array();
+						$file_exts[IMG_GIF] = 'gif';
+						$file_exts[IMG_JPG] = 'jpg';
+						$file_exts[IMG_JPEG] = 'jpg';
+						$file_exts[IMG_PNG] = 'png';
+
+						// Get image data
+						list($width, $height, $type, $attr) = @getimagesize($file_tmp_name);
+
+						// Check image size and type
+						if ($width > $config['avatar_min_width'] && $height > $config['avatar_min_height'] && isset ($file_exts[$type]))
+						{
+							// File extension
+							$file_ext = $file_exts[$type];
+
+							// Check if we can resize the image if needd
+							if (function_exists ('imagecreatetruecolor') && function_exists ('imagecopyresampled'))
+							{
+								$max_height = $config['avatar_max_height'];
+								$max_width = $config['avatar_max_width'];
+
+								//Check if we need to resize
+								if ($width > $max_width || $height > $max_height)
+								{
+									//Keep original size
+									$orig_height = $height;
+									$orig_width = $width;
+
+									// Taller
+									if ($height > $max_height)
+									{
+										$width = ($max_height / $height) * $width;
+										$height = $max_height;
+									}
+
+									// Wider
+									if ($width > $max_width)
+									{
+										$height = ($max_width / $width) * $height;
+										$width = $max_width;
+									}
+
+									// Destination
+									$destination = imagecreatetruecolor($width, $height);
+
+									// Resize
+									switch ($file_ext)
+									{
+										case 'gif':
+											$source = imagecreatefromgif($file_tmp_name);
+											imagecopyresampled($destination, $source, 0, 0, 0, 0, $width, $height, $orig_width, $orig_height);
+											imagegif($destination, $file_tmp_name);
+										break;
+
+										case 'png':
+											$source = imagecreatefrompng($file_tmp_name);
+											imagecopyresampled($destination, $source, 0, 0, 0, 0, $width, $height, $orig_width, $orig_height);
+											imagepng($destination, $file_tmp_name);
+										break;
+
+										case 'jpg':
+											$source = imagecreatefromjpeg($file_tmp_name);
+											imagecopyresampled($destination, $source, 0, 0, 0, 0, $width, $height, $orig_width, $orig_height);
+											imagejpeg($destination, $file_tmp_name);
+										break;
+									}
+								}
+							}
+
+							// Final path
+							$avatar_name = $config['avatar_salt'] . '_'.$user_id.'.'.$file_exts[$type];
+							$avatar_full_name = $phpbb_root_path.$config['avatar_path'].'/'.$avatar_name;
+
+							// Move file
+							if (@copy($file_tmp_name, $avatar_full_name))
+							{
+								//Remove temporary file
+								@unlink ($file_tmp_name);
+
+								$sql_arr = array ();
+								$sql_arr['user_avatar'] = ($user_id.'_'.time().'.'.$file_ext);
+								$sql_arr['user_avatar_type'] = AVATAR_UPLOAD;
+								$sql_arr['user_avatar_width'] = $width;
+								$sql_arr['user_avatar_height'] = $height;
+
+								//Update user
+								$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_arr) . ' WHERE user_id = ' . $user_id;
+								$db->sql_query($sql);
+
+								//Done
+								return true;
+							}
+						}
+
+						//Error
+						@unlink ($file_tmp_name);
+						return false;
+					}
+				}
+			}
+		}
+
+		//Error
+		return false;
+	}
 
 	/**
 	 * Callback Handler
@@ -327,6 +472,12 @@ class oa_social_login
 											{
 												// Process this user.
 												$user_id = $user_id_tmp;
+
+												//Add the avatar
+												if ( ! empty ($config['oa_social_login_avatars_enable']))
+												{
+													$has_been_uploaded = $this->upload_user_avatar ($user_id, $user_data);
+												}
 
 												//Send Email (Only if it is not a random email address).
 												if ($config['email_enable'] && !$user_random_email)
@@ -1345,11 +1496,10 @@ class oa_social_login
 		return false;
 	}
 
-
 	/**
 	 * Sends a CURL request
 	 */
-	protected static function curl_request($url, $options = array(), $timeout = 30)
+	protected static function curl_request($url, $options = array(), $timeout = 30, $num_redirects = 0)
 	{
 		//Store the result
 		$result = new stdClass();
@@ -1357,12 +1507,14 @@ class oa_social_login
 		//Send request
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_URL, $url);
-		curl_setopt($curl, CURLOPT_HEADER, 0);
+		curl_setopt($curl, CURLOPT_HEADER, 1);
 		curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
+		curl_setopt($curl, CURLOPT_REFERER, $url);
 		curl_setopt($curl, CURLOPT_VERBOSE, 0);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 0);
 		curl_setopt($curl, CURLOPT_USERAGENT, 'SocialLogin ' . oa_social_login::OA_SOCIAL_LOGIN_VERSION . ' phpBB3 (+http://www.oneall.com/)');
 
 		// BASIC AUTH?
@@ -1372,11 +1524,39 @@ class oa_social_login
 		}
 
 		//Make request
-		if (($http_data = curl_exec($curl)) !== false)
+		if (($response = curl_exec($curl)) !== false)
 		{
-			$result->http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-			$result->http_data = $http_data;
+			// Get Information
+			$curl_info = curl_getinfo ($curl);
+
+			//Save result
+			$result->http_code = $curl_info['http_code'];
+			$result->http_headers = preg_split('/\r\n|\n|\r/', trim (substr ($response, 0, $curl_info ['header_size'])));
+			$result->http_data = trim (substr ($response, $curl_info ['header_size']));
 			$result->http_error = null;
+
+			//Check if we have a redirection header
+			if (in_array($result->http_code, array(301, 302)) && $num_redirects < 4)
+			{
+				// Make sure we have http headers
+				if (is_array ($result->http_headers))
+				{
+					//Loop through headers
+					while ( ! $header_found && (list (, $header) = each ($result->http_headers)))
+					{
+						if (preg_match("/(Location:|URI:)[^(\n)]*/", $header, $matches))
+						{
+							$url_tmp = trim(str_replace($matches[1], "", $matches[0]));
+							$url_parsed = parse_url($url_tmp);
+
+							if (!empty($url_parsed))
+							{
+								$result = self::curl_request($url_tmp, $options, $timeout, $num_redirects + 1);
+							}
+						}
+					}
+				}
+			}
 		}
 		else
 		{
@@ -1390,10 +1570,11 @@ class oa_social_login
 	}
 
 
+
 	/**
 	 * Send an fsockopen request
 	 */
-	protected static function fsockopen_request($url, $options = array(), $timeout = 30)
+	protected static function fsockopen_request($url, $options = array(), $timeout = 30, $num_redirects = 0)
 	{
 		//Store the result
 		$result = new stdClass();
@@ -1480,9 +1661,43 @@ class oa_social_login
 		$response_header = preg_split("/\r\n|\n|\r/", $response_header);
 		list($header_protocol, $header_code, $header_status_message) = explode(' ', trim(array_shift($response_header)), 3);
 
-		//Build result
+		//Set result
 		$result->http_code = $header_code;
+		$result->http_headers = $response_header;
 		$result->http_data = $response_body;
+
+		// Make sure we we have a redirection status code
+		if (in_array($result->http_code, array(301, 302)) && $num_redirects <= 4)
+		{
+			// Make sure we have http headers
+			if (is_array ($result->http_headers))
+			{
+				//Header found?
+				$header_found = false;
+
+				//Loop through headers
+				while ( ! $header_found && (list (, $header) = each ($result->http_headers)))
+				{
+					//Check for location header
+					if (preg_match("/(Location:|URI:)[^(\n)]*/", $header, $matches))
+					{
+						//Found
+						$header_found = true;
+
+						//Clean url
+						$url_tmp = trim(str_replace($matches[1], "", $matches[0]));
+						$url_parsed = parse_url($url_tmp);
+
+						//Found
+						if (!empty($url_parsed))
+						{
+							$result = self::fsockopen_request ($url_tmp, $options, $timeout, $num_redirects+1);
+						}
+					}
+				}
+			}
+		}
+
 
 		//Done
 		return $result;
