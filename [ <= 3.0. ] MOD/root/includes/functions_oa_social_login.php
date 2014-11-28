@@ -138,7 +138,7 @@ class oa_social_login
 					$file_data = $api_result->http_data;
 
 					//Temporary filename
-					$file_tmp_path = (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') ? false : $phpbb_root_path . 'cache';
+					$file_tmp_path = ((@ini_get('open_basedir') || @ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'on') ? $phpbb_root_path . 'cache' : false);
 					$file_tmp_name = tempnam($file_tmp_path, unique_id() . '-');
 
 					//Save file
