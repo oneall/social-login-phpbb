@@ -1,0 +1,12 @@
+services:
+    phpbb.oneallsociallogin.listener:
+        class: phpbb\oneallsociallogin\event\listener
+        arguments:
+            - @config
+            - @config_text
+            - @controller.helper
+            - @request
+            - @template
+            - @user
+        tags:
+            - { name: event.listener }
