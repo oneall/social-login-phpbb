@@ -150,10 +150,9 @@ class oa_social_login
 
 						//Allowed file extensions
 						$file_exts = array();
-						$file_exts[IMG_GIF] = 'gif';
-						$file_exts[IMG_JPG] = 'jpg';
-						$file_exts[IMG_JPEG] = 'jpg';
-						$file_exts[IMG_PNG] = 'png';
+						$file_exts[IMAGETYPE_GIF] = 'gif';
+						$file_exts[IMAGETYPE_JPEG] = 'jpg';
+						$file_exts[IMAGETYPE_PNG] = 'png';
 
 						// Get image data
 						list($width, $height, $type, $attr) = @getimagesize($file_tmp_name);
