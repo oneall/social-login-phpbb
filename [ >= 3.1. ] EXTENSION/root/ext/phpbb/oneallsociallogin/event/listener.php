@@ -122,7 +122,7 @@ class listener implements EventSubscriberInterface
 		$oa_social_login = new \phpbb\oneallsociallogin\acp\oneallsociallogin_module ();
 
 		// User token
-		if (($user_token = $oa_social_login->get_user_token_for_user_id ($user->data ['user_id'])) !== false)
+		if (($user_token = $oa_social_login->get_user_token_for_user_id ($this->user->data ['user_id'])) !== false)
 		{
 			$this->template->assign_var ('OA_SOCIAL_LOGIN_USER_TOKEN', $user_token);
 		}
@@ -147,7 +147,7 @@ class listener implements EventSubscriberInterface
 		$oa_social_login->handle_callback ();
 
 		// User token
-		if (($user_token = $oa_social_login->get_user_token_for_user_id ($user->data ['user_id'])) !== false)
+		if (($user_token = $oa_social_login->get_user_token_for_user_id ($this->user->data ['user_id'])) !== false)
 		{
 			$this->template->assign_var ('OA_SOCIAL_LOGIN_USER_TOKEN', $user_token);
 		}
