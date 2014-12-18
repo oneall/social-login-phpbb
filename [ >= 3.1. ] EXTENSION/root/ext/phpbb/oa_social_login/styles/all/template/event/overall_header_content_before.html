@@ -1,0 +1,22 @@
+<!-- IF OA_SOCIAL_LOGIN_EMBED_SOCIAL_LOGIN --> 
+	<div class="panel">
+		<div class="inner">
+			<div class="content">
+				<!-- IF OA_SOCIAL_LOGIN_PAGE_CAPTION -->
+					<h2 class="login-title">{OA_SOCIAL_LOGIN_PAGE_CAPTION}</h2>
+				<!-- ENDIF -->
+				<div class="oneall_social_login_providers" id="oneall_social_login_overall_header_content_before" style="margin-top:10px"></div>
+					<!-- OneAll Social Login : http://www.oneall.com //-->
+					<script type="text/javascript">
+						// <![CDATA[					            
+							var _oneall = _oneall || [];
+							_oneall.push(['social_login', 'set_providers', ['{OA_SOCIAL_LOGIN_PROVIDERS}']]);	
+							_oneall.push(['social_login', 'set_callback_uri', '{OA_SOCIAL_LOGIN_CALLBACK_URI}']);				
+							_oneall.push(['social_login', 'set_custom_css_uri', (("https:" == document.location.protocol) ? "https://secure" : "http://public") + '.oneallcdn.com/css/api/socialize/themes/phpbb/default.css']);
+							_oneall.push(['social_login', 'do_render_ui', 'oneall_social_login_overall_header_content_before']);
+						// ]]>
+					</script>		
+			</div>
+		</div>
+</div>
+<!-- ENDIF -->
