@@ -1056,6 +1056,408 @@ class oa_social_login
 	}
 
 	/**
+	 * Extracts the social network data from a result-set returned by the OneAll API.
+	 */
+	public static function extract_social_network_profile ($social_data)
+	{
+		// Check API result.
+		if (is_object ($social_data) && property_exists ($social_data, 'http_code') && $social_data->http_code == 200 && property_exists ($social_data, 'http_data'))
+		{
+			// Decode the social network profile Data.
+			$social_data = json_decode ($social_data->http_data);
+
+			// Make sur that the data has beeen decoded properly
+			if (is_object ($social_data))
+			{
+				// Container for user data
+				$data = array ();
+
+				// Parse plugin data.
+				if (isset ($social_data->response->result->data->plugin))
+				{
+					$plugin = $social_data->response->result->data->plugin;
+					$data ['plugin_key'] = $plugin->key;
+					$data ['plugin_action'] = (isset ($plugin->data->action) ? $plugin->data->action : null);
+					$data ['plugin_operation'] = (isset ($plugin->data->operation) ? $plugin->data->operation : null);
+					$data ['plugin_reason'] = (isset ($plugin->data->reason) ? $plugin->data->reason : null);
+					$data ['plugin_status'] = (isset ($plugin->data->status) ? $plugin->data->status : null);
+				}
+
+				// Parse Social Profile Data.
+				$identity = $social_data->response->result->data->user->identity;
+
+				$data ['identity_token'] = $identity->identity_token;
+				$data ['identity_provider'] = $identity->source->name;
+
+				$data ['user_token'] = $social_data->response->result->data->user->user_token;
+				$data ['user_first_name'] = ! empty ($identity->name->givenName) ? $identity->name->givenName : '';
+				$data ['user_last_name'] = ! empty ($identity->name->familyName) ? $identity->name->familyName : '';
+				$data ['user_formatted_name'] = ! empty ($identity->name->formatted) ? $identity->name->formatted : '';
+				$data ['user_location'] = ! empty ($identity->currentLocation) ? $identity->currentLocation : '';
+				$data ['user_constructed_name'] = trim ($data ['user_first_name'] . ' ' . $data ['user_last_name']);
+				$data ['user_picture'] = ! empty ($identity->pictureUrl) ? $identity->pictureUrl : '';
+				$data ['user_thumbnail'] = ! empty ($identity->thumbnailUrl) ? $identity->thumbnailUrl : '';
+
+				$data ['user_current_location'] = ! empty ($identity->currentLocation) ? $identity->currentLocation : '';
+				$data ['user_about_me'] = ! empty ($identity->aboutMe) ? $identity->aboutMe : '';
+				$data ['user_note'] = ! empty ($identity->note) ? $identity->note : '';
+
+				// Birthdate - MM/DD/YYYY
+				if (! empty ($identity->birthday) && preg_match ('/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/', $identity->birthday, $matches))
+				{
+					$data ['user_birthdate'] = str_pad ($matches [2], 2, '0', STR_PAD_LEFT);
+					$data ['user_birthdate'] .= '/' . str_pad ($matches [1], 2, '0', STR_PAD_LEFT);
+					$data ['user_birthdate'] .= '/' . str_pad ($matches [3], 4, '0', STR_PAD_LEFT);
+				}
+				else
+				{
+					$data ['user_birthdate'] = '';
+				}
+
+				// Fullname.
+				if (! empty ($identity->name->formatted))
+				{
+					$data ['user_full_name'] = $identity->name->formatted;
+				}
+				elseif (! empty ($identity->name->displayName))
+				{
+					$data ['user_full_name'] = $identity->name->displayName;
+				}
+				else
+				{
+					$data ['user_full_name'] = $data ['user_constructed_name'];
+				}
+
+				// Preferred Username.
+				if (! empty ($identity->preferredUsername))
+				{
+					$data ['user_login'] = $identity->preferredUsername;
+				}
+				elseif (! empty ($identity->displayName))
+				{
+					$data ['user_login'] = $identity->displayName;
+				}
+				else
+				{
+					$data ['user_login'] = $data ['user_full_name'];
+				}
+
+				// phpBB does not like spaces here
+				$data ['user_login'] = str_replace (' ', '', trim ($data ['user_login']));
+
+				// Website/Homepage.
+				$data ['user_website'] = '';
+				if (! empty ($identity->profileUrl))
+				{
+					$data ['user_website'] = $identity->profileUrl;
+				}
+				elseif (! empty ($identity->urls [0]->value))
+				{
+					$data ['user_website'] = $identity->urls [0]->value;
+				}
+
+				// Gender.
+				$data ['user_gender'] = '';
+				if (! empty ($identity->gender))
+				{
+					switch ($identity->gender)
+					{
+						case 'male':
+							$data ['user_gender'] = 'm';
+							break;
+
+						case 'female':
+							$data ['user_gender'] = 'f';
+							break;
+					}
+				}
+
+				// Email Addresses.
+				$data ['user_emails'] = array ();
+				$data ['user_emails_simple'] = array ();
+
+				// Email Address.
+				$data ['user_email'] = '';
+				$data ['user_email_is_verified'] = false;
+
+				// Extract emails.
+				if (property_exists ($identity, 'emails') && is_array ($identity->emails))
+				{
+					// Loop through emails.
+					foreach ($identity->emails as $email)
+					{
+						// Add to simple list.
+						$data ['user_emails_simple'] [] = $email->value;
+
+						// Add to list.
+						$data ['user_emails'] [] = array (
+							'user_email' => $email->value,
+							'user_email_is_verified' => $email->is_verified
+						);
+
+						// Keep one, if possible a verified one.
+						if (empty ($data ['user_email']) || $email->is_verified)
+						{
+							$data ['user_email'] = $email->value;
+							$data ['user_email_is_verified'] = $email->is_verified;
+						}
+					}
+				}
+
+				// Addresses.
+				$data ['user_addresses'] = array ();
+				$data ['user_addresses_simple'] = array ();
+
+				// Extract entries.
+				if (property_exists ($identity, 'addresses') && is_array ($identity->addresses))
+				{
+					// Loop through entries.
+					foreach ($identity->addresses as $address)
+					{
+						// Add to simple list.
+						$data ['user_addresses_simple'] [] = $address->formatted;
+
+						// Add to list.
+						$data ['user_addresses'] [] = array (
+							'formatted' => $address->formatted
+						);
+					}
+				}
+
+				// Phone Number.
+				$data ['user_phone_numbers'] = array ();
+				$data ['user_phone_numbers_simple'] = array ();
+
+				// Extract entries.
+				if (property_exists ($identity, 'phoneNumbers') && is_array ($identity->phoneNumbers))
+				{
+					// Loop through entries.
+					foreach ($identity->phoneNumbers as $phone_number)
+					{
+						// Add to simple list.
+						$data ['user_phone_numbers_simple'] [] = $phone_number->value;
+
+						// Add to list.
+						$data ['user_phone_numbers'] [] = array (
+							'value' => $phone_number->value,
+							'type' => (isset ($phone_number->type) ? $phone_number->type : null)
+						);
+					}
+				}
+
+				// URLs.
+				$data ['user_interests'] = array ();
+				$data ['user_interests_simple'] = array ();
+
+				// Extract entries.
+				if (property_exists ($identity, 'interests') && is_array ($identity->interests))
+				{
+					// Loop through entries.
+					foreach ($identity->interests as $interest)
+					{
+						// Add to simple list.
+						$data ['user_interests_simple'] [] = $interest->value;
+
+						// Add to list.
+						$data ['users_interests'] [] = array (
+							'value' => $interest->value,
+							'category' => (isset ($interest->category) ? $interest->category : null)
+						);
+					}
+				}
+
+				// URLs.
+				$data ['user_urls'] = array ();
+				$data ['user_urls_simple'] = array ();
+
+				// Extract entries.
+				if (property_exists ($identity, 'urls') && is_array ($identity->urls))
+				{
+					// Loop through entries.
+					foreach ($identity->urls as $url)
+					{
+						// Add to simple list.
+						$data ['user_urls_simple'] [] = $url->value;
+
+						// Add to list.
+						$data ['user_urls'] [] = array (
+							'value' => $url->value,
+							'type' => (isset ($url->type) ? $url->type : null)
+						);
+					}
+				}
+
+				// Certifications.
+				$data ['user_certifications'] = array ();
+				$data ['user_certifications_simple'] = array ();
+
+				// Extract entries.
+				if (property_exists ($identity, 'certifications') && is_array ($identity->certifications))
+				{
+					// Loop through entries.
+					foreach ($identity->certifications as $certification)
+					{
+						// Add to simple list.
+						$data ['user_certifications_simple'] [] = $certification->name;
+
+						// Add to list.
+						$data ['user_certifications'] [] = array (
+							'name' => $certification->name,
+							'number' => (isset ($certification->number) ? $certification->number : null),
+							'authority' => (isset ($certification->authority) ? $certification->authority : null),
+							'start_date' => (isset ($certification->startDate) ? $certification->startDate : null)
+						);
+					}
+				}
+
+				// Recommendations.
+				$data ['user_recommendations'] = array ();
+				$data ['user_recommendations_simple'] = array ();
+
+				// Extract entries.
+				if (property_exists ($identity, 'recommendations') && is_array ($identity->recommendations))
+				{
+					// Loop through entries.
+					foreach ($identity->recommendations as $recommendation)
+					{
+						// Add to simple list.
+						$data ['user_recommendations_simple'] [] = $recommendation->value;
+
+						// Build data.
+						$data_entry = array (
+							'value' => $recommendation->value
+						);
+
+						// Add recommender
+						if (property_exists ($recommendation, 'recommender') && is_object ($recommendation->recommender))
+						{
+							$data_entry ['recommender'] = array ();
+
+							// Add recommender details
+							foreach (get_object_vars ($recommendation->recommender) as $field => $value)
+							{
+								$data_entry ['recommender'] [self::undo_camel_case ($field)] = $value;
+							}
+						}
+
+						// Add to list.
+						$data ['user_recommendations'] [] = $data_entry;
+					}
+				}
+
+				// Accounts.
+				$data ['user_accounts'] = array ();
+
+				// Extract entries.
+				if (property_exists ($identity, 'accounts') && is_array ($identity->accounts))
+				{
+					// Loop through entries.
+					foreach ($identity->accounts as $account)
+					{
+						// Add to list.
+						$data ['user_accounts'] [] = array (
+							'domain' => $account->domain,
+							'userid' => $account->userid,
+							'username' => $account->username
+						);
+					}
+				}
+
+				// Photos.
+				$data ['user_photos'] = array ();
+				$data ['user_photos_simple'] = array ();
+
+				// Extract entries.
+				if (property_exists ($identity, 'photos') && is_array ($identity->photos))
+				{
+					// Loop through entries.
+					foreach ($identity->photos as $photo)
+					{
+						// Add to simple list.
+						$data ['user_photos_simple'] [] = $photo->value;
+
+						// Add to list.
+						$data ['user_photos'] [] = array (
+							'value' => $photo->value,
+							'size' => $photo->size
+						);
+					}
+				}
+
+				// Languages.
+				$data ['user_languages'] = array ();
+				$data ['user_languages_simple'] = array ();
+
+				// Extract entries.
+				if (property_exists ($identity, 'languages') && is_array ($identity->languages))
+				{
+					// Loop through entries.
+					foreach ($identity->languages as $language)
+					{
+						// Add to simple list
+						$data ['user_languages_simple'] [] = $language->value;
+
+						// Add to list.
+						$data ['user_languages'] [] = array (
+							'value' => $language->value,
+							'type' => $language->type
+						);
+					}
+				}
+
+				// Educations.
+				$data ['user_educations'] = array ();
+				$data ['user_educations_simple'] = array ();
+
+				// Extract entries.
+				if (property_exists ($identity, 'educations') && is_array ($identity->educations))
+				{
+					// Loop through entries.
+					foreach ($identity->educations as $education)
+					{
+						// Add to simple list.
+						$data ['user_educations_simple'] [] = $education->value;
+
+						// Add to list.
+						$data ['user_educations'] [] = array (
+							'value' => $education->value,
+							'type' => $education->type
+						);
+					}
+				}
+
+				// Organizations.
+				$data ['user_organizations'] = array ();
+				$data ['user_organizations_simple'] = array ();
+
+				// Extract entries.
+				if (property_exists ($identity, 'organizations') && is_array ($identity->organizations))
+				{
+					// Loop through entries.
+					foreach ($identity->organizations as $organization)
+					{
+						// Add to simple list.
+						$data ['user_organizations_simple'] [] = $organization->name;
+
+						// Add to list.
+						$data ['user_organizations'] [] = array (
+							'name' => $organization->name,
+							'location' => $organization->location,
+							'title' => $organization->title,
+							'description' => $organization->description,
+							'start_date' => $organization->startDate,
+							'end_date' => $organization->endDate
+						);
+					}
+				}
+
+				return $data;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Returns the current url
 	 */
 	private static function get_current_url ()
