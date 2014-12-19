@@ -23,7 +23,7 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *
  */
-namespace phpbb\oa_social_login\acp;
+namespace oneall\oa_social_login\acp;
 
 class oa_social_login_acp_module
 {
@@ -242,7 +242,7 @@ class oa_social_login_acp_module
 		global $phpbb_root_path, $phpEx, $user;
 
 		// Add the language file.
-		$user->add_lang_ext ('phpbb/oa_social_login', 'info_acp_oa_social_login');
+		$user->add_lang_ext ('oneall/oa_social_login', 'info_acp_oa_social_login');
 
 		// Check CURL HTTPS - Port 443.
 		if (oa_social_login_acp_module::check_curl (true) === true)
@@ -285,7 +285,7 @@ class oa_social_login_acp_module
 		global $phpbb_root_path, $phpEx, $user;
 
 		// Add language file.
-		$user->add_lang_ext ('phpbb/oa_social_login', 'info_acp_oa_social_login');
+		$user->add_lang_ext ('oneall/oa_social_login', 'info_acp_oa_social_login');
 
 		// Read arguments.
 		$api_subdomain = trim (strtolower (request_var ('api_subdomain', '')));
@@ -1072,7 +1072,7 @@ class oa_social_login_acp_module
 		curl_setopt ($curl, CURLOPT_SSL_VERIFYPEER, 0);
 		curl_setopt ($curl, CURLOPT_SSL_VERIFYHOST, 0);
 		curl_setopt ($curl, CURLOPT_FOLLOWLOCATION, 0);
-		curl_setopt ($curl, CURLOPT_USERAGENT, 'SocialLogin phpBB3 (+http://www.oneall.com/)');
+		curl_setopt ($curl, CURLOPT_USERAGENT, 'SocialLogin phpBB3.1.x (+http://www.oneall.com/)');
 
 		// BASIC AUTH?
 		if (isset ($options ['api_key']) && isset ($options ['api_secret']))
@@ -1189,7 +1189,7 @@ class oa_social_login_acp_module
 		// Create HTTP request
 		$defaults = array ();
 		$defaults ['Host'] = 'Host: ' . $host;
-		$defaults ['User-Agent'] = 'User-Agent: SocialLogin  phpBB3 (+http://www.oneall.com/)';
+		$defaults ['User-Agent'] = 'User-Agent: SocialLogin phpBB3.1.x (+http://www.oneall.com/)';
 
 		// BASIC AUTH?
 		if (isset ($options ['api_key']) && isset ($options ['api_secret']))
@@ -1728,7 +1728,7 @@ class oa_social_login_acp_module
 			$oa_action = strtolower (request_var ('oa_action', ''));
 
 			// Add language file.
-			$user->add_lang_ext ('phpbb/oa_social_login', 'info_oa_social_login');
+			$user->add_lang_ext ('oneall/oa_social_login', 'info_oa_social_login');
 
 			// Make sure Social Login is enabled.
 			if (empty ($config ['oa_social_login_disable']))

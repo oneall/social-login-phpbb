@@ -1,10 +1,10 @@
 {
-	"name": "phpbb/oa_social_login",
+	"name": "oneall/oa_social_login",
 	"type": "phpbb-extension",
 	"description": "Social Login for phpBB allows your users to login and register with 25+ Social Networks like for example Twitter, Facebook, LinkedIn and Google+",
-	"homepage": "https://docs.oneall.com/plugins/guide/social-login-phpbb/",
+	"homepage": "https://docs.oneall.loc/plugins/guide/social-login-phpbb/?v=3.1.x",
 	"version": "2.0.0",
-	"keywords": ["phpbb", "extension", "oa_social_login"],
+	"keywords": ["phpBB", "Extension", "OneAll", "Social Login"],
 	"license": "GPL-2.0",
 	"authors": [
 		{

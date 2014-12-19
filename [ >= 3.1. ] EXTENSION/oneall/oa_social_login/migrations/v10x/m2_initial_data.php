@@ -23,7 +23,7 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *
  */
-namespace phpbb\oa_social_login\migrations\v10x;
+namespace oneall\oa_social_login\migrations\v10x;
 
 /**
  * Migration stage 2: Initial data changes to the database

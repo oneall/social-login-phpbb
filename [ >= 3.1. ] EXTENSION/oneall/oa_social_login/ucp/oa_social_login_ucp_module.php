@@ -23,7 +23,7 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *
  */
-namespace phpbb\oa_social_login\ucp;
+namespace oneall\oa_social_login\ucp;
 
 if (!defined('IN_PHPBB'))
 {
@@ -39,7 +39,7 @@ class oa_social_login_ucp_module
 		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx, $request, $phpbb_dispatcher;
 
 		//Initialize module.
-		$oa_social_login = new \phpbb\oa_social_login\acp\oa_social_login_acp_module ();
+		$oa_social_login = new \oneall\oa_social_login\acp\oa_social_login_acp_module ();
 
 		// User must be logged in and not a bot
 		if (is_object ($user) && empty ($user->data ['isbot']) && (! empty ($user->data ['user_id']) && $user->data ['user_id'] != ANONYMOUS))

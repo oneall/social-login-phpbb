@@ -23,7 +23,7 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *
  */
-namespace phpbb\oa_social_login\event;
+namespace oneall\oa_social_login\event;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -82,7 +82,7 @@ class listener implements EventSubscriberInterface
 	{
 		$lang_set_ext = $event['lang_set_ext'];
 		$lang_set_ext[] = array(
-			'ext_name' => 'phpbb/oa_social_login',
+			'ext_name' => 'oneall/oa_social_login',
 			'lang_set' => 'info_oa_social_login',
 		);
 		$event['lang_set_ext'] = $lang_set_ext;
@@ -98,7 +98,7 @@ class listener implements EventSubscriberInterface
 		if (empty ($this->config ['oa_social_login_disable']) && ! empty ($this->config ['oa_social_login_api_subdomain']))
 		{
 			// Initialize module.
-			$oa_social_login = new \phpbb\oa_social_login\acp\oa_social_login_acp_module ();
+			$oa_social_login = new \oneall\oa_social_login\acp\oa_social_login_acp_module ();
 
 			// First check for a callback
 			$this->oa_social_login_callback ();
@@ -152,7 +152,7 @@ class listener implements EventSubscriberInterface
 		// These values are returned by OneAll
 		if (strlen ((request_var ('oa_action', ''))) > 0 && strlen (request_var ('connection_token', '')) > 0)
 		{
-			$oa_social_login = new \phpbb\oa_social_login\acp\oa_social_login_acp_module ();
+			$oa_social_login = new \oneall\oa_social_login\acp\oa_social_login_acp_module ();
 			$oa_social_login->handle_callback ();
 		}
 	}

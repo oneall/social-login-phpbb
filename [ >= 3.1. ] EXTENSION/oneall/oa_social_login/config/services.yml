@@ -1,6 +1,6 @@
 services:
-    phpbb.oa_social_login.listener:
-        class: phpbb\oa_social_login\event\listener
+    oneall.oa_social_login.listener:
+        class: oneall\oa_social_login\event\listener
         arguments:
             - @config
             - @config_text

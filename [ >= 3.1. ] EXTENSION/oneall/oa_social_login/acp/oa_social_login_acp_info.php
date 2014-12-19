@@ -23,31 +23,22 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *
  */
-namespace phpbb\oa_social_login\ucp;
+namespace oneall\oa_social_login\acp;
 
-class oa_social_login_ucp_info
+class oa_social_login_acp_info
 {
 	function module ()
 	{
 		return array (
-			'filename' => '\phpbb\oa_social_login\ucp\oa_social_login_ucp_module',
-			'title' => 'UCP_OA_SOCIAL_LINK',
-			'version'   => '1.0.0',
+			'filename' => '\oneall\oa_social_login\acp\oa_social_login_acp_module',
+			'title' => 'ACP_OA_SOCIAL_LOGIN',
 			'modes' => array (
 				'settings' => array (
-					'title' => 'UCP_OA_SOCIAL_LINK',
-					'auth' => 'acl_u_chgprofileinfo',
-					'cat' => array ('UCP_PROFILE')
+					'title' => 'ACP_OA_SOCIAL_LOGIN_SETTINGS',
+					'auth' => 'acl_a_board',
+					'cat' => array ()
 				)
 			)
 		);
-	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
 	}
 }

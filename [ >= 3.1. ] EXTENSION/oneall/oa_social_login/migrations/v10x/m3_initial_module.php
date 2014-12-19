@@ -23,7 +23,7 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *
  */
-namespace phpbb\oa_social_login\migrations\v10x;
+namespace oneall\oa_social_login\migrations\v10x;
 
 /**
  * Migration stage 3: Initial module
@@ -51,7 +51,7 @@ class m3_initial_module extends \phpbb\db\migration\migration
 					'acp',
 					'ACP_OA_SOCIAL_LOGIN',
 					array (
-						'module_basename' => '\phpbb\oa_social_login\acp\oa_social_login_acp_module',
+						'module_basename' => '\oneall\oa_social_login\acp\oa_social_login_acp_module',
 						'modes' => array (
 							'settings'
 						)
@@ -76,7 +76,7 @@ class m3_initial_module extends \phpbb\db\migration\migration
 					'ucp',
 					'UCP_OA_SOCIAL_LINK',
 					array (
-						'module_basename' => '\phpbb\oa_social_login\ucp\oa_social_login_ucp_module',
+						'module_basename' => '\oneall\oa_social_login\ucp\oa_social_login_ucp_module',
 						'modes' => array (
 							'settings'
 						)

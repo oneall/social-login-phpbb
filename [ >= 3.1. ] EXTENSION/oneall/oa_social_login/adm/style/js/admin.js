@@ -19,7 +19,7 @@ jQuery.noConflict();
 
 					var data = {};
 					var sid = $('#sid').html();
-					var ajaxurl = 'index.php?sid=' + sid + '&i=-phpbb-oa_social_login-acp-oa_social_login_acp_module&mode=settings&task=autodetect_api_connection';
+					var ajaxurl = 'index.php?sid=' + sid + '&i=-oneall-oa_social_login-acp-oa_social_login_acp_module&mode=settings&task=autodetect_api_connection';
 
 					message_container = $('#oa_social_login_api_connection_handler_result');
 					message_container.removeClass('success_message error_message').addClass('working_message');
@@ -109,7 +109,7 @@ jQuery.noConflict();
 					  'api_connection_use_https' : use_https,
 					};
 
-					var ajaxurl = 'index.php?sid=' + sid + '&i=-phpbb-oa_social_login-acp-oa_social_login_acp_module&mode=settings&task=verify_api_settings';
+					var ajaxurl = 'index.php?sid=' + sid + '&i=-oneall-oa_social_login-acp-oa_social_login_acp_module&mode=settings&task=verify_api_settings';
 
 					message_container = $('#oa_social_login_api_test_result');
 					message_container.removeClass('success_message error_message').addClass('working_message');
