@@ -1,0 +1,12 @@
+services:
+    oneall.sociallogin.listener:
+        class: oneall\sociallogin\event\listener
+        arguments:
+            - @config
+            - @config_text
+            - @controller.helper
+            - @request
+            - @template
+            - @user
+        tags:
+            - { name: event.listener }

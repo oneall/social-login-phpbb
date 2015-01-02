@@ -1,0 +1,33 @@
+<!-- INCLUDE ucp_header.html -->
+
+<h2>{L_OA_SOCIAL_LOGIN_LINK}</h2>
+
+<div class="panel">
+	<div class="inner">
+		<p>{L_OA_SOCIAL_LOGIN_LINK_DESC1}<br />{L_OA_SOCIAL_LOGIN_LINK_DESC2}</p>
+		<dl>
+			<dt>
+				<label>{L_OA_SOCIAL_LOGIN_LINK_NETWORKS}:</label><br>
+				<span>{L_OA_SOCIAL_LOGIN_LINK_ACTION}</span><br /><br />
+			</dt>
+		</dl>
+		<dl>
+			<dt>
+				<div class="oneall_social_login" id="oneall_social_login_link_profile"></div>
+			</dt>
+		</dl>
+	</div>
+</div>
+
+<script type="text/javascript">
+	// <![CDATA[					            
+		var _oneall = _oneall || [];
+		_oneall.push(['social_link', 'set_providers', ['{OA_SOCIAL_LOGIN_PROVIDERS}']]);
+		_oneall.push(['social_link', 'set_user_token', '{OA_SOCIAL_LINK_USER_TOKEN}']);
+		_oneall.push(['social_link', 'set_callback_uri', '{OA_SOCIAL_LINK_CALLBACK_URI}']);
+		_oneall.push(['social_link', 'do_render_ui', 'oneall_social_login_link_profile']);
+	// ]]>
+</script>
+				
+
+<!-- INCLUDE ucp_footer.html -->
