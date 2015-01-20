@@ -95,7 +95,7 @@ class listener implements EventSubscriberInterface
 			'lang_set' => 'backend'
 		);
 
-		// Set lanuage settings.
+		// Set language settings.
 		$event['lang_set_ext'] = $lang_set_ext;
 	}
 
