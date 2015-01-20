@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @package   	OneAll Social Login
  * @copyright 	Copyright 2013-2015 http://www.oneall.com - All rights reserved.
@@ -1071,8 +1070,10 @@ class sociallogin_acp_module
 		curl_setopt ($curl, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt ($curl, CURLOPT_SSL_VERIFYPEER, 0);
 		curl_setopt ($curl, CURLOPT_SSL_VERIFYHOST, 0);
-		curl_setopt ($curl, CURLOPT_FOLLOWLOCATION, 0);
 		curl_setopt ($curl, CURLOPT_USERAGENT, 'SocialLogin phpBB3.1.x (+http://www.oneall.com/)');
+
+		// Does not work in PHP Safe Mode, we manually follow the locations if necessary.
+		curl_setopt ($curl, CURLOPT_FOLLOWLOCATION, 0);
 
 		// BASIC AUTH?
 		if (isset ($options ['api_key']) && isset ($options ['api_secret']))
@@ -1093,24 +1094,29 @@ class sociallogin_acp_module
 			$result->http_error = null;
 
 			// Check if we have a redirection header
-			if (in_array ($result->http_code, array (
-				301,
-				302
-			)) && $num_redirects < 4)
+			if (in_array ($result->http_code, array (301, 302)) && $num_redirects < 4)
 			{
 				// Make sure we have http headers
 				if (is_array ($result->http_headers))
 				{
-					// Loop through headers
+					// Header found ?
+					$header_found = false;
+
+					// Loop through headers.
 					while (! $header_found && (list (, $header) = each ($result->http_headers)))
 					{
+						// Try to parse a redirection header.
 						if (preg_match ("/(Location:|URI:)[^(\n)]*/", $header, $matches))
 						{
+							// Sanitize redirection url.
 							$url_tmp = trim (str_replace ($matches [1], "", $matches [0]));
 							$url_parsed = parse_url ($url_tmp);
-
 							if (! empty ($url_parsed))
 							{
+								// Header found!
+								$header_found = true;
+
+								// Follow redirection url.
 								$result = self::curl_request ($url_tmp, $options, $timeout, $num_redirects + 1);
 							}
 						}
@@ -1234,7 +1240,7 @@ class sociallogin_acp_module
 				// Header found?
 				$header_found = false;
 
-				// Loop through headers
+				// Loop through headers.
 				while (! $header_found && (list (, $header) = each ($result->http_headers)))
 				{
 					// Check for location header
