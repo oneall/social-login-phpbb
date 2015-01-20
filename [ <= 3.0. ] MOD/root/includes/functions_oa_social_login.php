@@ -1792,16 +1792,24 @@ class oa_social_login
 				// Make sure we have http headers
 				if (is_array ($result->http_headers))
 				{
-					// Loop through headers
+					// Header found ?
+					$header_found = false;
+
+					// Loop through headers.
 					while (! $header_found && (list (, $header) = each ($result->http_headers)))
 					{
+						// Try to parse a redirection header.
 						if (preg_match ("/(Location:|URI:)[^(\n)]*/", $header, $matches))
 						{
+							// Sanitize redirection url.
 							$url_tmp = trim (str_replace ($matches [1], "", $matches [0]));
 							$url_parsed = parse_url ($url_tmp);
-
 							if (! empty ($url_parsed))
 							{
+								// Header found!
+								$header_found = true;
+
+								// Follow redirection url.
 								$result = self::curl_request ($url_tmp, $options, $timeout, $num_redirects + 1);
 							}
 						}
