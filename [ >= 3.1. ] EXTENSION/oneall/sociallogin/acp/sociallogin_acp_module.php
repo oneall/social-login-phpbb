@@ -126,6 +126,10 @@ class sociallogin_acp_module
 		$oa_social_login_registration_page_disable = ((isset ($config ['oa_social_login_registration_page_disable']) && $config ['oa_social_login_registration_page_disable'] == '1') ? '1' : '0');
 		$oa_social_login_registration_page_caption = (isset ($config ['oa_social_login_registration_page_caption']) ? $config ['oa_social_login_registration_page_caption'] : 'Connect with your social network account');
 
+		// Index Page.
+		$oa_social_login_index_page_disable = ((isset ($config ['oa_social_login_index_page_disable']) && $config ['oa_social_login_index_page_disable'] == '1') ? '1' : '0');
+		$oa_social_login_index_page_disable = (isset ($config ['oa_social_login_index_page_caption']) ? $config ['oa_social_login_index_page_caption'] : 'Connect with your social network account');
+
 		// Triggers a form message.
 		$oa_social_login_settings_saved = false;
 
@@ -181,6 +185,10 @@ class sociallogin_acp_module
 			$oa_social_login_registration_page_disable = ((request_var ('oa_social_login_registration_page_disable', 0) == 1) ? 1 : 0);
 			$oa_social_login_registration_page_caption = request_var ('oa_social_login_registration_page_caption', '');
 
+			// Main page.
+			$oa_social_login_index_page_disable = ((request_var ('oa_social_login_index_page_disable', 0) == 1) ? 1 : 0);
+			$oa_social_login_index_page_caption = request_var ('oa_social_login_index_page_caption', '');
+
 			// Save configuration.
 			set_config ('oa_social_login_disable', $oa_social_login_disable);
 			set_config ('oa_social_login_disable_linking', $oa_social_login_disable_linking);
@@ -196,6 +204,8 @@ class sociallogin_acp_module
 			set_config ('oa_social_login_login_page_caption', $oa_social_login_login_page_caption);
 			set_config ('oa_social_login_registration_page_disable', $oa_social_login_registration_page_disable);
 			set_config ('oa_social_login_registration_page_caption', $oa_social_login_registration_page_caption);
+			set_config ('oa_social_login_index_page_disable', $oa_social_login_index_page_disable);
+			set_config ('oa_social_login_index_page_caption', $oa_social_login_index_page_caption);
 		}
 
 		// Setup Social Network Vars
@@ -229,7 +239,9 @@ class sociallogin_acp_module
 			'OA_SOCIAL_LOGIN_LOGIN_PAGE_DISABLE'	 => ($oa_social_login_login_page_disable == '1'),
 			'OA_SOCIAL_LOGIN_LOGIN_PAGE_CAPTION' =>	$oa_social_login_login_page_caption,
 			'OA_SOCIAL_LOGIN_REGISTRATION_PAGE_DISABLE'	 => ($oa_social_login_registration_page_disable == '1'),
-			'OA_SOCIAL_LOGIN_REGISTRATION_PAGE_CAPTION' =>	$oa_social_login_registration_page_caption
+			'OA_SOCIAL_LOGIN_REGISTRATION_PAGE_CAPTION' =>	$oa_social_login_registration_page_caption,
+			'OA_SOCIAL_LOGIN_INDEX_PAGE_DISABLE'	 => ($oa_social_login_index_page_disable == '1'),
+			'OA_SOCIAL_LOGIN_INDEX_PAGE_CAPTION' =>	$oa_social_login_index_page_caption
 		));
 
 		// Done
