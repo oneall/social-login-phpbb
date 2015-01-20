@@ -80,11 +80,22 @@ class listener implements EventSubscriberInterface
 	 */
 	public function add_language ($event)
 	{
+		// Read language settings.
 		$lang_set_ext = $event['lang_set_ext'];
+
+		// Add frontend language strings.
 		$lang_set_ext[] = array(
 			'ext_name' => 'oneall/sociallogin',
-			'lang_set' => 'frontend',
+			'lang_set' => 'frontend'
 		);
+
+		// Add backend language strings.
+		$lang_set_ext[] = array(
+			'ext_name' => 'oneall/sociallogin',
+			'lang_set' => 'backend'
+		);
+
+		// Set lanuage settings.
 		$event['lang_set_ext'] = $lang_set_ext;
 	}
 

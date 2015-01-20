@@ -89,6 +89,9 @@ class sociallogin_acp_module
 	{
 		global $db, $user, $auth, $template, $config, $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
+		// Add the language file.
+		$user->add_lang_ext ('oneall/sociallogin', 'backend');
+
 		// Set up the page
 		$this->tpl_name = 'sociallogin';
 		$this->page_title = $user->lang ['OA_SOCIAL_LOGIN_SETTINGS'];
@@ -1724,6 +1727,9 @@ class sociallogin_acp_module
 		// Required global variables.
 		global $db, $auth, $user, $config, $template, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
+		// Add language file.
+		$user->add_lang_ext ('oneall/sociallogin', 'frontend');
+
 		// Read arguments.
 		$connection_token = trim(request_var ('connection_token', ''));
 		$login_token = trim(request_var ('oa_social_login_login_token', ''));
@@ -1732,9 +1738,6 @@ class sociallogin_acp_module
 		// Make sure we need to call the callback handler.
 		if (strlen ($oa_action) > 0 && strlen ($connection_token) > 0)
 		{
-			// Add language file.
-			$user->add_lang_ext ('oneall/sociallogin', 'frontend');
-
 			// Make sure Social Login is enabled.
 			if (empty ($config ['oa_social_login_disable']))
 			{
