@@ -128,7 +128,7 @@ class sociallogin_acp_module
 
 		// Index Page.
 		$oa_social_login_index_page_disable = ((isset ($config ['oa_social_login_index_page_disable']) && $config ['oa_social_login_index_page_disable'] == '1') ? '1' : '0');
-		$oa_social_login_index_page_disable = (isset ($config ['oa_social_login_index_page_caption']) ? $config ['oa_social_login_index_page_caption'] : 'Connect with your social network account');
+		$oa_social_login_index_page_caption = (isset ($config ['oa_social_login_index_page_caption']) ? $config ['oa_social_login_index_page_caption'] : 'Connect with your social network account');
 
 		// Triggers a form message.
 		$oa_social_login_settings_saved = false;
@@ -417,7 +417,7 @@ class sociallogin_acp_module
 		global $db, $table_prefix;
 
 		// Update the counter for the given identity_token.
-		$sql = "UPDATE " . $table_prefix . 'oasl_identity' . " SET num_logins=num_logins+1, date_updated='" . time () . "' WHERE identity_token = '" . $db->sql_escape ($identity_token) . "' LIMIT 1";
+		$sql = "UPDATE " . $table_prefix . "oasl_identity SET num_logins=num_logins+1, date_updated='" . time () . "' WHERE identity_token = '" . $db->sql_escape ($identity_token) . "'";
 		$query = $db->sql_query ($sql);
 	}
 
@@ -522,8 +522,7 @@ class sociallogin_acp_module
 				if (! empty ($result ['oasl_user_id']) && $result ['oasl_user_id'] != $oasl_user_id)
 				{
 					// Delete the wrongly linked identity_token.
-					$sql = "DELETE FROM " . $table_prefix . 'oasl_identity' . "
-									WHERE oasl_identity_id = " . intval ($oasl_identity_id) . " LIMIT 1";
+					$sql = "DELETE FROM " . $table_prefix . "oasl_identity WHERE oasl_identity_id = " . intval ($oasl_identity_id);
 					$query = $db->sql_query_limit ($sql, 1);
 
 					// Reset the identifier
@@ -732,7 +731,7 @@ class sociallogin_acp_module
 			$oasl_user_id = intval ($result ['oasl_user_id']);
 
 			// Check if the user account exists.
-			$sql = "SELECT user_id FROM " . USERS_TABLE . " WHERE user_id = " . intval ($user_id) . "";
+			$sql = "SELECT user_id FROM " . USERS_TABLE . " WHERE user_id = " . intval ($user_id);
 			$query = $db->sql_query_limit ($sql, 1);
 			$result = $db->sql_fetchrow ($query);
 			$db->sql_freeresult ($query);
@@ -745,7 +744,7 @@ class sociallogin_acp_module
 
 			// Delete the wrongly linked user_token.
 			$sql = "DELETE FROM " . $table_prefix . 'oasl_user' . " WHERE user_token = '" . $db->sql_escape ($user_token) . "'";
-			$query = $db->sql_query_limit ($sql, 1);
+			$query = $db->sql_query ($sql);
 
 			// Delete the wrongly linked identity_token.
 			$sql = "DELETE FROM " . $table_prefix . 'oasl_identity' . " WHERE oasl_user_id = " . intval ($oasl_user_id) . "";
@@ -765,8 +764,8 @@ class sociallogin_acp_module
 		global $db, $table_prefix;
 
 		// Read the user_id for this user_token.
-		$sql = "SELECT user_token FROM " . $table_prefix . 'oasl_user' . " WHERE user_id = " . intval ($user_id) . " LIMIT 1";
-		$query = $db->sql_query ($sql);
+		$sql = "SELECT user_token FROM " . $table_prefix . 'oasl_user' . " WHERE user_id = " . intval ($user_id);
+		$query = $db->sql_query_limit ($sql, 1);
 		$result = $db->sql_fetchrow ($query);
 		$db->sql_freeresult ($query);
 
@@ -1622,9 +1621,9 @@ class sociallogin_acp_module
 							{
 								// Add to list.
 								$data ['user_accounts'] [] = array (
-									'domain' => $account->domain,
-									'userid' => $account->userid,
-									'username' => $account->username
+									'domain' => (isset ($account->domain) ? $account->domain : null),
+									'userid' => (isset ($account->userid) ? $account->userid : null),
+									'username' => (isset ($account->username) ? $account->username : null)
 								);
 							}
 						}
