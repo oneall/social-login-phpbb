@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @package   	OneAll Social Login
  * @copyright 	Copyright 2013-2015 http://www.oneall.com - All rights reserved.
@@ -41,13 +40,13 @@ class m1_initial_schema extends \phpbb\db\migration\migration
 				$this->table_prefix . 'oasl_identity' => array (
 					'COLUMNS' => array (
 						'oasl_identity_id' => array (
-							'INT:10',
+							'UINT',
 							NULL,
 							'auto_increment'
 						),
 						'oasl_user_id' => array (
-							'INT:10',
-							NULL
+							'UINT',
+							0
 						),
 						'identity_token' => array (
 							'VCHAR:255',
@@ -58,16 +57,16 @@ class m1_initial_schema extends \phpbb\db\migration\migration
 							''
 						),
 						'num_logins' => array (
-							'INT:10',
-							NULL
+							'UINT',
+							0
 						),
 						'date_added' => array (
-							'INT:10',
-							NULL
+							'UINT',
+							0
 						),
 						'date_updated' => array (
-							'INT:10',
-							NULL
+							'UINT',
+							0
 						)
 					),
 					'PRIMARY_KEY' => 'oasl_identity_id',
@@ -81,7 +80,7 @@ class m1_initial_schema extends \phpbb\db\migration\migration
 				$this->table_prefix . 'oasl_login_token' => array (
 					'COLUMNS' => array (
 						'oasl_login_token_id' => array (
-							'INT:10',
+							'UINT',
 							NULL,
 							'auto_increment'
 						),
@@ -90,12 +89,12 @@ class m1_initial_schema extends \phpbb\db\migration\migration
 							''
 						),
 						'user_id' => array (
-							'INT:10',
-							NULL
+							'UINT',
+							0
 						),
 						'date_creation' => array (
-							'INT:10',
-							NULL
+							'UINT',
+							0
 						)
 					),
 					'PRIMARY_KEY' => 'oasl_login_token_id',
@@ -109,21 +108,21 @@ class m1_initial_schema extends \phpbb\db\migration\migration
 				$this->table_prefix . 'oasl_user' => array (
 					'COLUMNS' => array (
 						'oasl_user_id' => array (
-							'INT:10',
+							'UINT',
 							NULL,
 							'auto_increment'
 						),
 						'user_id' => array (
-							'INT:10',
-							NULL
+							'UINT',
+							0
 						),
 						'user_token' => array (
 							'VCHAR:255',
 							''
 						),
 						'date_added' => array (
-							'INT:10',
-							NULL
+							'UINT',
+							0
 						)
 					),
 					'PRIMARY_KEY' => 'oasl_user_id',
@@ -143,5 +142,12 @@ class m1_initial_schema extends \phpbb\db\migration\migration
 	 */
 	public function revert_schema ()
 	{
+		return array(
+			'drop_tables'=> array(
+				$this->table_prefix . 'oasl_user',
+				$this->table_prefix . 'oasl_login_token',
+				$this->table_prefix . 'oasl_identity'
+			)
+		);
 	}
 }
