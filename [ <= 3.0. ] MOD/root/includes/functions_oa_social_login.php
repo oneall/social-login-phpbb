@@ -954,9 +954,9 @@ class oa_social_login
 					{
 						// Add to list.
 						$data ['user_accounts'] [] = array (
-							'domain' => $account->domain,
-							'userid' => $account->userid,
-							'username' => $account->username
+							'domain' => (isset ($account->domain) ? $account->domain : null),
+							'userid' => (isset ($account->userid) ? $account->userid : null),
+							'username' => (isset ($account->username) ? $account->username : null)
 						);
 					}
 				}
