@@ -46,5 +46,5 @@ $lang = array_merge ($lang, array (
 	'OA_SOCIAL_LOGIN_SOCIAL_LINK' => 'Social Link Service',
 	'OA_SOCIAL_LOGIN_ACCOUNT_ALREADY_LINKED' => 'This social network account is already linked to another forum user.',
 	'OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_OTHER' => 'The account has been created. However, the forum settings require account activation.<br />An activation key has been sent to your email address.',
-	'OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_ADMIN' => 'The account has been created. However, the forum settings require account activation by an administrator.<br />An email has been sent to the administrators and you will be informed by email once your account has been activated.'
+	'OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_ADMIN' => 'The account has been created. However, the forum settings require account activation by an administrator.<br />An email has been sent to the administrators and you will be informed by email once your account has been activated.',
 ));
