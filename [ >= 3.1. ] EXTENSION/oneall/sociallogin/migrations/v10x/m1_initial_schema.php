@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package   	OneAll Social Login
  * @copyright 	Copyright 2013-2015 http://www.oneall.com - All rights reserved.
@@ -61,11 +62,11 @@ class m1_initial_schema extends \phpbb\db\migration\migration
 							0
 						),
 						'date_added' => array (
-							'UINT',
+							'TIMESTAMP',
 							0
 						),
 						'date_updated' => array (
-							'UINT',
+							'TIMESTAMP',
 							0
 						)
 					),
@@ -93,7 +94,7 @@ class m1_initial_schema extends \phpbb\db\migration\migration
 							0
 						),
 						'date_creation' => array (
-							'UINT',
+							'TIMESTAMP',
 							0
 						)
 					),
@@ -121,7 +122,7 @@ class m1_initial_schema extends \phpbb\db\migration\migration
 							''
 						),
 						'date_added' => array (
-							'UINT',
+							'TIMESTAMP',
 							0
 						)
 					),
@@ -142,8 +143,8 @@ class m1_initial_schema extends \phpbb\db\migration\migration
 	 */
 	public function revert_schema ()
 	{
-		return array(
-			'drop_tables'=> array(
+		return array (
+			'drop_tables' => array (
 				$this->table_prefix . 'oasl_user',
 				$this->table_prefix . 'oasl_login_token',
 				$this->table_prefix . 'oasl_identity'
