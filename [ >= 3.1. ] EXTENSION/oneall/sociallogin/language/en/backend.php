@@ -124,5 +124,5 @@ $lang = array_merge ($lang, array (
 	'OA_SOCIAL_LOGIN_API_CREDENTIALS_UNKNOW_ERROR' => 'Unknow response - please make sure that you are logged in!',
 	'OA_SOCIAL_LOGIN_API_CREDENTIALS_OK' => 'The settings are correct - do not forget to save your changes!',
 	'OA_SOCIAL_LOGIN_ENABLE_SOCIAL_NETWORK' => 'You have to enable at least one social network',
-	'OA_SOCIAL_LOGIN_ENTER_CREDENTIALS' => 'You have to setup your API credentials'
+	'OA_SOCIAL_LOGIN_ENTER_CREDENTIALS' => 'You have to setup your API credentials',
 ));
