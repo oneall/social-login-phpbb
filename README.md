@@ -15,6 +15,7 @@ https://www.phpbb.com/customise/db/mod/oa_social_login/
 ## Supported Social Networks
 * Amazon
 * Blogger
+* Draugiem
 * Disqus
 * Facebook
 * Foursquare
