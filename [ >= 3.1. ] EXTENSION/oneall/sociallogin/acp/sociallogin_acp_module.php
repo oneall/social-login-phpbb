@@ -908,6 +908,9 @@ class sociallogin_acp_module
 			'disqus' => array (
 				'name' => 'Disqus'
 			),
+			'draugiem' => array (
+				'name' => 'Draugiem'
+			),
 			'facebook' => array (
 				'name' => 'Facebook'
 			),
