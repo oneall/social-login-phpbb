@@ -179,15 +179,15 @@ class sociallogin_acp_module
 
 			// Login page.
 			$oa_social_login_login_page_disable = ((request_var ('oa_social_login_login_page_disable', 0) == 1) ? 1 : 0);
-			$oa_social_login_login_page_caption = request_var ('oa_social_login_login_page_caption', '');
+			$oa_social_login_login_page_caption = utf8_normalize_nfc(request_var('oa_social_login_login_page_caption', '', true));
 
 			// Registration page.
 			$oa_social_login_registration_page_disable = ((request_var ('oa_social_login_registration_page_disable', 0) == 1) ? 1 : 0);
-			$oa_social_login_registration_page_caption = request_var ('oa_social_login_registration_page_caption', '');
+			$oa_social_login_registration_page_caption = utf8_normalize_nfc(request_var('oa_social_login_registration_page_caption', '', true));
 
 			// Main page.
 			$oa_social_login_index_page_disable = ((request_var ('oa_social_login_index_page_disable', 0) == 1) ? 1 : 0);
-			$oa_social_login_index_page_caption = request_var ('oa_social_login_index_page_caption', '');
+			$oa_social_login_index_page_caption = utf8_normalize_nfc(request_var('oa_social_login_index_page_caption', '', true));
 
 			// Save configuration.
 			set_config ('oa_social_login_disable', $oa_social_login_disable);
