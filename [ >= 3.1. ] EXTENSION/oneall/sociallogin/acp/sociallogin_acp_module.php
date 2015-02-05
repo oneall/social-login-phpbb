@@ -841,7 +841,7 @@ class sociallogin_acp_module
 	 */
 	function get_default_group_id ()
 	{
-		global $db, $table_prefix;
+		global $db;
 
 		// Read the default group.
 		$sql = "SELECT group_id FROM " . GROUPS_TABLE . " WHERE group_name = 'REGISTERED' AND group_type = " . GROUP_SPECIAL;
@@ -1930,6 +1930,12 @@ class sociallogin_acp_module
 											'username' => $user_data ['user_login'],
 											'user_email' => $user_data ['user_email']
 										);
+
+										// Adds the user to the Newly registered users group.
+										if ($config['new_member_post_limit'])
+										{
+											$user_row['user_new'] = 1;
+										}
 
 										// Register user.
 										$user_id_tmp = user_add ($user_row, false);
