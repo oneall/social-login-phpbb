@@ -2070,6 +2070,9 @@ class sociallogin_acp_module
 										{
 											redirect (append_sid ($phpbb_root_path . 'index.' . $phpEx));
 										}
+
+										// Redirect to the same page
+										redirect (append_sid(self::get_current_url ()));
 									}
 								}
 							}

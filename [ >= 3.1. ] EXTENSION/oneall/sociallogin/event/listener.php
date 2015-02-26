@@ -70,7 +70,7 @@ class listener implements EventSubscriberInterface
 	static public function getSubscribedEvents ()
 	{
 		return array (
-			'core.page_header' => 'setup',
+			'core.page_header_after' => 'setup',
 			'core.user_setup' => 'add_language'
 		);
 	}
