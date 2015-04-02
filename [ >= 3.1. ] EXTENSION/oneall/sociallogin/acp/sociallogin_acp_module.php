@@ -702,7 +702,7 @@ class sociallogin_acp_module
 		global $db, $table_prefix;
 
 		// Read the user_id for this login
-		$sql = "SELECT user_id FROM " . USERS_TABLE . " WHERE username = '" . $db->sql_escape ($user_login) . "'";
+		$sql = "SELECT user_id FROM " . USERS_TABLE . " WHERE username_clean = '" . $db->sql_escape (utf8_clean_string($user_login)) . "'";
 		$query = $db->sql_query_limit ($sql, 1);
 		$result = $db->sql_fetchrow ($query);
 		$db->sql_freeresult ($query);
