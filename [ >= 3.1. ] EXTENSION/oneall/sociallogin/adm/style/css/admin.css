@@ -70,8 +70,8 @@
   font-weight: bold;
 }
 
-#oneall_sociallogin fieldset dl {
-  border-bottom: 1px dashed #DDDDDD;
+#oneall_sociallogin fieldset dl.dot {
+  border-bottom: 2px dotted #ccc !important;
   padding: 5px 0 15px;
 }
 

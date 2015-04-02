@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @package   	OneAll Social Login
  * @copyright 	Copyright 2013-2015 http://www.oneall.com - All rights reserved.
@@ -123,7 +122,7 @@ class listener implements EventSubscriberInterface
 			// User must not be logged in
 			if ( empty ($this->user->data['user_id']) || $this->user->data['user_id'] == ANONYMOUS)
 			{
-				// Embed on the main page
+				// Embed on the main page ?
 				if (! empty ($this->user->page['page_name']) && $this->user->page['page_name'] == 'index.php')
 				{
 					// Can be changed in the social login settings.
@@ -140,9 +139,8 @@ class listener implements EventSubscriberInterface
 					}
 				}
 
-
-				// Embed on the login page
-				if (request_var ('mode', '') == 'login')
+				// Embed on the login page ?
+				elseif (request_var ('mode', '') == 'login')
 				{
 					// Can be changed in the social login settings.
 					if (empty ($this->config ['oa_social_login_login_page_disable']))
@@ -157,20 +155,39 @@ class listener implements EventSubscriberInterface
 						}
 					}
 				}
-
-				// Embed on the registration page
-				if (request_var ('mode', '') == 'register')
+				// Embed on the registration page ?
+				elseif (request_var ('mode', '') == 'register')
 				{
-					// Only if the user has agreed to the terms
-					if (request_var ('agreed', '') != '')
+					// Can be changed in the social login settings.
+					if (empty ($this->config ['oa_social_login_registration_page_disable']))
+					{
+						// Only if the user has agreed to the terms
+						if (request_var ('agreed', '') != '')
+						{
+							// Trigger icons.
+							$this->template->assign_var ('OA_SOCIAL_LOGIN_EMBED_SOCIAL_LOGIN', 1);
+
+							// Set caption
+							if (! empty ($this->config ['oa_social_login_registration_page_caption']))
+							{
+								$this->template->assign_var ('OA_SOCIAL_LOGIN_PAGE_CAPTION', $this->config ['oa_social_login_registration_page_caption']);
+							}
+						}
+					}
+				}
+				// Embed on any other page ?
+				else
+				{
+					// Can be changed in the social login settings.
+					if ( ! isset ($this->config ['oa_social_login_other_page_disable']) || $this->config ['oa_social_login_other_page_disable'] == '0')
 					{
 						// Trigger icons.
 						$this->template->assign_var ('OA_SOCIAL_LOGIN_EMBED_SOCIAL_LOGIN', 1);
 
 						// Set caption
-						if (! empty ($this->config ['oa_social_login_registration_page_caption']))
+						if (! empty ($this->config ['oa_social_login_other_page_caption']))
 						{
-							$this->template->assign_var ('OA_SOCIAL_LOGIN_PAGE_CAPTION', $this->config ['oa_social_login_registration_page_caption']);
+							$this->template->assign_var ('OA_SOCIAL_LOGIN_PAGE_CAPTION', $this->config ['oa_social_login_other_page_caption']);
 						}
 					}
 				}

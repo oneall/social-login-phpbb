@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @package   	OneAll Social Login
  * @copyright 	Copyright 2013-2015 http://www.oneall.com - All rights reserved.
