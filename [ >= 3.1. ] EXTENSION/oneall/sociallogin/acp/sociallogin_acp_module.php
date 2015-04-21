@@ -184,19 +184,19 @@ class sociallogin_acp_module
 
 			// Login page, default 1.
 			$oa_social_login_login_page_disable = ((request_var ('oa_social_login_login_page_disable', 0) == 1) ? 1 : 0);
-			$oa_social_login_login_page_caption = utf8_normalize_nfc(request_var('oa_social_login_login_page_caption', '', true));
+			$oa_social_login_login_page_caption = request_var('oa_social_login_login_page_caption', '', true);
 
 			// Registration page, default 1.
 			$oa_social_login_registration_page_disable = ((request_var ('oa_social_login_registration_page_disable', 0) == 1) ? 1 : 0);
-			$oa_social_login_registration_page_caption = utf8_normalize_nfc(request_var('oa_social_login_registration_page_caption', '', true));
+			$oa_social_login_registration_page_caption = request_var('oa_social_login_registration_page_caption', '', true);
 
 			// Main page, default 1.
 			$oa_social_login_index_page_disable = ((request_var ('oa_social_login_index_page_disable', 0) == 1) ? 1 : 0);
-			$oa_social_login_index_page_caption = utf8_normalize_nfc(request_var('oa_social_login_index_page_caption', '', true));
+			$oa_social_login_index_page_caption = request_var('oa_social_login_index_page_caption', '', true);
 
 			// Other pages, default 0.
 			$oa_social_login_other_page_disable = ((request_var ('oa_social_login_other_page_disable', 1) == 0) ? 0 : 1);
-			$oa_social_login_other_page_caption = utf8_normalize_nfc(request_var('oa_social_login_other_page_caption', '', true));
+			$oa_social_login_other_page_caption = request_var('oa_social_login_other_page_caption', '', true);
 
 			// Save configuration.
 			set_config ('oa_social_login_disable', $oa_social_login_disable);
