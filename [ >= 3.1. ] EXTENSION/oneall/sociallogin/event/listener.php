@@ -60,6 +60,7 @@ class listener implements EventSubscriberInterface
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
+		$this->oa_user = null;  // is the user logged in with oneall.
 	}
 
 
@@ -70,8 +71,48 @@ class listener implements EventSubscriberInterface
 	{
 		return array (
 			'core.page_header_after' => 'setup',
-			'core.user_setup' => 'add_language'
+			'core.user_setup' => 'add_language',
+			'core.ucp_profile_reg_details_data' => 'set_oa_user',
+			'core.ucp_profile_reg_details_validate' => 'skip_cur_password_check'
 		);
+	}
+
+	/**
+	 * Helper function to check if a user is logged in with Social Login.
+	 * Memorizes the result in attribute to avoid rechecks.
+	 */
+	private function is_user_oa ()
+	{
+		if (! isset ($this->oa_user)) {
+			$sociallogin = new \oneall\sociallogin\acp\sociallogin_acp_module ();
+			$user_token = $sociallogin->get_user_token_for_user_id ($this->user->data['user_id']);
+			$this->oa_user = $user_token !== false;
+		}
+		return $this->oa_user;
+	}
+
+	/**
+	 * Notifies if a user is logged in with Social Login, to the UCP template.
+	 * The UCP template event will disable the cur_password form input.
+	 */
+	public function set_oa_user ($event)
+	{
+		$this->template->assign_var ('OA_SOCIAL_LOGIN_USER', $this->is_user_oa ());
+	}
+
+	/**
+	 * Allow changes to account settings without password for Social Login users.
+	 * Because the template disabled the input field cur_password.
+	 */
+	public function skip_cur_password_check ($event)
+	{
+		if ($this->is_user_oa ())
+		{
+			$filtered = array_filter ($event['error'], function ($v) { 
+				return $v != 'CUR_PASSWORD_EMPTY';  // from phpbb source code.
+			});
+			$event['error'] = $filtered;
+		}
 	}
 
 	/**

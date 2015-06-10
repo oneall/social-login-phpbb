@@ -436,15 +436,38 @@ class sociallogin_acp_module
 
 
 	/**
-	 * Unlinks the identity token
+	 * Unlinks the identity token.
+	 * Eventually clean the oasl_user table.
 	 */
 	public function unlink_identity_token ($identity_token)
 	{
 		global $db, $table_prefix;
 
+		// Retrieve the oasl_user_id from the identity_token, using the oasl_identity table.
+		$sql = "SELECT oasl_user_id FROM " . $table_prefix . 'oasl_identity' . " WHERE identity_token = '" . $db->sql_escape ($identity_token) . "'";
+		$query = $db->sql_query ($sql);
+		$result = $db->sql_fetchrow ($query);
+		$db->sql_freeresult ($query);
+		if (! is_array ($result) || empty ($result ['oasl_user_id']))
+		{
+			return false;
+		}
+		$user_id = $result ['oasl_user_id'];
 		// Delete the identity_token.
 		$sql = "DELETE FROM " . $table_prefix . 'oasl_identity' . " WHERE  identity_token = '" . $db->sql_escape ($identity_token) . "'";
 		$query = $db->sql_query ($sql);
+		// Check if there are any other identities linked to the user_id.
+		$sql = "SELECT oasl_user_id FROM " . $table_prefix . 'oasl_identity' . " WHERE oasl_user_id = '" . $db->sql_escape ($user_id) . "'";
+		$query = $db->sql_query ($sql);
+		$result = $db->sql_fetchrow ($query);
+		$db->sql_freeresult ($query);
+		// If no identity linked to the oasl_user_id: delete oasl_user_id row from oasl_user table.
+		if (! is_array ($result))
+		{
+			$sql = "DELETE FROM " . $table_prefix . 'oasl_user' . " WHERE  oasl_user_id = '" . $db->sql_escape ($user_id) . "'";
+			$query = $db->sql_query ($sql);
+		}
+		return true;
 	}
 
 
