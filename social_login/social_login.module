@@ -1,0 +1,38 @@
+<?php
+/**
+ * @file
+ * Adds the link to the module to the administration area.
+ */
+
+
+/**
+ * Implements hook_menu().
+ */
+function social_login_menu() {
+  // Link to the administration page.
+  $items = array();
+  $items['admin/config/people/social_login'] = array(
+    'title' => 'OneAll Social Login',
+    'description' => 'Setup OneAll Social Login and enable the Social Networks of your choice',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array(
+      'social_login_admin_settings',
+    ),
+    'access arguments' => array(
+      'administer site configuration',
+    ),
+    'file' => 'social_login.admin.inc',
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_help().
+ */
+function social_login_help($path, $arg) {
+  if ($path == 'admin/help#social_login') {
+    return t('We are devoted to creating a positive experience for our customers. Feel free to <a href="@oneall_support" target="_blank">contact us</a> if you have any questions and/or feedback.', array(
+      '@oneall_support' => 'http://www.oneall.com/company/contact-us/',
+    ));
+  }
+}

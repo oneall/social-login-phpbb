@@ -1,0 +1,12 @@
+name = "OneAll Social Login Widget"
+description = Displays the buttons of the Social Networks that your users may use to connect to your website.
+package = "OneAll Social Login"
+core = 7.x
+dependencies[] = "social_login_core"
+
+; Information added by Drupal.org packaging script on 2014-10-29
+version = "7.x-1.7"
+core = "7.x"
+project = "social_login"
+datestamp = "1414581457"
+

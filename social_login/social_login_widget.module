@@ -1,0 +1,333 @@
+<?php
+/**
+ * @file
+ * Adds the OneAll Social Login widget at the locations
+ * chosen by the administrator.
+ */
+
+/**
+ * Adds the javascript library.
+ */
+function social_login_widget_add_js_library($subdomain, $https_enabled = FALSE) {
+  drupal_add_js(($https_enabled ? 'https' : 'http') . '://' . $subdomain . '.api.oneall.com/socialize/library.js', 'external');
+}
+
+/**
+ * Adds the social network buttons.
+ */
+function social_login_widget_add_js_plugin($plugin_type, $subdomain, $providers, $containerid, $token = NULL) {
+  global $is_https, $base_url;
+
+  // Check required settings.
+  if (!empty($containerid) AND !empty($subdomain)) {
+
+    // Build the callback uri.
+    $current_uri = social_login_get_current_url();
+    $callback_uri = url('social_login/callback', array('absolute' => TRUE, 'query' => array('origin' => $current_uri)));
+
+    // Add social library.
+    social_login_widget_add_js_library($subdomain, $is_https);
+
+    // Build Javascript.
+    $js = array();
+    $js[] = "oneall.api.plugins." . $plugin_type . ".build(\"" . $containerid . "\", {";
+    $js[] = " 'providers' : ['" . implode("','", $providers) . "'],";
+    $js[] = " 'callback_uri': '" . $callback_uri . "', ";
+    $js[] = " 'force_reauth' : " . ($plugin_type == 'social_link' ? 'true' : 'false') . ", ";
+    $js[] = " 'user_token': '" . (!empty($token) ? $token : '') . "', ";
+    $js[] = " 'css_theme_uri' : '" . (($is_https ? 'https://secure.' : ' http://public.') . 'oneallcdn.com/css/api/socialize/themes/drupal/default.css') . "' ";
+    $js[] = "}); <!-- OneAll.com / " . ucwords(str_replace("_", " ", $plugin_type)) . " for Drupal -->";
+    $js = implode("\n", $js);
+
+    // Add login buttons.
+    drupal_add_js($js, array('type' => 'inline', 'scope' => 'footer'));
+  }
+}
+
+/**
+ * Returns the current url.
+ */
+function social_login_get_current_url($https_enabled = FALSE) {
+  $request_uri = ((!isset($_SERVER['REQUEST_URI'])) ? $_SERVER['PHP_SELF'] : $_SERVER['REQUEST_URI']);
+  $request_port = ((!empty($_SERVER['SERVER_PORT']) AND $_SERVER['SERVER_PORT'] <> '80') ? (":" . $_SERVER['SERVER_PORT']) : '');
+  $request_protocol = ($https_enabled ? 'https' : 'http') . "://";
+  $redirect_to = $request_protocol . $_SERVER['SERVER_NAME'] . $request_port . $request_uri;
+  return $redirect_to;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function social_login_widget_block_info() {
+  $blocks['social_login_widget'] = array(
+    'info' => t('OneAll Social Login'),
+    'weight' => 0,
+  );
+  return $blocks;
+}
+
+
+/**
+ * Implements hook_block_view().
+ */
+function social_login_widget_block_view($delta = '') {
+  $block = array();
+  if ($delta == 'social_login_widget') {
+
+    // Read Settings.
+    $settings = social_login_widget_get_settings();
+
+    // Read User.
+    global $user;
+
+    // Hide the block for logged in users.
+    if (empty($user->uid) OR $settings['block_icons_loggedin'] <> 'hide') {
+      // Container to add the buttons to.
+      $containerid = 'social_login_providers_' . rand(99999, 9999999);
+
+      // Add Javascript.
+      social_login_widget_add_js_plugin('social_login', $settings['api_subdomain'], $settings['enabled_providers'], $containerid);
+
+      // Setup Block.
+      $block['subject'] = t('Login with your Social Network account.');
+      $block['content'] = theme('social_login_widget_provider_container_block', array('containerid' => $containerid));
+    }
+  }
+  return $block;
+}
+
+
+/**
+ * Implements hook_form_alter().
+ */
+function social_login_widget_form_alter(&$form, &$form_state) {
+
+  switch ($form['#form_id']) {
+    // Hook into login page.
+    case 'user_login':
+      social_login_widget_show_providers($form, $form_state, 'login_page');
+      break;
+
+    // Hook into edit profile page.
+    case 'user_profile_form':
+      social_login_widget_show_providers($form, $form_state, 'edit_profile_page');
+      break;
+
+    // Hook into registration page.
+    default:
+      if (isset($form['#user_category']) && $form['#user_category'] == 'register') {
+        social_login_widget_show_providers($form, $form_state, 'registration_page');
+      }
+      break;
+  }
+}
+
+
+/**
+ * Implements hook_form_USER_LOGIN_BLOCK_alter().
+ */
+function social_login_widget_form_user_login_block_alter(&$form, &$form_state) {
+  social_login_widget_show_providers($form, $form_state, 'side_panel');
+}
+
+
+/**
+ * Generic function called to display the social providers.
+ */
+function social_login_widget_show_providers(&$form, &$form_state, $target) {
+
+  // Read Settings.
+  $settings = social_login_widget_get_settings();
+
+  // Enabled?
+  $widget_enabled = FALSE;
+
+  // Show in fieldset?
+  $widget_in_fieldset = FALSE;
+
+  // Unique token.
+  $token = '';
+
+  // Where are the buttons shown?
+  switch ($target) {
+    // Side Panel.
+    case 'side_panel':
+      $plugin_type = 'social_login';
+
+      // Do not show if disabled by admin.
+      if ($settings['side_panel_icons'] <> 'disable') {
+        $widget_enabled = TRUE;
+        $title = $settings['side_panel_caption'];
+        $position = ($settings['side_panel_icons'] == 'below' ? 100 : (-100));
+      }
+      break;
+
+    // Registration Page.
+    case 'registration_page':
+      $plugin_type = 'social_login';
+
+      // Do not show if there is already a session.
+      if (empty($_SESSION['social_login_session_open'])) {
+        // Do not show if disabled by admin.
+        if ($settings['registration_page_icons'] <> 'disable') {
+          $widget_enabled = TRUE;
+          $title = $settings['registration_page_caption'];
+          $position = ($settings['registration_page_icons'] == 'below' ? 100 : (-100));
+        }
+      }
+      break;
+
+    // Login Page.
+    case 'login_page':
+      $plugin_type = 'social_login';
+
+      // Do not show if there is already a session.
+      if (empty($_SESSION['social_login_session_open'])) {
+        // Do not show if disabled by admin.
+        if ($settings['login_page_icons'] <> 'disable') {
+          $widget_enabled = TRUE;
+          $title = $settings['login_page_caption'];
+          $position = ($settings['login_page_icons'] == 'above' ? -100 : 100);
+        }
+      }
+      break;
+
+    // Edit Profile Page.
+    case 'edit_profile_page':
+      if ($settings['profile_page_icons'] <> 'disable') {
+        // Needed to retrieve his token.
+        global $user;
+
+        // Unique token.
+        $token = social_login_core_get_user_token_for_uid($user->uid);
+
+        // Type of plugin.
+        $plugin_type = 'social_link';
+
+        // Enable Widget.
+        $widget_enabled = TRUE;
+
+        // Show in fieldset.
+        $widget_in_fieldset = TRUE;
+
+        // Title.
+        $title = $settings['profile_page_caption'];
+
+        // Display on top.
+        $position = ($settings['profile_page_icons'] == 'above' ? -100 : 100);
+      }
+      break;
+
+    // Unkown.
+    default:
+      $plugin_type = 'social_login';
+
+      // Widget is enabled.
+      $widget_enabled = TRUE;
+
+      // Default title.
+      $title = t('Login with');
+
+      // Display on botton.
+      $position = 100;
+      break;
+  }
+
+  // Enabled.
+  if ($widget_enabled === TRUE) {
+    // Container to add the buttons to.
+    $containerid = 'social_login_providers_' . rand(99999, 9999999);
+
+    // Add javascript to display the plugin.
+    social_login_widget_add_js_plugin($plugin_type, $settings['api_subdomain'], $settings['enabled_providers'], $containerid, $token);
+
+    // Show in fieldset.
+    if ($widget_in_fieldset) {
+      $form['social_login_' . $containerid] = array(
+        '#type' => 'fieldset',
+        '#title' => $title,
+        '#weight' => $position,
+      );
+      $form['social_login_' . $containerid]['inner_block'] = array(
+        '#prefix' => theme('social_login_widget_provider_container', array('containerid' => $containerid, 'label' => '')),
+      );
+    }
+    else {
+      $form['social_login_' . $containerid] = array(
+        '#prefix' => theme('social_login_widget_provider_container', array('containerid' => $containerid, 'label' => $title)),
+        '#weight' => $position,
+      );
+    }
+  }
+}
+
+
+/**
+ * Implements hook_theme().
+ */
+function social_login_widget_theme() {
+  return array(
+    'social_login_widget_provider_container' => array(
+      'template' => 'provider_container',
+      'path' => drupal_get_path('module', 'social_login_widget') . '/theme',
+      'variables' => array(
+        'containerid' => NULL,
+        'label' => NULL,
+      ),
+    ),
+    'social_login_widget_provider_container_block' => array(
+      'template' => 'block_provider_container',
+      'path' => drupal_get_path('module', 'social_login_widget') . '/theme',
+      'variables' => array(
+        'containerid' => NULL,
+      ),
+    ),
+  );
+}
+
+
+/**
+ * Returns the settings.
+ */
+function social_login_widget_get_settings() {
+
+  // Container.
+  $settings = array();
+  $settings['enabled_providers'] = array();
+
+  // Default values.
+  $settings['api_subdomain'] = '';
+  $settings['api_key'] = '';
+  $settings['api_secret'] = '';
+
+  $settings['http_handler'] = 'curl';
+  $settings['http_protocol'] = 'https';
+
+  $settings['side_panel_icons'] = 'below';
+  $settings['side_panel_caption'] = '';
+
+  $settings['registration_page_icons'] = 'below';
+  $settings['registration_page_caption'] = '';
+
+  $settings['registration_retrieve_avatars'] = 'enable';
+  $settings['registration_approval'] = 'inherit';
+  $settings['registration_method'] = 'manual';
+
+  $settings['login_page_icons'] = 'above';
+  $settings['login_page_caption'] = '';
+
+  $settings['profile_page_icons'] = 'below';
+  $settings['profile_page_caption'] = '';
+
+  $settings['block_icons_loggedin'] = 'hide';
+
+  // Read settings.
+  $results = db_query("SELECT setting, value FROM {oneall_social_login_settings}");
+  foreach ($results as $result) {
+    $settings[$result->setting] = $result->value;
+    if (drupal_substr($result->setting, 0, 8) == 'provider' && !empty($result->value)) {
+      $settings['enabled_providers'][] = drupal_substr($result->setting, 9, drupal_strlen($result->setting));
+    }
+  }
+  return $settings;
+}
