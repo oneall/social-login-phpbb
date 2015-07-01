@@ -671,7 +671,7 @@ function social_login_core_user_login(&$edit, $account) {
 		  if ($mod !== 'social_login_core') {
 			  $fun = $mod . '_user_login';
 			  if (function_exists($fun)) {
-				  $fun($edit, $account);
+				  $fun($edit, $account, NULL);
 			  }
 		  }
       }
