@@ -49,10 +49,17 @@ class listener implements EventSubscriberInterface
 	// @var \phpbb\user
 	protected $user;
 
+	// @var string php_root_path
+	protected $phpbb_root_path;
+
+	// @var string phpEx
+	protected $php_ext;
+
+
 	/**
 	 * Constructor
 	 */
-	public function __construct (\phpbb\config\config $config,\phpbb\config\db_text $config_text,\phpbb\controller\helper $controller_helper,\phpbb\request\request $request,\phpbb\template\template $template,\phpbb\user $user)
+	public function __construct (\phpbb\config\config $config,\phpbb\config\db_text $config_text,\phpbb\controller\helper $controller_helper,\phpbb\request\request $request,\phpbb\template\template $template,\phpbb\user $user, $phpbb_root_path, $php_ext)
 	{
 		$this->config = $config;
 		$this->config_text = $config_text;
@@ -60,6 +67,8 @@ class listener implements EventSubscriberInterface
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
 		$this->oa_user = null;  // is the user logged in with oneall.
 	}
 
@@ -179,7 +188,6 @@ class listener implements EventSubscriberInterface
 						}
 					}
 				}
-
 				// Embed on the login page ?
 				elseif (request_var ('mode', '') == 'login')
 				{
@@ -216,11 +224,12 @@ class listener implements EventSubscriberInterface
 						}
 					}
 				}
-				// Embed on any other page ?
-				else
+				// Embed on any other page, except the validation page ?
+				elseif (! strpos ($this->user->page['page_name'], 
+							substr ($this->controller_helper->route ("oneall_sociallogin_validate"), strlen ('/app.php'))))
 				{
 					// Can be changed in the social login settings.
-					if ( ! isset ($this->config ['oa_social_login_other_page_disable']) || $this->config ['oa_social_login_other_page_disable'] == '0')
+					if (empty ($this->config ['oa_social_login_other_page_disable']))
 					{
 						// Trigger icons.
 						$this->template->assign_var ('OA_SOCIAL_LOGIN_EMBED_SOCIAL_LOGIN', 1);
@@ -241,11 +250,96 @@ class listener implements EventSubscriberInterface
 	 */
 	public function check_callback ()
 	{
-		// These values are returned by OneAll
 		if (strlen ((request_var ('oa_action', ''))) > 0 && strlen (request_var ('connection_token', '')) > 0)
 		{
 			$sociallogin = new \oneall\sociallogin\acp\sociallogin_acp_module ();
-			$sociallogin->handle_callback ();
+			$to_validate = $sociallogin->handle_callback ();
+			if (is_array ($to_validate))
+			{
+				$to_validate['session_id'] = $this->user->data['session_id'];
+				$to_validate['redirect'] = $sociallogin->get_current_url ();
+				$sociallogin->put_session_validation_data ($to_validate);
+				redirect ($this->controller_helper->route ("oneall_sociallogin_validate"));
+			}
+		}
+	}
+
+	/**
+	 * Validation form
+	 * See config/routing.yml
+	 */
+	public function handle ()
+	{
+		$this->user->add_lang ('ucp');
+		$sociallogin = new \oneall\sociallogin\acp\sociallogin_acp_module ();
+		if (strlen ((request_var ('submit', ''))) > 0)
+		{
+			$login = request_var ('username', '');
+			$email = request_var ('email', '');
+			$validation_error = array ();
+			if (! function_exists ('validate_data'))
+			{
+				include ($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
+			}
+			$user_input = array (
+				'username' => $login,
+				'email' => $email,
+			);
+			$user_input_checks = array (
+				'username' => array (
+					array ('username'),
+					array ('string', false, $this->config['min_name_chars'], $this->config['max_name_chars']),
+				),
+				'email' => array (
+					array ('user_email'),
+					array ('string', false, 6, 60),
+				),
+			);
+			$validation_error = validate_data ($user_input, $user_input_checks);
+			if ($validation_error)
+			{
+				foreach ($validation_error as $msgs) 
+				{
+					$this->template->assign_block_vars ('errors', array ('msg' => $this->user->lang ($msgs)));
+				}
+				$this->template->assign_vars (array (
+					'ERROR' => true,
+					'OA_SOCIAL_LOGIN_VALIDATION_USER_LOGIN' => $login,
+					'OA_SOCIAL_LOGIN_USERNAME_EXPLAIN' => $this->user->lang (
+						$this->config['allow_name_chars'] . '_EXPLAIN', 
+						$this->user->lang ('CHARACTERS', (int) $this->config['min_name_chars']), 
+						$this->user->lang ('CHARACTERS', (int) $this->config['max_name_chars'])),
+					'OA_SOCIAL_LOGIN_VALIDATION_USER_EMAIL' => $email,
+					'OA_SOCIAL_LOGIN_VALIDATION_NO_EMAIL' => empty ($email),
+					'OA_SOCIAL_LOGIN_VALIDATE' => $this->controller_helper->route ("oneall_sociallogin_validate") 
+				));
+				return $this->controller_helper->render ('sociallogin_validation_body.html', 'validation');
+			}
+			$val = $sociallogin->get_session_validation_data ($this->user->data['session_id']);
+			if ($val)
+			{
+				$sociallogin->delete_session_validation_data ($this->user->data['session_id']);
+				$val['user_login'] = $login;
+				$val['user_email'] = $email;
+				$sociallogin->social_login_resume_handle_callback ($val);
+			}
+			trigger_error ($this->user->lang ('OA_SOCIAL_LOGIN_VALIDATION_SESSION_ERROR'));
+		}
+		else
+		{
+			$val = $sociallogin->get_session_validation_data ($this->user->data['session_id']);
+			$this->template->assign_vars (array (
+				'OA_SOCIAL_LOGIN_VALIDATION_USER_LOGIN' => $val ? $val['user_login'] : '',
+				'OA_SOCIAL_LOGIN_USERNAME_EXPLAIN' => $this->user->lang (
+					$this->config['allow_name_chars'] . '_EXPLAIN', 
+					$this->user->lang ('CHARACTERS', (int) $this->config['min_name_chars']), 
+					$this->user->lang ('CHARACTERS', (int) $this->config['max_name_chars'])),
+				'OA_SOCIAL_LOGIN_VALIDATION_USER_EMAIL' => $val ? $val['user_email'] : '',
+				'OA_SOCIAL_LOGIN_VALIDATION_NO_EMAIL' => $val ? empty ($val['user_email']) : false,
+				'OA_SOCIAL_LOGIN_VALIDATE' => $this->controller_helper->route ("oneall_sociallogin_validate"),
+				)
+			);
+			return $this->controller_helper->render ('sociallogin_validation_body.html', 'validation');
 		}
 	}
 }
