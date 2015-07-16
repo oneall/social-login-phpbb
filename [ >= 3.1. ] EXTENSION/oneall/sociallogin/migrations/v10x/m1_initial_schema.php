@@ -132,6 +132,54 @@ class m1_initial_schema extends \phpbb\db\migration\migration
 							'oasl_user_id'
 						)
 					)
+				),
+				$this->table_prefix . 'oasl_session' => array (
+					'COLUMNS' => array (
+						'oasl_session_id' => array (
+							'UINT',
+							NULL,
+							'auto_increment'
+						),
+						'session_id' => array (
+							'CHAR:32',
+							''
+						),
+						'user_login' => array (
+							'VCHAR:255',
+							''
+						),
+						'user_email' => array (
+							'VCHAR:255',
+							''
+						),
+						'user_token' => array (
+							'VCHAR:255',
+							''
+						),
+						'identity_token' => array (
+							'VCHAR:255',
+							''
+						),
+						'identity_provider' => array (
+							'VCHAR:255',
+							''
+						),
+						'redirect' => array (
+							'VCHAR:255',
+							''
+						),
+						'date_creation' => array (
+							'TIMESTAMP',
+							0
+						)
+					),
+					'PRIMARY_KEY' => 'oasl_session_id',
+					'KEYS' => array (
+						'oases' => array (
+							'UNIQUE',
+							'oasl_session_id'
+						)
+					)
 				)
 			)
 		);
@@ -146,7 +194,8 @@ class m1_initial_schema extends \phpbb\db\migration\migration
 			'drop_tables' => array (
 				$this->table_prefix . 'oasl_user',
 				$this->table_prefix . 'oasl_login_token',
-				$this->table_prefix . 'oasl_identity'
+				$this->table_prefix . 'oasl_identity',
+				$this->table_prefix . 'oasl_session'
 			)
 		);
 	}

@@ -109,6 +109,20 @@ class sociallogin_acp_module
 		// Social Networks.
 		$oa_social_login_providers = (isset ($config ['oa_social_login_providers']) ? explode (",", $config ['oa_social_login_providers']) : array ());
 
+		// Profile Validation. 
+		if (isset ($config ['oa_social_login_validate']) && $config ['oa_social_login_validate'] == '1')
+		{
+			$oa_social_login_validate = 1;
+		}
+		elseif (isset ($config ['oa_social_login_validate']) && $config ['oa_social_login_validate'] == '2')
+		{
+			$oa_social_login_validate = 2;
+		}
+		else
+		{
+			$oa_social_login_validate = 0;
+		}
+
 		// Social Link.
 		$oa_social_login_disable_linking = ((isset ($config ['oa_social_login_disable_linking']) && $config ['oa_social_login_disable_linking'] == '1') ? '1' : '0');
 
@@ -181,6 +195,19 @@ class sociallogin_acp_module
 			$oa_social_login_disable_linking = ((request_var ('oa_social_login_disable_linking', 0) == 1) ? 1 : 0);
 			$oa_social_login_avatars_enable = ((request_var ('oa_social_login_avatars_enable', 0) == 1) ? 1 : 0);
 			$oa_social_login_redirect = request_var ('oa_social_login_redirect', '');
+			$oa_social_login_validate_tmp = request_var ('oa_social_login_validate', 0);
+			if ($oa_social_login_validate_tmp == '1')
+			{
+				$oa_social_login_validate = 1;
+			}
+			elseif ($oa_social_login_validate_tmp == '2')
+			{
+				$oa_social_login_validate = 2;
+			}
+			else
+			{
+				$oa_social_login_validate = 0;
+			}
 
 			// Login page, default 1.
 			$oa_social_login_login_page_disable = ((request_var ('oa_social_login_login_page_disable', 0) == 1) ? 1 : 0);
@@ -217,6 +244,7 @@ class sociallogin_acp_module
 			set_config ('oa_social_login_index_page_caption', $oa_social_login_index_page_caption);
 			set_config ('oa_social_login_other_page_disable', $oa_social_login_other_page_disable);
 			set_config ('oa_social_login_other_page_caption', $oa_social_login_other_page_caption);
+			set_config ('oa_social_login_validate', $oa_social_login_validate);
 		}
 
 		// Setup Social Network Vars
@@ -234,6 +262,7 @@ class sociallogin_acp_module
 			'U_ACTION' => $this->u_action,
 			'CURRENT_SID' => $user->data ['session_id'],
 			'OA_SOCIAL_LOGIN_SETTINGS_SAVED' => $oa_social_login_settings_saved,
+			'OA_SOCIAL_LOGIN_VALIDATE' => $oa_social_login_validate,
 			'OA_SOCIAL_LOGIN_DISABLE' => ($oa_social_login_disable == '1'),
 			'OA_SOCIAL_LOGIN_DISABLE_LINKING' => ($oa_social_login_disable_linking == '1'),
 			'OA_SOCIAL_LOGIN_AVATARS_ENABLE' => ($oa_social_login_avatars_enable == '1'),
@@ -593,6 +622,50 @@ class sociallogin_acp_module
 		return false;
 	}
 
+	/** 
+	 * Insert temporary login and email for validation in oasl_session table
+	 */
+	public function put_session_validation_data ($validation)
+	{
+		global $db, $table_prefix;
+		$this->delete_session_validation_data ($validation['session_id']);
+		$sql_arr = array (
+			'session_id' => $validation['session_id'],
+			'user_login' => $validation['user_login'],
+			'user_email' => $validation['user_email'],
+			'user_token' => $validation['user_token'],
+			'identity_token' => $validation['identity_token'],
+			'identity_provider' => $validation['identity_provider'],
+			'redirect' => $validation['redirect'],
+			'date_creation' => time ()
+		);
+		$sql = "INSERT INTO " . $table_prefix . 'oasl_session' . " " . $db->sql_build_array ('INSERT', $sql_arr);
+		$query = $db->sql_query ($sql);
+	}
+
+	/** 
+	 * Retrieve temporary login, email for validation
+	 */
+	public function get_session_validation_data ($session_id)
+	{
+		global $db, $table_prefix;
+		$sql = "SELECT * FROM " . $table_prefix . 'oasl_session' . " WHERE session_id = '" . $db->sql_escape ($session_id) . "'";
+		$query = $db->sql_query ($sql);
+		$result = $db->sql_fetchrow ($query);
+		$db->sql_freeresult ($query);
+		return $result;
+	}
+
+	/** 
+	 * Delete temporary login, email for validation
+	 */
+	public function delete_session_validation_data ($session_id)
+	{
+		global $db, $table_prefix;
+		$sql = "DELETE FROM " . $table_prefix . "oasl_session" . 
+				" WHERE session_id = '" . $db->sql_escape ($session_id) . "' OR date_creation < NOW() - INTERVAL 120 MINUTE";
+		$query = $db->sql_query ($sql);
+	}
 
 	/**
 	 * Generates a random email address
@@ -1015,6 +1088,9 @@ class sociallogin_acp_module
 			),
 			'youtube' => array (
 				'name' => 'YouTube'
+			),
+			'battlenet' => array (
+				'name' => 'BattleNet'
 			)
 		);
 		return $providers;
@@ -1813,304 +1889,10 @@ class sociallogin_acp_module
 						// Extract data
 						if (($user_data = $this->extract_social_network_profile ($result)) !== false)
 						{
-							// This is the user to process
-							$user_id = null;
-
 							// Social Login
 							if ($oa_action == 'social_login')
 							{
-								// Get user_id by token.
-								$user_id_tmp = $this->get_user_id_for_user_token ($user_data ['user_token']);
-
-								// We already have a user for this token.
-								if (is_numeric ($user_id_tmp))
-								{
-									// Process this user.
-									$user_id = $user_id_tmp;
-
-									// Load user data.
-									$user_profile = $this->get_user_data_by_user_id ($user_id);
-
-									// The user account needs to be activated.
-									if (! empty ($user_profile ['user_inactive_reason']))
-									{
-										if ($config ['require_activation'] == USER_ACTIVATION_ADMIN)
-										{
-											$error_message = $user->lang ['OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_ADMIN'];
-										}
-										else
-										{
-											$error_message = $user->lang ['OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_OTHER'];
-										}
-									}
-								}
-								// No user has been found for this token.
-								else
-								{
-									// Make sur that account linking is enabled.
-									if (empty ($config ['oa_social_login_disable_linking']))
-									{
-										// Make sure that the email has been verified.
-										if (! empty ($user_data ['user_email']) && isset ($user_data ['user_email_is_verified']) && $user_data ['user_email_is_verified'] === true)
-										{
-											// Read existing user
-											$user_id_tmp = $this->get_user_id_by_email ($user_data ['user_email']);
-
-											// Existing user found
-											if (is_numeric ($user_id_tmp))
-											{
-												// Link the user to this social network.
-												if ($this->link_tokens_to_user_id ($user_id_tmp, $user_data ['user_token'], $user_data ['identity_token'], $user_data ['identity_provider']) !== false)
-												{
-													$user_id = $user_id_tmp;
-												}
-											}
-										}
-									}
-
-									// No user has been linked to this token yet.
-									if (! is_numeric ($user_id))
-									{
-										// User functions
-										if (! function_exists ('user_add'))
-										{
-											require ($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-										}
-
-										// Username is mandatory.
-										if (! isset ($user_data ['user_login']) || strlen (trim ($user_data ['user_login'])) == 0)
-										{
-											$user_data ['user_login'] = $user_data ['identity_provider'] . 'User';
-										}
-
-										// Username must be unique.
-										if ($this->get_user_id_by_username ($user_data ['user_login']) !== false)
-										{
-											$i = 1;
-											$user_login_tmp = $user_data ['user_login'] . ($i);
-											while ($this->get_user_id_by_username ($user_login_tmp) !== false)
-											{
-												$user_login_tmp = $user_data ['user_login'] . ($i++);
-											}
-											$user_data ['user_login'] = $user_login_tmp;
-										}
-
-										// Email must be unique
-										if (! isset ($user_data ['user_email']) || $this->get_user_id_by_email ($user_data ['user_email']) !== false)
-										{
-											// Create a random email
-											$user_data ['user_email'] = $this->generate_random_email ();
-
-											// This is a random email (the flag is used further down)
-											$user_random_email = true;
-										}
-										else
-										{
-											// This is not a random email.
-											$user_random_email = false;
-										}
-
-										// Detect the default language of the forum.
-										if (! empty ($config ['default_lang']))
-										{
-											$user_row ['user_lang'] = trim ($config ['default_lang']);
-										}
-										// Use english
-										else
-										{
-											$user_row ['user_lang'] = 'en';
-										}
-
-										// Default group_id is required.
-										$group_id = $this->get_default_group_id ();
-
-										// No group has been set.
-										if (! is_numeric ($group_id))
-										{
-											trigger_error ('NO_GROUP');
-										}
-
-										// Activation Required.
-										if (! $user_random_email && ($config ['require_activation'] == USER_ACTIVATION_SELF || $config ['require_activation'] == USER_ACTIVATION_ADMIN) && $config ['email_enable'])
-										{
-											$user_type = USER_INACTIVE;
-											$user_actkey = gen_rand_string (mt_rand (6, 10));
-
-											$user_inactive_reason = INACTIVE_REGISTER;
-											$user_inactive_time = time ();
-										}
-										// No Activation Required.
-										else
-										{
-											$user_type = USER_NORMAL;
-											$user_actkey = '';
-
-											$user_inactive_reason = 0;
-											$user_inactive_time = 0;
-										}
-
-										// Generate a random password.
-										$new_password = $this->generate_hash ($config ['min_pass_chars'] + rand (3, 5));
-
-										// Setup user details.
-										$user_row = array (
-											'group_id' => $group_id,
-											'user_type' => $user_type,
-											'user_actkey' => $user_actkey,
-											'user_password' => phpbb_hash ($new_password),
-											'user_ip' => $user->ip,
-											'user_inactive_reason' => $user_inactive_reason,
-											'user_inactive_time' => $user_inactive_time,
-											'user_lastvisit' => time (),
-											'user_lang' => $user_row ['user_lang'],
-											'username' => $user_data ['user_login'],
-											'user_email' => $user_data ['user_email']
-										);
-
-										// Adds the user to the Newly registered users group.
-										if ($config['new_member_post_limit'])
-										{
-											$user_row['user_new'] = 1;
-										}
-
-										// Register user.
-										$user_id_tmp = user_add ($user_row, false);
-
-										// This should not happen, because the required variables are listed above.
-										if ($user_id_tmp === false)
-										{
-											trigger_error ('NO_USER', E_USER_ERROR);
-										}
-										// User added successfully.
-										else
-										{
-											// Link the user to this social network.
-											if ($this->link_tokens_to_user_id ($user_id_tmp, $user_data ['user_token'], $user_data ['identity_token'], $user_data ['identity_provider']) !== false)
-											{
-												// Process this user.
-												$user_id = $user_id_tmp;
-
-												// Add the avatar
-												if ($config ['oa_social_login_avatars_enable'] == 0)
-												{
-													$this->upload_user_avatar ($user_id, $user_data);
-												}
-
-												// Send Email (Only if it is not a random email address).
-												if ($config ['email_enable'] && ! $user_random_email)
-												{
-													// Do we have to include messenger?
-													require ($phpbb_root_path . "includes/functions_messenger." . $phpEx);
-
-													// Activation Type.
-													if ($config ['require_activation'] == USER_ACTIVATION_SELF)
-													{
-														$error_message = $user->lang ['OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_OTHER'];
-														$email_template = 'user_welcome_inactive';
-													}
-													else if ($config ['require_activation'] == USER_ACTIVATION_ADMIN)
-													{
-														$error_message = $user->lang ['OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_ADMIN'];
-														$email_template = 'admin_welcome_inactive';
-													}
-													else
-													{
-														$email_template = 'user_welcome';
-													}
-
-													// Url for activation.
-													$server_url = generate_board_url ();
-
-													// Send email to new user
-													$messenger = new \messenger (false);
-													$messenger->template ($email_template, $user_row ['user_lang']);
-													$messenger->to ($user_row ['user_email'], $user_row ['username']);
-													$messenger->set_addresses ($user_row);
-													$messenger->anti_abuse_headers ($config, $user);
-													$messenger->assign_vars (array (
-														'WELCOME_MSG' => htmlspecialchars_decode (sprintf ($user->lang ['WELCOME_SUBJECT'], $config ['sitename'])),
-														'USERNAME' => htmlspecialchars_decode ($user_row ['username']),
-														'PASSWORD' => htmlspecialchars_decode ($new_password),
-														'U_ACTIVATE' => $server_url . '/ucp.' . $phpEx . '?mode=activate&u=' . $user_id . '&k=' . $user_actkey
-													));
-													$messenger->send (NOTIFY_EMAIL);
-
-													add_log ('admin', 'LOG_USER_REACTIVATE', $user_row ['username']);
-													add_log ('user', $user_id, 'LOG_USER_REACTIVATE_USER');
-
-													$messenger->save_queue ();
-
-													// Send email to administrators.
-													if ($config ['require_activation'] == USER_ACTIVATION_ADMIN)
-													{
-														// Grab an array of user_id's with a_user permissions ... these users can activate a user.
-														$acl_admins = $auth->acl_get_list (false, 'a_user', false);
-														$acl_admins = (! empty ($acl_admins [0] ['a_user'])) ? $acl_admins [0] ['a_user'] : array ();
-
-														// Read administrator data.
-														$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type FROM ' . USERS_TABLE . ' WHERE user_type = ' . USER_FOUNDER;
-
-														if (is_array ($acl_admins) && count ($acl_admins) > 0)
-														{
-															$sql .= ' OR ' . $db->sql_in_set ('user_id', $acl_admins);
-														}
-
-														$query = $db->sql_query ($sql);
-														while ($row = $db->sql_fetchrow ($query))
-														{
-															$messenger->template ('admin_activate', $row ['user_lang']);
-															$messenger->to ($row ['user_email'], $row ['username']);
-															$messenger->im ($row ['user_jabber'], $row ['username']);
-															$messenger->set_addresses ($user_row);
-															$messenger->assign_vars (array (
-																'USERNAME' => htmlspecialchars_decode ($user_row ['username']),
-																'U_USER_DETAILS' => $server_url . '/memberlist.' . $phpEx . '?mode=viewprofile&u=' . $user_id,
-																'U_ACTIVATE' => $server_url . '/ucp.' . $phpEx . '?mode=activate&u=' . $user_id . '&k=' . $user_actkey
-															));
-
-															$messenger->send ($row ['user_notify_type']);
-														}
-														$db->sql_freeresult ($query);
-													}
-												}
-											}
-										}
-									}
-								}
-
-								// Display an error message
-								if (isset ($error_message))
-								{
-									$error_message = $error_message . '<br /><br />' . sprintf ($user->lang ['RETURN_INDEX'], '<a href="' . append_sid ("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
-									trigger_error ($error_message);
-								}
-								// Process
-								else
-								{
-									if (isset ($user_id) && is_numeric ($user_id))
-									{
-										// Update statistics
-										$this->count_login_identity_token ($user_data ['identity_token']);
-
-										// Log the user in
-										$this->do_login ($user_id);
-
-										// Redirect to a custom page
-										if (! empty ($config ['oa_social_login_redirect']))
-										{
-											redirect ($config ['oa_social_login_redirect'], false, true);
-										}
-
-										// Do not stay on the login/registration page
-										if (in_array (request_var ('mode', ''), array ('login', 'register')))
-										{
-											redirect (append_sid ($phpbb_root_path . 'index.' . $phpEx));
-										}
-
-										// Redirect to the same page
-										redirect (append_sid(self::get_current_url ()));
-									}
-								}
+								return $this->social_login_handle_callback ($user_data);
 							}
 							// Social Link
 							elseif ($oa_action == 'social_link')
@@ -2176,7 +1958,388 @@ class sociallogin_acp_module
 		}
 	}
 
-/**
+
+	/**
+	 * Handle callback for social login
+	 */
+	protected function social_login_handle_callback ($user_data)
+	{
+		global $db, $auth, $user, $config, $template, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+
+		$error_message = null;
+		$user_id = null;
+
+		// Get user_id by token.
+		$user_id_tmp = $this->get_user_id_for_user_token ($user_data ['user_token']);
+
+		// We already have a user for this token.
+		if (is_numeric ($user_id_tmp))
+		{
+			// Process this user.
+			$user_id = $user_id_tmp;
+
+			// Load user data.
+			$user_profile = $this->get_user_data_by_user_id ($user_id);
+
+			// The user account needs to be activated.
+			if (! empty ($user_profile ['user_inactive_reason']))
+			{
+				if ($config ['require_activation'] == USER_ACTIVATION_ADMIN)
+				{
+					$error_message = $user->lang ['OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_ADMIN'];
+				}
+				else
+				{
+					$error_message = $user->lang ['OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_OTHER'];
+				}
+			}
+		}
+		// No user has been found for this token.
+		else
+		{
+			// Make sure that account linking is enabled.
+			if (empty ($config ['oa_social_login_disable_linking']))
+			{
+				// Make sure that the email has been verified.
+				if (! empty ($user_data ['user_email']) && isset ($user_data ['user_email_is_verified']) && $user_data ['user_email_is_verified'] === true)
+				{
+					// Read existing user
+					$user_id_tmp = $this->get_user_id_by_email ($user_data ['user_email']);
+
+					// Existing user found
+					if (is_numeric ($user_id_tmp))
+					{
+						// Link the user to this social network.
+						if ($this->link_tokens_to_user_id ($user_id_tmp, $user_data ['user_token'], $user_data ['identity_token'], $user_data ['identity_provider']) !== false)
+						{
+							$user_id = $user_id_tmp;
+						}
+					}
+				}
+			}
+			// No user has been linked to this token yet.
+			if (! is_numeric ($user_id))
+			{
+				// User functions
+				if (! function_exists ('user_add'))
+				{
+					require ($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				}
+
+				// Will validation be required ('1' means always).
+				$do_validation = $config['oa_social_login_validate'] === '1' ? true : false;
+
+				// Username is mandatory.
+				if (! isset ($user_data ['user_login']) || strlen (trim ($user_data ['user_login'])) == 0)
+				{
+					$user_data ['user_login'] = $user_data ['identity_provider'] . 'User';
+				}
+				// Username must be unique.
+				if ($this->get_user_id_by_username ($user_data ['user_login']) !== false)
+				{
+					$i = 1;
+					$user_login_tmp = $user_data ['user_login'] . ($i);
+					while ($this->get_user_id_by_username ($user_login_tmp) !== false)
+					{
+						$user_login_tmp = $user_data ['user_login'] . ($i++);
+					}
+					$user_data ['user_login'] = $user_login_tmp;
+					if (! $do_validation && $config['oa_social_login_validate'] !== '0')
+					{
+						$do_validation = true;
+					}
+				}
+
+				if (! $do_validation && $config['oa_social_login_validate'] !== '0' && 
+					(empty ($user_data ['user_email']) || 
+						(! empty ($user_data ['user_email']) && 
+						$this->get_user_id_by_email ($user_data ['user_email']) !== false && 
+						$config['oa_social_login_disable_linking'] === '1')
+					))
+				{
+					$do_validation = true;
+				}
+				// Email must be unique
+				if (empty ($user_data ['user_email']) || $this->get_user_id_by_email ($user_data ['user_email']) !== false)
+				{
+					// Create a random email
+					$user_data ['user_email'] = $this->generate_random_email ();
+
+					// This is a random email (the flag is used further down)
+					$user_random_email = true;
+				}
+				else
+				{
+					// This is not a random email.
+					$user_random_email = false;
+				}
+				// Return to controller
+				if ($do_validation === true)
+				{
+					return array (
+							'user_login' => $user_data['user_login'],
+							'user_email' => $user_random_email ? '' : $user_data['user_email'],
+							'user_token' => $user_data['user_token'],
+							'identity_token' => $user_data['identity_token'],
+							'identity_provider' => $user_data['identity_provider'],
+					);
+				}
+				list ($error_message, $user_id) = $this->social_login_user_add ($user_random_email, $user_data);
+			}
+		}
+		$this->social_login_redirect ($error_message, $user_id, $user_data);
+	}
+
+
+	/**
+	 * Complete social login callback once credentials are validated.
+	 */
+	public function social_login_resume_handle_callback ($val_userdata)
+	{
+		$user_data = $val_userdata;
+		unset ($user_data['session_id']);
+		list ($error_message, $user_id) = $this->social_login_user_add (false, $user_data);
+		$this->social_login_redirect ($error_message, $user_id, $user_data);
+	}
+
+
+	/**
+	 * Continue social login callback once credentials validated.
+	 */
+	protected function social_login_user_add ($user_random_email, $user_data)
+	{
+		global $db, $auth, $user, $config, $template, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+
+		$error_message = null;
+		$user_id = null;
+
+		// User functions
+		if (! function_exists ('user_add'))
+		{
+			require ($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
+		// Detect the default language of the forum.
+		if (! empty ($config ['default_lang']))
+		{
+			$user_row ['user_lang'] = trim ($config ['default_lang']);
+		}
+		// Use english
+		else
+		{
+			$user_row ['user_lang'] = 'en';
+		}
+
+		// Default group_id is required.
+		$group_id = $this->get_default_group_id ();
+
+		// No group has been set.
+		if (! is_numeric ($group_id))
+		{
+			trigger_error ('NO_GROUP');
+		}
+
+		// Activation Required.
+		if (! $user_random_email && ($config ['require_activation'] == USER_ACTIVATION_SELF || $config ['require_activation'] == USER_ACTIVATION_ADMIN) && $config ['email_enable'])
+		{
+			$user_type = USER_INACTIVE;
+			$user_actkey = gen_rand_string (mt_rand (6, 10));
+
+			$user_inactive_reason = INACTIVE_REGISTER;
+			$user_inactive_time = time ();
+		}
+		// No Activation Required.
+		else
+		{
+			$user_type = USER_NORMAL;
+			$user_actkey = '';
+
+			$user_inactive_reason = 0;
+			$user_inactive_time = 0;
+		}
+
+		// Generate a random password.
+		$new_password = $this->generate_hash ($config ['min_pass_chars'] + rand (3, 5));
+
+		// Setup user details.
+		$user_row = array (
+			'group_id' => $group_id,
+			'user_type' => $user_type,
+			'user_actkey' => $user_actkey,
+			'user_password' => phpbb_hash ($new_password),
+			'user_ip' => $user->ip,
+			'user_inactive_reason' => $user_inactive_reason,
+			'user_inactive_time' => $user_inactive_time,
+			'user_lastvisit' => time (),
+			'user_lang' => $user_row ['user_lang'],
+			'username' => $user_data ['user_login'],
+			'user_email' => $user_data ['user_email']
+		);
+
+		// Adds the user to the Newly registered users group.
+		if ($config['new_member_post_limit'])
+		{
+			$user_row['user_new'] = 1;
+		}
+
+		// Register user.
+		$user_id_tmp = user_add ($user_row, false);
+
+		// This should not happen, because the required variables are listed above.
+		if ($user_id_tmp === false)
+		{
+			trigger_error ('NO_USER', E_USER_ERROR);
+		}
+		// User added successfully.
+		else
+		{
+			// Link the user to this social network.
+			if ($this->link_tokens_to_user_id (	$user_id_tmp, 
+												$user_data ['user_token'], 
+												$user_data ['identity_token'], 
+												$user_data ['identity_provider']) !== false)
+			{
+				// Process this user.
+				$user_id = $user_id_tmp;
+
+				// Add the avatar
+				if ($config ['oa_social_login_avatars_enable'] == 0)
+				{
+					$this->upload_user_avatar ($user_id, $user_data);
+				}
+
+				// Send Email (Only if it is not a random email address).
+				if ($config ['email_enable'] && ! $user_random_email)
+				{
+					// Do we have to include messenger?
+					require ($phpbb_root_path . "includes/functions_messenger." . $phpEx);
+
+					// Activation Type.
+					if ($config ['require_activation'] == USER_ACTIVATION_SELF)
+					{
+						$error_message = $user->lang ['OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_OTHER'];
+						$email_template = 'user_welcome_inactive';
+					}
+					else if ($config ['require_activation'] == USER_ACTIVATION_ADMIN)
+					{
+						$error_message = $user->lang ['OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_ADMIN'];
+						$email_template = 'admin_welcome_inactive';
+					}
+					else
+					{
+						$email_template = 'user_welcome';
+					}
+
+					// Url for activation.
+					$server_url = generate_board_url ();
+
+					// Send email to new user
+					$messenger = new \messenger (false);
+					$messenger->template ($email_template, $user_row ['user_lang']);
+					$messenger->to ($user_row ['user_email'], $user_row ['username']);
+					$messenger->set_addresses ($user_row);
+					$messenger->anti_abuse_headers ($config, $user);
+					$messenger->assign_vars (array (
+						'WELCOME_MSG' => htmlspecialchars_decode (sprintf ($user->lang ['WELCOME_SUBJECT'], $config ['sitename'])),
+						'USERNAME' => htmlspecialchars_decode ($user_row ['username']),
+						'PASSWORD' => htmlspecialchars_decode ($new_password),
+						'U_ACTIVATE' => $server_url . '/ucp.' . $phpEx . '?mode=activate&u=' . $user_id . '&k=' . $user_actkey
+					));
+					$messenger->send (NOTIFY_EMAIL);
+
+					add_log ('admin', 'LOG_USER_REACTIVATE', $user_row ['username']);
+					add_log ('user', $user_id, 'LOG_USER_REACTIVATE_USER');
+
+					$messenger->save_queue ();
+
+					// Send email to administrators.
+					if ($config ['require_activation'] == USER_ACTIVATION_ADMIN)
+					{
+						// Grab an array of user_id's with a_user permissions ... these users can activate a user.
+						$acl_admins = $auth->acl_get_list (false, 'a_user', false);
+						$acl_admins = (! empty ($acl_admins [0] ['a_user'])) ? $acl_admins [0] ['a_user'] : array ();
+
+						// Read administrator data.
+						$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type FROM ' . USERS_TABLE . ' WHERE user_type = ' . USER_FOUNDER;
+
+						if (is_array ($acl_admins) && count ($acl_admins) > 0)
+						{
+							$sql .= ' OR ' . $db->sql_in_set ('user_id', $acl_admins);
+						}
+
+						$query = $db->sql_query ($sql);
+						while ($row = $db->sql_fetchrow ($query))
+						{
+							$messenger->template ('admin_activate', $row ['user_lang']);
+							$messenger->to ($row ['user_email'], $row ['username']);
+							$messenger->im ($row ['user_jabber'], $row ['username']);
+							$messenger->set_addresses ($user_row);
+							$messenger->assign_vars (array (
+								'USERNAME' => htmlspecialchars_decode ($user_row ['username']),
+								'U_USER_DETAILS' => $server_url . '/memberlist.' . $phpEx . '?mode=viewprofile&u=' . $user_id,
+								'U_ACTIVATE' => $server_url . '/ucp.' . $phpEx . '?mode=activate&u=' . $user_id . '&k=' . $user_actkey
+							));
+
+							$messenger->send ($row ['user_notify_type']);
+						}
+						$db->sql_freeresult ($query);
+					}
+				}
+			}
+			return array ($error_message, $user_id);
+		}
+	}
+
+
+	/**
+	 * Complete callback once credentials validated.
+	 */
+	protected function social_login_redirect ($error_message, $user_id, $user_data)
+	{
+		global $user, $phpbb_root_path, $phpEx;
+
+		// Display an error message
+		if (isset ($error_message))
+		{
+			$error_message = $error_message . '<br /><br />' . sprintf ($user->lang ['RETURN_INDEX'], '<a href="' . append_sid ("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+			trigger_error ($error_message);
+		}
+		// Process
+		else
+		{
+			if (is_numeric ($user_id))
+			{
+				// Update statistics
+				$this->count_login_identity_token ($user_data ['identity_token']);
+
+				// Log the user in
+				$this->do_login ($user_id);
+
+				// Redirect to a custom page
+				if (! empty ($config ['oa_social_login_redirect']))
+				{
+					redirect ($config ['oa_social_login_redirect'], false, true);
+				}
+
+				// Do not stay on the login/registration page
+				if (in_array (request_var ('mode', ''), array ('login', 'register')))
+				{
+					redirect (append_sid ($phpbb_root_path . 'index.' . $phpEx));
+				}
+
+				// If the user validated his credentials, then the original page is in session data:
+				if (isset ($user_data['redirect']))
+				{
+					redirect (append_sid ($user_data['redirect']));
+				}
+
+				// Redirect to the same page
+				redirect (append_sid (self::get_current_url ()));
+			}
+		}
+	}
+
+
+	/**
 	 * Check if the current connection is being made over https
 	 */
 	private static function is_https_on ()
