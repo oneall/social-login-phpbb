@@ -26,7 +26,7 @@ namespace oneall\sociallogin\acp;
 
 class sociallogin_acp_info
 {
-	function module ()
+	public function module ()
 	{
 		return array (
 			'filename' => '\oneall\sociallogin\acp\sociallogin_acp_module',
@@ -34,8 +34,8 @@ class sociallogin_acp_info
 			'modes' => array (
 				'settings' => array (
 					'title' => 'OA_SOCIAL_LOGIN_ACP_SETTINGS',
-					'auth' => 'acl_a_board',
-					'cat' => array ()
+					'auth' => 'ext_oneall/sociallogin && acl_a_board',
+					'cat' => array ('OA_SOCIAL_LOGIN_ACP')
 				)
 			)
 		);
