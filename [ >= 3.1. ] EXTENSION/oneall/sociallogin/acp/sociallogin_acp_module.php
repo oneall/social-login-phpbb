@@ -66,7 +66,6 @@ class sociallogin_acp_module
 	 */
 	public function main ($id, $mode)
 	{
-		// Tasks.
 		switch (request_var ('task', ''))
 		{
 			// Verify API settings.
@@ -94,7 +93,7 @@ class sociallogin_acp_module
 
 		// Set up the page
 		$this->tpl_name = 'sociallogin';
-		$this->page_title = $user->lang ['OA_SOCIAL_LOGIN_SETTINGS'];
+		$this->page_title = $user->lang ['OA_SOCIAL_LOGIN_ACP'];
 
 		// Enable Social Login?
 		$oa_social_login_disable = ((isset ($config ['oa_social_login_disable']) && $config ['oa_social_login_disable'] == '1') ? '1' : '0');
