@@ -1422,17 +1422,23 @@ class sociallogin_acp_module
 	/**
 	 * Extracts the social network data from a result-set returned by the OneAll API.
 	 */
-	public static function extract_social_network_profile ($social_data)
+	public static function extract_social_network_profile ($reply)
 	{
 		// Check API result.
-		if (is_object ($social_data) && property_exists ($social_data, 'http_code') && $social_data->http_code == 200 && property_exists ($social_data, 'http_data'))
+		if (is_object ($reply) && property_exists ($reply, 'http_code') && $reply->http_code == 200 && property_exists ($reply, 'http_data'))
 		{
 			// Decode the social network profile Data.
-			$social_data = json_decode ($social_data->http_data);
+			$social_data = json_decode ($reply->http_data);
 
 			// Make sur that the data has beeen decoded properly
 			if (is_object ($social_data))
 			{
+				// Provider may report an error inside message:
+				if (! empty ($social_data->response->result->status->flag) && $social_data->response->result->status->code >= 400) {
+					error_log ($social_data->response->result->status->info . ' (' . $social_data->response->result->status->code . ')');
+					return false;
+				}
+
 				// Container for user data
 				$data = array ();
 
@@ -1467,8 +1473,7 @@ class sociallogin_acp_module
 
 						// Add identity data.
 						$data ['identity_token'] = $identity->identity_token;
-						$data ['identity_provider'] = $identity->source->name;
-
+						$data ['identity_provider'] = ! empty ($identity->source->name) ? $identity->source->name : '';
 
 						$data ['user_first_name'] = ! empty ($identity->name->givenName) ? $identity->name->givenName : '';
 						$data ['user_last_name'] = ! empty ($identity->name->familyName) ? $identity->name->familyName : '';
@@ -1881,7 +1886,7 @@ class sociallogin_acp_module
 
 					// Make Request.
 					$result = $this->do_api_request ($api_connection_handler, $api_connection_url, $api_credentials);
-
+		
 					// Parse result
 					if (is_object ($result) && property_exists ($result, 'http_code') && $result->http_code == 200)
 					{
