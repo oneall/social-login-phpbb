@@ -2253,25 +2253,28 @@ class sociallogin_acp_module
 					// Send email to administrators.
 					if ($config ['require_activation'] == USER_ACTIVATION_ADMIN)
 					{
+						// Read founders.
+						$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type FROM ' . USERS_TABLE . ' WHERE user_type = ' . USER_FOUNDER;
+						
 						// Grab an array of user_id's with a_user permissions ... these users can activate a user.
 						$acl_admins = $auth->acl_get_list (false, 'a_user', false);
 						$acl_admins = (! empty ($acl_admins [0] ['a_user'])) ? $acl_admins [0] ['a_user'] : array ();
-
-						// Read administrator data.
-						$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type FROM ' . USERS_TABLE . ' WHERE user_type = ' . USER_FOUNDER;
-
+		
+						// Include admins
 						if (is_array ($acl_admins) && count ($acl_admins) > 0)
 						{
 							$sql .= ' OR ' . $db->sql_in_set ('user_id', $acl_admins);
 						}
 
+						// Retrieve founders/admins
 						$query = $db->sql_query ($sql);
+						
+						// Send emails to them
 						while ($row = $db->sql_fetchrow ($query))
 						{
-							$messenger->template ('admin_activate', $row ['user_lang']);
-							$messenger->to ($row ['user_email'], $row ['username']);
-							$messenger->im ($row ['user_jabber'], $row ['username']);
-							$messenger->set_addresses ($user_row);
+							$messenger->template ('admin_activate', $row ['user_lang']);						
+							$messenger->set_addresses ($row);
+							
 							$messenger->assign_vars (array (
 								'USERNAME' => htmlspecialchars_decode ($user_row ['username']),
 								'U_USER_DETAILS' => $server_url . '/memberlist.' . $phpEx . '?mode=viewprofile&u=' . $user_id,
