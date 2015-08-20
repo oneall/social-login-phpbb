@@ -24,8 +24,18 @@
 			</author>
 		</author-group>
 		<github><![CDATA[https://github.com/oneall/social-login-phpbb]]></github>
-		<mod-version>3.6.0</mod-version>
+		<mod-version>3.6.1</mod-version>
 		<history>
+			<entry>
+				<date>2015-08-20</date>
+				<rev-version>3.6.1</rev-version>
+				<changelog lang="en">
+					<change>Verify API Settings fixed</change>			
+				</changelog>
+				<changelog lang="fr">
+					<change>Correction du button pour vérifier la config API</change>			
+				</changelog>
+			</entry>
 			<entry>
 				<date>2014-12-24</date>
 				<rev-version>3.6.0</rev-version>

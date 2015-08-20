@@ -30,7 +30,7 @@ if (! defined ('IN_PHPBB'))
 // Oneall Social Login
 class oa_social_login
 {
-	const OA_SOCIAL_LOGIN_VERSION = '3.6.0';
+	const OA_SOCIAL_LOGIN_VERSION = '3.6.1';
 
 	/**
 	 * Invert CamelCase -> camel_case

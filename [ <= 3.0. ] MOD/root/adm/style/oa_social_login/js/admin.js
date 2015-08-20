@@ -101,15 +101,15 @@ jQuery.noConflict();
 					var key = $('#oa_social_login_api_key').val();
 					var secret = $('#oa_social_login_api_secret').val();
 					var handler = (radio_fsockopen_val === 'fsockopen' ? 'fsockopen' : 'curl');
-					var use_https = (radio_port_443 === '443' ? '1' : '0');
+					var port = (radio_port_443 === '443' ? 443 : 80);			
 					var sid = $('#sid').html();
 
 					var data = {
 					  'api_subdomain' : subdomain,
 					  'api_key' : key,
 					  'api_secret' : secret,
-					  'api_connection_handler' : handler,
-					  'api_connection_use_https' : use_https,
+					  'api_connection_port': port,
+					  'api_connection_handler' : handler		
 					};
 
 					var ajaxurl = 'index.php?sid=' + sid + '&i=oa_social_login&mode=index&task=verify_api_settings';

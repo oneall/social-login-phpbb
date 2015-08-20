@@ -267,8 +267,8 @@ class acp_oa_social_login
 		else
 		{
 			//Check the handler
-			$api_connection_handler = ($api_connection_handler != 'fsockopen' ? 'curl' : 'fsockopen');
-			$api_connection_use_https = ($api_connection_port != '80' ? true : false);
+			$api_connection_handler = ($api_connection_handler == 'fsockopen' ? 'fsockopen' : 'curl');
+			$api_connection_use_https = ($api_connection_port == 443 ? true : false);
 
 			//FSOCKOPEN
 			if ($api_connection_handler == 'fsockopen')
