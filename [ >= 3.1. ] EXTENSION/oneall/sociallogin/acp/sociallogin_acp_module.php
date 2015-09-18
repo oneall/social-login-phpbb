@@ -1187,9 +1187,30 @@ class sociallogin_acp_module
 		// BASIC AUTH?
 		if (isset ($options ['api_key']) && isset ($options ['api_secret']))
 		{
-			curl_setopt ($curl, CURLOPT_USERPWD, $options ['api_key'] . ":" . $options ['api_secret']);
+			curl_setopt ($curl, CURLOPT_USERPWD, $options ['api_key'] . ':' . $options ['api_secret']);
 		}
 		
+		// Proxy Settings
+		if ( ! empty ($options ['proxy_url']))
+		{
+			// Proxy Location
+			curl_setopt ($curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+			curl_setopt ($curl, CURLOPT_PROXY, $options ['proxy_url']);
+			
+			// Proxy Port
+			if ( ! empty ($options ['proxy_port']))
+			{			
+				curl_setopt ($curl, CURLOPT_PROXYPORT, $options ['proxy_port']);
+			}
+		
+			// Proxy Authentication
+			if ( ! empty ($options ['proxy_username']) && ! empty ($options ['proxy_password']))
+			{
+				curl_setopt ($curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
+				curl_setopt ($curl, CURLOPT_PROXYUSERPWD, $options ['proxy_username'] . ':' . $options ['proxy_password']);
+			}
+		}
+				
 		// Make request
 		if (($response = curl_exec ($curl)) !== false)
 		{
