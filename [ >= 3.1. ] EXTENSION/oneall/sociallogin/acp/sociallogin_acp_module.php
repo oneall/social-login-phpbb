@@ -27,6 +27,8 @@ namespace oneall\sociallogin\acp;
 
 class sociallogin_acp_module
 {
+	// Version
+	const USER_AGENT = 'SocialLogin/2.4.7 phpBB/3.1.x (+http://www.oneall.com/)';
 	
 	// @var \phpbb\config\config
 	protected $config;
@@ -1179,7 +1181,7 @@ class sociallogin_acp_module
 		curl_setopt ($curl, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt ($curl, CURLOPT_SSL_VERIFYPEER, 0);
 		curl_setopt ($curl, CURLOPT_SSL_VERIFYHOST, 0);
-		curl_setopt ($curl, CURLOPT_USERAGENT, 'SocialLogin phpBB3.1.x (+http://www.oneall.com/)');
+		curl_setopt ($curl, CURLOPT_USERAGENT, self::USER_AGENT);
 		
 		// Does not work in PHP Safe Mode, we manually follow the locations if necessary.
 		curl_setopt ($curl, CURLOPT_FOLLOWLOCATION, 0);
@@ -1327,7 +1329,7 @@ class sociallogin_acp_module
 		// Create HTTP request
 		$defaults = array();
 		$defaults ['Host'] = 'Host: ' . $host;
-		$defaults ['User-Agent'] = 'User-Agent: SocialLogin phpBB3.1.x (+http://www.oneall.com/)';
+		$defaults ['User-Agent'] = self::USER_AGENT;
 		
 		// BASIC AUTH?
 		if (isset ($options ['api_key']) && isset ($options ['api_secret']))
