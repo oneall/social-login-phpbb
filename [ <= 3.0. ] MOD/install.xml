@@ -24,8 +24,20 @@
 			</author>
 		</author-group>
 		<github><![CDATA[https://github.com/oneall/social-login-phpbb]]></github>
-		<mod-version>3.6.1</mod-version>
+		<mod-version>3.6.2</mod-version>
 		<history>
+			<entry>
+				<date>2015-09-21</date>
+				<rev-version>3.6.2</rev-version>
+				<changelog lang="en">
+					<change>Battle.Net Added</change>
+					<change>Dribbble Added</change			
+				</changelog>
+				<changelog lang="fr">
+					<change>Battle.Net Ajouté</change>
+					<change>Dribbble Ajouté</change		
+				</changelog>
+			</entry>
 			<entry>
 				<date>2015-08-20</date>
 				<rev-version>3.6.1</rev-version>

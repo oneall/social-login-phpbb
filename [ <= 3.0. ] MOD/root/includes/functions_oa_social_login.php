@@ -30,7 +30,8 @@ if (! defined ('IN_PHPBB'))
 // Oneall Social Login
 class oa_social_login
 {
-	const OA_SOCIAL_LOGIN_VERSION = '3.6.1';
+	const OA_SOCIAL_LOGIN_VERSION = '3.6.2';
+	const USER_AGENT = 'SocialLogin/3.6.2 phpBB/3.0.x (+http://www.oneall.com/)';
 
 	/**
 	 * Invert CamelCase -> camel_case
@@ -1585,84 +1586,93 @@ class oa_social_login
 	 */
 	public static function get_providers ()
 	{
-		$providers = array (
-			'amazon' => array (
-				'name' => 'Amazon'
+		$providers = array(
+			'amazon' => array(
+				'name' => 'Amazon' 
 			),
-			'blogger' => array (
-				'name' => 'Blogger'
+			'battlenet' => array(
+				'name' => 'BattleNet'
 			),
-			'disqus' => array (
-				'name' => 'Disqus'
+			'blogger' => array(
+				'name' => 'Blogger' 
 			),
-			'facebook' => array (
-				'name' => 'Facebook'
+			'disqus' => array(
+				'name' => 'Disqus' 
 			),
-			'foursquare' => array (
-				'name' => 'Foursquare'
+			'draugiem' => array(
+				'name' => 'Draugiem' 
 			),
-			'github' => array (
-				'name' => 'Github.com'
+			'dribbble' => array(
+				'name' => 'Dribbble'
 			),
-			'google' => array (
-				'name' => 'Google'
+			'facebook' => array(
+				'name' => 'Facebook' 
 			),
-			'instagram' => array (
-				'name' => 'Instagram'
+			'foursquare' => array(
+				'name' => 'Foursquare' 
 			),
-			'linkedin' => array (
-				'name' => 'LinkedIn'
+			'github' => array(
+				'name' => 'Github.com' 
 			),
-			'livejournal' => array (
-				'name' => 'LiveJournal'
+			'google' => array(
+				'name' => 'Google' 
 			),
-			'mailru' => array (
-				'name' => 'Mail.ru'
+			'instagram' => array(
+				'name' => 'Instagram' 
 			),
-			'odnoklassniki' => array (
-				'name' => 'Odnoklassniki'
+			'linkedin' => array(
+				'name' => 'LinkedIn' 
 			),
-			'openid' => array (
-				'name' => 'OpenID'
+			'livejournal' => array(
+				'name' => 'LiveJournal' 
 			),
-			'paypal' => array (
-				'name' => 'PayPal'
+			'mailru' => array(
+				'name' => 'Mail.ru' 
 			),
-			'reddit' => array (
-				'name' => 'Reddit'
+			'odnoklassniki' => array(
+				'name' => 'Odnoklassniki' 
 			),
-			'skyrock' => array (
-				'name' => 'Skyrock.com'
+			'openid' => array(
+				'name' => 'OpenID' 
 			),
-			'stackexchange' => array (
-				'name' => 'StackExchange'
+			'paypal' => array(
+				'name' => 'PayPal' 
 			),
-			'steam' => array (
-				'name' => 'Steam'
+			'reddit' => array(
+				'name' => 'Reddit' 
 			),
-			'twitch' => array (
-				'name' => 'Twitch.tv'
+			'skyrock' => array(
+				'name' => 'Skyrock.com' 
 			),
-			'twitter' => array (
-				'name' => 'Twitter'
+			'stackexchange' => array(
+				'name' => 'StackExchange' 
 			),
-			'vimeo' => array (
-				'name' => 'Vimeo'
+			'steam' => array(
+				'name' => 'Steam' 
 			),
-			'vkontakte' => array (
-				'name' => 'VKontakte'
+			'twitch' => array(
+				'name' => 'Twitch.tv' 
 			),
-			'windowslive' => array (
-				'name' => 'Windows Live'
+			'twitter' => array(
+				'name' => 'Twitter' 
 			),
-			'wordpress' => array (
-				'name' => 'WordPress.com'
+			'vimeo' => array(
+				'name' => 'Vimeo' 
 			),
-			'yahoo' => array (
-				'name' => 'Yahoo'
+			'vkontakte' => array(
+				'name' => 'VKontakte' 
 			),
-			'youtube' => array (
-				'name' => 'YouTube'
+			'windowslive' => array(
+				'name' => 'Windows Live' 
+			),
+			'wordpress' => array(
+				'name' => 'WordPress.com' 
+			),
+			'yahoo' => array(
+				'name' => 'Yahoo' 
+			),
+			'youtube' => array(
+				'name' => 'YouTube' 
 			)
 		);
 		return $providers;
@@ -1766,7 +1776,7 @@ class oa_social_login
 		curl_setopt ($curl, CURLOPT_SSL_VERIFYPEER, 0);
 		curl_setopt ($curl, CURLOPT_SSL_VERIFYHOST, 0);
 		curl_setopt ($curl, CURLOPT_FOLLOWLOCATION, 0);
-		curl_setopt ($curl, CURLOPT_USERAGENT, 'SocialLogin ' . oa_social_login::OA_SOCIAL_LOGIN_VERSION . ' phpBB3 (+http://www.oneall.com/)');
+		curl_setopt ($curl, CURLOPT_USERAGENT, self::USER_AGENT);
 
 		// BASIC AUTH?
 		if (isset ($options ['api_key']) && isset ($options ['api_secret']))
@@ -1887,7 +1897,7 @@ class oa_social_login
 		// Create HTTP request
 		$defaults = array ();
 		$defaults ['Host'] = 'Host: ' . $host;
-		$defaults ['User-Agent'] = 'User-Agent: SocialLogin ' . oa_social_login::OA_SOCIAL_LOGIN_VERSION . ' phpBB3 (+http://www.oneall.com/)';
+		$defaults ['User-Agent'] = self::USER_AGENT;
 
 		// BASIC AUTH?
 		if (isset ($options ['api_key']) && isset ($options ['api_secret']))

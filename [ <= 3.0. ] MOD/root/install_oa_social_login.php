@@ -249,6 +249,9 @@ $versions = array(
 	'3.6.1' => array(
 		// No database changes.
 	),
+	'3.6.2' => array(
+		// No database changes.
+	),
 );
 
 // Include the UMIL Auto file, it handles the rest
