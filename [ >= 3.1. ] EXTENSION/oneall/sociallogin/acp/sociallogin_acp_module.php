@@ -1007,6 +1007,9 @@ class sociallogin_acp_module
 			'draugiem' => array(
 				'name' => 'Draugiem' 
 			),
+			'dribbble' => array(
+				'name' => 'Dribbble'
+			),
 			'facebook' => array(
 				'name' => 'Facebook' 
 			),
