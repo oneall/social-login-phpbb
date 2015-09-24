@@ -1332,7 +1332,7 @@ class sociallogin_acp_module
 		// Create HTTP request
 		$defaults = array();
 		$defaults ['Host'] = 'Host: ' . $host;
-		$defaults ['User-Agent'] = self::USER_AGENT;
+		$defaults ['User-Agent'] = 'User-Agent: ' . self::USER_AGENT;
 		
 		// BASIC AUTH?
 		if (isset ($options ['api_key']) && isset ($options ['api_secret']))
