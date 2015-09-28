@@ -4,6 +4,9 @@
  * Contains the core functions used by the OneAll Social Login Module.
  */
 
+$oa_core_info = drupal_parse_info_file(drupal_get_path('module', 'social_login_core') . '/social_login_core.info');
+$oa_core_info_version = str_replace(array('-', '_', ':'), '.', $oa_core_info['version']);
+define('USER_AGENT', 'SocialLogin/' . $oa_core_info_version . ' Drupal/' . $oa_core_info['core'] . ' (+http://www.oneall.com/)');
 
 /**
  * Implements hook_menu().
@@ -123,7 +126,7 @@ function social_login_core_do_api_request($handler, $url, $options = array(), $t
         $url = $matches[1] . $options['api_key'] . ':' . $options['api_secret'] . '@' . $matches[3];
       }
     }
-    $result = drupal_http_request($url, array('timeout' => $timeout));
+    $result = drupal_http_request($url, array('timeout' => $timeout, 'headers' => array ('User-Agent' => USER_AGENT)));
     if (is_object($result)) {
       // Done.
       return array(
@@ -166,6 +169,7 @@ function social_login_core_do_api_request($handler, $url, $options = array(), $t
     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
     curl_setopt($curl, CURLOPT_FAILONERROR, 0);
     curl_setopt($curl, CURLOPT_FOLLOWLOCATION, ($allow_follow_location ? 1 : 0));
+    curl_setopt($curl, CURLOPT_USERAGENT, USER_AGENT);
 
     $http_data = curl_exec($curl);
     $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
