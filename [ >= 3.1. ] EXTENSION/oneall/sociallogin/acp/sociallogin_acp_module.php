@@ -168,7 +168,7 @@ class sociallogin_acp_module
 			}
 			
 			// Gather API Connection details.
-			$oa_social_login_api_connection_handler = (request_var ('oa_social_login_api_connection_handler', 'curl') == 'fsockopen' ? 'fsockopen' : 'curl');
+			$oa_social_login_api_connection_handler = (request_var ('oa_social_login_api_connection_handler', 'curl') == 'fs' ? 'fsockopen' : 'curl');
 			$oa_social_login_api_connection_port = (request_var ('oa_social_login_api_connection_port', 443) == 80 ? 80 : 443);
 			$oa_social_login_api_subdomain = request_var ('oa_social_login_api_subdomain', '');
 			$oa_social_login_api_key = request_var ('oa_social_login_api_key', '');
@@ -361,7 +361,7 @@ class sociallogin_acp_module
 		else
 		{
 			// Check the handler
-			$api_connection_handler = ($api_connection_handler == 'fsockopen' ? 'fsockopen' : 'curl');
+			$api_connection_handler = ($api_connection_handler == 'fs' ? 'fsockopen' : 'curl');
 			$api_connection_use_https = ($api_connection_port == 443 ? true : false);
 			
 			// FSOCKOPEN

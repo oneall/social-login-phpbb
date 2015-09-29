@@ -97,7 +97,9 @@ jQuery.noConflict();
 					var subdomain = $('#oa_social_login_api_subdomain').val();
 					var key = $('#oa_social_login_api_key').val();
 					var secret = $('#oa_social_login_api_secret').val();
-					var handler = (radio_fsockopen_val === 'fsockopen' ? 'fsockopen' : 'curl');
+					
+					/* Do not pass CURL in the URL, this is blocked by some hosts */
+					var handler = (radio_fsockopen_val === 'fsockopen' ? 'fs' : 'cr');
 					var port = (radio_port_443 === '443' ? 443 : 80);
 					var sid = $('#sid').html();
 
