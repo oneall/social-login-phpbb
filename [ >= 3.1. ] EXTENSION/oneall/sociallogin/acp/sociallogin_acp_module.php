@@ -28,7 +28,7 @@ namespace oneall\sociallogin\acp;
 class sociallogin_acp_module
 {
 	// Version
-	const USER_AGENT = 'SocialLogin/2.4.8 phpBB/3.1.x (+http://www.oneall.com/)';
+	const USER_AGENT = 'SocialLogin/2.4.9 phpBB/3.1.x (+http://www.oneall.com/)'; 
 	
 	// @var \phpbb\config\config
 	protected $config;
@@ -620,20 +620,15 @@ class sociallogin_acp_module
 	}
 
 	/**
-	 * Insert temporary login and email for validation in oasl_session table
+	 * Insert temporary user_data for validation in oasl_session table
 	 */
-	public function put_session_validation_data ($validation)
+	public function put_session_validation_data ($session_id, $validation)
 	{
 		global $db, $table_prefix;
-		$this->delete_session_validation_data ($validation ['session_id']);
+		$this->delete_session_validation_data ($session_id);
 		$sql_arr = array(
-			'session_id' => $validation ['session_id'],
-			'user_login' => $validation ['user_login'],
-			'user_email' => $validation ['user_email'],
-			'user_token' => $validation ['user_token'],
-			'identity_token' => $validation ['identity_token'],
-			'identity_provider' => $validation ['identity_provider'],
-			'redirect' => $validation ['redirect'],
+			'session_id' => $session_id,
+			'user_data' => $validation,
 			'date_creation' => time () 
 		);
 		$sql = "INSERT INTO " . $table_prefix . 'oasl_session' . " " . $db->sql_build_array ('INSERT', $sql_arr);
@@ -641,7 +636,7 @@ class sociallogin_acp_module
 	}
 
 	/**
-	 * Retrieve temporary login, email for validation
+	 * Retrieve temporary user_data for validation
 	 */
 	public function get_session_validation_data ($session_id)
 	{
@@ -654,7 +649,7 @@ class sociallogin_acp_module
 	}
 
 	/**
-	 * Delete temporary login, email for validation
+	 * Delete temporary user_data for validation
 	 */
 	public function delete_session_validation_data ($session_id)
 	{
@@ -2084,13 +2079,8 @@ class sociallogin_acp_module
 				// Return to controller
 				if ($do_validation === true)
 				{
-					return array(
-						'user_login' => $user_data ['user_login'],
-						'user_email' => $user_random_email ? '' : $user_data ['user_email'],
-						'user_token' => $user_data ['user_token'],
-						'identity_token' => $user_data ['identity_token'],
-						'identity_provider' => $user_data ['identity_provider'] 
-					);
+					$user_data ['user_email'] = $user_random_email ? '' : $user_data ['user_email'];
+					return $user_data;
 				}
 				list ($error_message, $user_id) = $this->social_login_user_add ($user_random_email, $user_data);
 			}
@@ -2099,12 +2089,10 @@ class sociallogin_acp_module
 	}
 
 	/**
-	 * Complete social login callback once credentials are validated.
+	 * Resume social login callback once login/email are validated.
 	 */
-	public function social_login_resume_handle_callback ($val_userdata)
+	public function social_login_resume_handle_callback ($user_data)
 	{
-		$user_data = $val_userdata;
-		unset ($user_data ['session_id']);
 		list ($error_message, $user_id) = $this->social_login_user_add (false, $user_data);
 		$this->social_login_redirect ($error_message, $user_id, $user_data);
 	}

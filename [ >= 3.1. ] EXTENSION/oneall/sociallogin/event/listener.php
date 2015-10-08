@@ -253,12 +253,12 @@ class listener implements EventSubscriberInterface
 		if (strlen ((request_var ('oa_action', ''))) > 0 && strlen (request_var ('connection_token', '')) > 0)
 		{
 			$sociallogin = new \oneall\sociallogin\acp\sociallogin_acp_module ();
-			$to_validate = $sociallogin->handle_callback ();
-			if (is_array ($to_validate))
+			$user_data = $sociallogin->handle_callback ();
+			if (is_array ($user_data))  // validation required
 			{
-				$to_validate['session_id'] = $this->user->data['session_id'];
-				$to_validate['redirect'] = $sociallogin->get_current_url ();
-				$sociallogin->put_session_validation_data ($to_validate);
+				$user_data ['redirect'] = $sociallogin->get_current_url ();
+				$json_user_data = @json_encode ($user_data);
+				$sociallogin->put_session_validation_data ($this->user->data['session_id'], $json_user_data);
 				redirect ($this->controller_helper->route ("oneall_sociallogin_validate"));
 			}
 		}
@@ -316,28 +316,35 @@ class listener implements EventSubscriberInterface
 				return $this->controller_helper->render ('sociallogin_validation_body.html', 'validation');
 			}
 			$val = $sociallogin->get_session_validation_data ($this->user->data['session_id']);
-			if ($val)
+			$user_data = $val ? json_decode ($val['user_data'], true) : null;
+			if ($user_data === null)
 			{
-				$sociallogin->delete_session_validation_data ($this->user->data['session_id']);
-				$val['user_login'] = $login;
-				$val['user_email'] = $email;
-				$sociallogin->social_login_resume_handle_callback ($val);
+				trigger_error ($this->user->lang ('OA_SOCIAL_LOGIN_VALIDATION_SESSION_ERROR'));
 			}
-			trigger_error ($this->user->lang ('OA_SOCIAL_LOGIN_VALIDATION_SESSION_ERROR'));
+			$user_data ['user_login'] = $login;
+			$user_data ['user_email'] = $email;
+			$sociallogin->delete_session_validation_data ($this->user->data['session_id']);
+			$sociallogin->social_login_resume_handle_callback ($user_data);
 		}
 		else
 		{
 			$val = $sociallogin->get_session_validation_data ($this->user->data['session_id']);
-			$this->template->assign_vars (array (
-				'OA_SOCIAL_LOGIN_VALIDATION_USER_LOGIN' => $val ? $val['user_login'] : '',
-				'OA_SOCIAL_LOGIN_USERNAME_EXPLAIN' => $this->user->lang (
-					$this->config['allow_name_chars'] . '_EXPLAIN', 
-					$this->user->lang ('CHARACTERS', (int) $this->config['min_name_chars']), 
-					$this->user->lang ('CHARACTERS', (int) $this->config['max_name_chars'])),
-				'OA_SOCIAL_LOGIN_VALIDATION_USER_EMAIL' => $val ? $val['user_email'] : '',
-				'OA_SOCIAL_LOGIN_VALIDATION_NO_EMAIL' => $val ? empty ($val['user_email']) : false,
-				'OA_SOCIAL_LOGIN_VALIDATE' => $this->controller_helper->route ("oneall_sociallogin_validate"),
-				)
+			$user_data = $val ? json_decode ($val['user_data'], true) : null;
+			if ($user_data === null)
+			{
+				trigger_error ($this->user->lang ('OA_SOCIAL_LOGIN_VALIDATION_SESSION_ERROR'));
+			}
+			$this->template->assign_vars (
+					array (
+							'OA_SOCIAL_LOGIN_VALIDATION_USER_LOGIN' => $user_data['user_login'],
+							'OA_SOCIAL_LOGIN_USERNAME_EXPLAIN' => $this->user->lang (
+									$this->config['allow_name_chars'] . '_EXPLAIN',
+									$this->user->lang ('CHARACTERS', (int) $this->config['min_name_chars']),
+									$this->user->lang ('CHARACTERS', (int) $this->config['max_name_chars'])),
+							'OA_SOCIAL_LOGIN_VALIDATION_USER_EMAIL' => $user_data['user_email'],
+							'OA_SOCIAL_LOGIN_VALIDATION_NO_EMAIL' => empty ($user_data['user_email']),
+							'OA_SOCIAL_LOGIN_VALIDATE' => $this->controller_helper->route ("oneall_sociallogin_validate"),
+					)
 			);
 			return $this->controller_helper->render ('sociallogin_validation_body.html', 'validation');
 		}

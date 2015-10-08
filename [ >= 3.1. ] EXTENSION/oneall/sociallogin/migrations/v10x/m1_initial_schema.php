@@ -144,28 +144,8 @@ class m1_initial_schema extends \phpbb\db\migration\migration
 							'CHAR:32',
 							''
 						),
-						'user_login' => array (
-							'VCHAR:255',
-							''
-						),
-						'user_email' => array (
-							'VCHAR:255',
-							''
-						),
-						'user_token' => array (
-							'VCHAR:255',
-							''
-						),
-						'identity_token' => array (
-							'VCHAR:255',
-							''
-						),
-						'identity_provider' => array (
-							'VCHAR:255',
-							''
-						),
-						'redirect' => array (
-							'VCHAR:255',
+						'user_data' => array (
+							'TEXT',
 							''
 						),
 						'date_creation' => array (
