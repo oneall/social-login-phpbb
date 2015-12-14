@@ -1,0 +1,25 @@
+Installation and Configuration
+
+Please follow these steps to install OneAll Social Login for Drupal:
+
+1. Download the module archive,
+2. Create a new directory "oneall_social_login" in the "modules" directory of 
+   your Drupal installation,   
+3. Extract the files of the downloaded archive into the created directory,
+4. Login to your Drupal administration area,
+5. Open the "Modules" page, scroll down and enable all "ONEALL SOCIAL LOGIN"
+   entries,
+6. Open the "Configuration" page, click on "Social Login" in the "PEOPLE" group,
+7. Enter your "API Settings", choose the Social Networks and save your settings.
+
+NOTE: 
+If you do not have your "API Settings" yet, please signup for a new account 
+here: https://app.oneall.com/signup/.
+
+You will obtain the "API Settings" after having created a new Site.
+
+More information is available here:
+http://docs.oneall.com/plugins/guide/social-login-drupal/
+
+Feel free to contact us if you have any questions. 
+http://www.oneall.com/company/contact-us/
