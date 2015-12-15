@@ -1,0 +1,18 @@
+
+social_login.admin_settings:
+  path: /admin/config/people/social_login
+  defaults:
+    _title: 'OneAll Social Login'
+    _form: \Drupal\social_login\Form\SocialLoginAdminSettings
+  requirements:
+    _permission: 'administer site configuration'
+
+
+social_login.core:
+  path: /social_login/callback
+  defaults:
+    _title: 'OneAll Social Login Callback'
+    _controller: '\Drupal\social_login\Controller\SocialLoginCore::callback_handler'
+  requirements:
+    _permission: 'access content'
+    

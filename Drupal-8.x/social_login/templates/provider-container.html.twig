@@ -1,0 +1,22 @@
+{#
+/**
+ * @file
+ * Container in which the social network icons are displayed.
+ */
+#}
+<div class="social_login" style="margin:20px 0 10px 0">
+ {% if label is not empty %}<label>{{ label }}</label>{% endif %}
+ <div id="{{ containerid }}"></div>
+</div>
+
+<script type="text/javascript">
+	var _oneall = _oneall || [];
+	_oneall.push(["{{ plugintype }}", "set_providers", [{{ providers | raw }}]]);
+	_oneall.push(["{{ plugintype }}", "set_callback_uri", "{{ callbackuri }}"]);
+	_oneall.push(["{{ plugintype }}", "set_force_re_authentication",
+		{% if plugin_type == 'social_link' %}true{% else %}false{% endif %}]);
+	{% if token is not empty %}
+		_oneall.push(["{{ plugintype }}", "set_user_token", "{{ token }}"]);
+	{% endif %}
+	_oneall.push(["{{ plugintype }}", "do_render_ui", "{{ containerid }}"]);
+</script>

@@ -1,0 +1,7 @@
+configuration:
+  version: 1.x
+  css:
+    theme:
+      css/social_login.admin.css: {}
+
+    

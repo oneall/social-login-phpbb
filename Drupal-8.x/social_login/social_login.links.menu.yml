@@ -1,0 +1,5 @@
+social_login.admin_settings:
+  route_name: social_login.admin_settings
+  title: 'OneAll Social Login'
+  description: 'Setup OneAll Social Login and enable the Social Networks of your choice'
+  parent: user.admin_index

@@ -1,0 +1,9 @@
+name: 'OneAll Social Login'
+type: module
+description: 'Allows your users to register and login with 30+ social networks like for example Twitter, Facebook, Paypal, LinkedIn, Instagram, Vimeo, Google and Yahoo'
+package: 'OneAll Social Login'
+core: 8.x
+configure: social_login.admin_settings
+#dependencies:
+libraries:
+  - social_login/configuration

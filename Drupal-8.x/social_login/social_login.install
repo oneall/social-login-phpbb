@@ -1,0 +1,155 @@
+<?php
+/**
+ * @file
+ * On Install: creates the tables required by the OneAll Social Login module.
+ * On UnInstall: removes the previously created tables.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function social_login_schema() {
+
+  // Used to link social network profiles to now internal authmap entries.
+  $schema['oneall_social_login_identities'] = array(
+    'description' => 'Used to link social network profiles to authmap entries.',
+    'fields' => array(
+      'oasliid' => array(
+        'description' => 'The primary key of this table.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'aid' => array(
+        'description' => 'Foreign key to link entries of this table to entries in the authmap table.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'identity_token' => array(
+        'description' => 'Unique identity_token for a social network profile, returned by the OneAll API.',
+        'type' => 'varchar',
+        'length' => 48,
+        'not null' => TRUE,
+      ),
+      'provider_name' => array(
+        'description' => 'Social network provider (Facebook, Twitter ...) of this identity.',
+        'type' => 'varchar',
+        'length' => '64',
+        'not null' => TRUE,
+      ),
+    ),
+    'indexes' => array(
+      'identity_token' => array(
+        'identity_token',
+      ),
+      'aid' => array(
+        'aid',
+      ),
+    ),
+    'foreign keys' => array(
+      'aid' => array(
+        'table' => 'oneall_social_authmap',
+        'columns' => array(
+          'aid' => 'aid',
+        ),
+      ),
+    ),
+    'primary key' => array(
+      'oasliid',
+    ),
+  );
+  
+  // new authmap entries (authmap removed in D8).
+  $schema['oneall_social_login_authmap'] = array(
+    'description' => 'D7 equivalent authmap entries.',
+    'fields' => array(
+      'aid' => array(
+        'description' => 'The primary key of this table.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'uid' => array(
+        'description' => 'User id.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'user_token' => array(
+        'description' => 'Unique user_token for a social network user, returned by the OneAll API.',
+        'type' => 'varchar',
+        'length' => 48,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array(
+      'aid',
+    ),
+  );
+
+  // Used to store module settings.
+  $schema['oneall_social_login_settings'] = array(
+    'description' => 'Used to store module settings.',
+    'fields' => array(
+      'oaslsid' => array(
+        'description' => 'The primary key of this table.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'setting' => array(
+        'description' => 'The name of the setting.',
+        'type' => 'varchar',
+        'length' => '64',
+        'not null' => TRUE,
+      ),
+      'value' => array(
+        'description' => 'The value of the setting.',
+        'type' => 'varchar',
+        'length' => '64',
+        'not null' => TRUE,
+      ),
+    ),
+    'indexes' => array(
+      'setting' => array(
+        'setting',
+      ),
+    ),
+    'primary key' => array(
+      'oaslsid',
+    ),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */
+function social_login_install() {
+
+  // Start transaction.
+  $db_transaction = db_transaction();
+
+  // Install.
+  try {
+    drupal_install_schema('oneall_social_login_identities');
+    drupal_install_schema('oneall_social_login_authmap');
+    drupal_install_schema('oneall_social_login_settings');
+  }
+  catch (Exception $e) {
+    $db_transaction->rollback();
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function social_login_uninstall() {
+
+  // Drop tables.
+  drupal_uninstall_schema('oneall_social_login_identities');
+  drupal_uninstall_schema('oneall_social_login_authmap');
+  drupal_uninstall_schema('oneall_social_login_settings');
+}
