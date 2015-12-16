@@ -245,7 +245,8 @@ function social_login_core_callback_handler() {
         $social_data = @drupal_json_decode($data['http_data']);
 
         // Everything seems to be ok.
-        if (is_array($social_data) && isset($social_data['response']) && isset($social_data['response']['request']['status']['code']) && $social_data['response']['request']['status']['code'] == 200) {
+        if (is_array($social_data) && isset($social_data['response']) && isset($social_data['response']['request']['status']['code']) && 
+        		$social_data['response']['request']['status']['code'] == 200 && isset($social_data['response']['result']['data']['user'])) {
 
           // The plugin that has been uses social_login/social_link.
           $data = $social_data['response']['result']['data'];
@@ -555,7 +556,7 @@ function social_login_core_callback_handler() {
  */
 function social_login_core_user_insert(&$edit, $account, $category) {
   // Check if we come from a valid session.
-  if (isset($_SESSION) && !empty($_SESSION['social_login_session_open']) && !empty($_SESSION['social_login_social_data'])) {
+  if (isset($_SESSION) && !empty($_SESSION['social_login_social_data'])) {
     // Restore data.
     $social_data = @unserialize($_SESSION['social_login_social_data']);
 
@@ -810,40 +811,9 @@ function social_login_core_form_alter(&$form, &$form_state) {
   // Hook into login page.
   if (is_array($form) && isset($form['#form_id']) && $form['#form_id'] == 'user_login') {
     // Check if we come from a valid session.
-    if (isset($_SESSION) && !empty($_SESSION['social_login_session_open']) && !empty($_SESSION['social_login_social_data'])) {
-      // Restore data.
-      $social_data = @unserialize($_SESSION['social_login_social_data']);
-
-      // Check format.
-      if (is_array($social_data) && isset($social_data['response']) && isset($social_data['response']['request']['status']['code']) && $social_data['response']['request']['status']['code'] == 200) {
-        // Read settings.
-        $settings = social_login_core_get_settings();
-
-        // Used Provider.
-        $provider_name = $social_data['response']['result']['data']['user']['identity']['source']['name'];
-
-        // No message if the module is not shown on the registration page.
-        if (empty($settings['registration_page_icons']) || $settings['registration_page_icons'] <> 'disable') {
-          $form['social_login_core_create_account'] = array(
-            '#type' => 'item',
-            '#weight' => -110,
-            '#title' => t('I would like to create a new account'),
-            '#description' => t('If you do not have an account on this website yet, <a href="@link_register">create a new account</a> to link your @social_network account to this account.', array(
-              '@social_network' => $provider_name,
-              '@link_register' => url('user/register'),
-            )),
-          );
-        }
-        // Tell the user what is going on.
-        $form['social_login_core_link_account'] = array(
-          '#type' => 'item',
-          '#weight' => -100,
-          '#title' => t('I already have an account'),
-          '#description' => t('If you have already an account on this website, login below to link your @social_network to this account.', array(
-            '@social_network' => $provider_name,
-          )),
-        );
-      }
+    if (isset($_SESSION) && !empty($_SESSION['social_login_social_data'])) {
+    	// Which is not needed for the login form.
+    	social_login_core_clear_session();
     }
   }
 }
@@ -900,24 +870,11 @@ function social_login_core_form_user_register_form_alter(&$form, &$form_state) {
       $form['account']['name']['#default_value'] = $user_login;
       $form['account']['mail']['#default_value'] = $user_email;
 
-      // Don't show message if the module is not on the registration page.
-      if (empty($settings['login_page_icons']) || $settings['login_page_icons'] <> 'disable') {
-        $form['social_login_core_link_account'] = array(
-          '#type' => 'item',
-          '#weight' => -100,
-          '#title' => t('Do you already have an account?'),
-          '#description' => t('If you have already an account on this website, <a href="@link_login">log in</a> to link @social_network to this account.', array(
-            '@social_network' => $provider_name,
-            '@link_login' => url('user'),
-          )),
-        );
-      }
-
       // Tell the user what is going on.
       $form['social_login_core_create_account'] = array(
         '#type' => 'item',
         '#weight' => -100,
-        '#title' => t('Would you like to create a new account?'),
+        '#title' => t('You have successfully connected to @social_network', array('@social_network' => $provider_name)),
         '#description' => t('Please complete the form to create your account. Once your account has been created, you can use @social_network to log in.', array(
           '@social_network' => $provider_name,
         )),
