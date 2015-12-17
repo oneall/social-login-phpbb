@@ -26,9 +26,9 @@ function social_login_help($route_name, RouteMatchInterface $route_match) {
 
 /*
  * -------------------
-* -----  HOOKS  -----
-* -------------------
-*/
+ * -----  HOOKS  -----
+ * -------------------
+ */
 
 /**
  * Implements hook_form_USER_FORM_alter().
@@ -37,12 +37,12 @@ function social_login_form_USER_FORM_alter(&$form, FormStateInterface $form_stat
 
 	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'('. $form_id .')');
 
-	// Display social link when editing a profile:
+	// Display social link when editing a profile.
 	if ($form_id == 'user_form') {
 		// But only for our profile:
 		$editing_user = FALSE;
 		$route = Url::fromRouteMatch(\Drupal::routeMatch());
-		// Avoid exceptions:
+		// Avoid exceptions.
 		if ($route->isRouted()) {
 			$params = $route->getRouteParameters();
 			$editing_user = isset($params['user']) ? $params['user'] : FALSE;
@@ -61,13 +61,11 @@ function social_login_form_USER_LOGIN_FORM_alter(&$form, FormStateInterface $for
 
 	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'()');
 
-	if (isset($_SESSION) && !empty($_SESSION['social_login_session_open'])) {
-		// clear leftover session (none possible on login page, but we may come from an interrupted registration process)
+	if (isset($_SESSION) && empty($_SESSION['social_login_session_open']) && !empty($_SESSION['social_login_session_open'])) {
+		// Clear leftover session (none possible on login page, but we may come from an interrupted registration process).
 		social_login_clear_session();
 	}
-	else {
-		social_login_show_providers($form, $form_state, 'login_page');
-	}
+	social_login_show_providers($form, $form_state, 'login_page');
 }
 
 /**
@@ -81,6 +79,9 @@ function social_login_form_USER_REGISTER_FORM_alter(&$form, FormStateInterface $
 	if (isset($_SESSION) && !empty($_SESSION['social_login_session_open']) && !empty($_SESSION['social_login_social_data'])) {
 
 		\Drupal::logger('social_login')->notice('- '. __FUNCTION__ .'@'. __LINE__ .' found session');
+
+		// To ensure that the SESSION data is used for registration once (see if condition above).
+		$_SESSION['social_login_session_open'] = 0;
 
 		// Restore data.
 		$social_data = @unserialize($_SESSION['social_login_social_data']);
@@ -126,24 +127,11 @@ function social_login_form_USER_REGISTER_FORM_alter(&$form, FormStateInterface $
 			$form['account']['name']['#default_value'] = $user_login;
 			$form['account']['mail']['#default_value'] = $user_email;
 
-			// Don't show message if the module is not on the registration page.
-			if (empty($settings['login_page_icons']) || $settings['login_page_icons'] <> 'disable') {
-				$form['social_login_link_account'] = array(
-						'#type' => 'item',
-						'#weight' => -100,
-						'#title' => t('Do you already have an account?'),
-						'#description' => t('If you have already an account on this website, <a href="@link_login">log in</a> to link @social_network to this account.', array(
-								'@social_network' => $provider_name,
-								'@link_login' => Url::fromRoute('user.page')->toString(),
-						)),
-				);
-			}
-
 			// Tell the user what is going on.
 			$form['social_login_create_account'] = array(
 					'#type' => 'item',
 					'#weight' => -100,
-					'#title' => t('Would you like to create a new account?'),
+					'#title' => t('You have successfully connected to @social_network', array('@social_network' => $provider_name)),
 					'#description' => t('Please complete the form to create your account. Once your account has been created, you can use @social_network to log in.', array(
 							'@social_network' => $provider_name,
 					)),
@@ -359,7 +347,7 @@ function social_login_user_insert($account) {
 	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'('. $account->id() .')');
 
 	// Check if we come from a valid session.
-	if (isset($_SESSION) && !empty($_SESSION['social_login_session_open']) && !empty($_SESSION['social_login_social_data'])) {
+	if (isset($_SESSION) && !empty($_SESSION['social_login_social_data'])) {
 
 		\Drupal::logger('social_login')->notice('- '. __FUNCTION__ .'@'. __LINE__ .' found session');
 
@@ -367,7 +355,7 @@ function social_login_user_insert($account) {
 		$social_data = @unserialize($_SESSION['social_login_social_data']);
 
 		// Check format.
-		if (is_array($social_data) && isset($social_data['response']) && isset($social_data['response']['request']['status']['code']) && $social_data['response']['request']['status']['code'] == 200) {
+		if (is_array($social_data) && isset($social_data['response']) && isset($social_data['response']['request']['status']['code']) && $social_data['response']['request']['status']['code'] == 200 && isset($social_data['response']['result']['data']['user'])) {
 
 			// Retrieve required data.
 			$user_data = $social_data['response']['result']['data']['user'];
@@ -437,7 +425,7 @@ function social_login_user_login($account) {
 		$social_data = @unserialize($_SESSION['social_login_social_data']);
 
 		// Check format.
-		if (is_array($social_data) && isset($social_data['response']) && isset($social_data['response']['request']['status']['code']) && $social_data['response']['request']['status']['code'] == 200) {
+		if (is_array($social_data) && isset($social_data['response']) && isset($social_data['response']['request']['status']['code']) && $social_data['response']['request']['status']['code'] == 200 && isset($social_data['response']['result']['data']['user'])) {
 
 			// Retrieve required data.
 			$user_data = $social_data['response']['result']['data']['user'];
@@ -693,8 +681,8 @@ function social_login_do_api_request($handler, $url, $options = array(), $timeou
 
 /* ------------------------------
  * -----  USER MANIPULATION -----
-* -------------------------------
-*/
+ * ------------------------------
+ */
 
 /**
  * Grabs the social network avatar and links it to a user account.
@@ -1095,8 +1083,8 @@ function social_login_get_available_providers() {
 
 /* --------------------
  * -----  MISC  -------
-* --------------------
-*/
+ * --------------------
+ */
 
 
 function social_login_get_current_url($https_enabled = FALSE) {
