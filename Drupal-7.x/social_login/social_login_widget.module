@@ -175,6 +175,14 @@ function social_login_widget_show_providers(&$form, &$form_state, $target) {
           $position = ($settings['registration_page_icons'] == 'below' ? 100 : (-100));
         }
       }
+      // Hide only once.
+      else if (isset($_SESSION['social_login_session_open'])) {
+      	/* $_SESSION['social_login_session_open'] === 1
+      	 * Assignment below prevents the SESSION to be displayed in future registration form (preventing registration)
+      	 * and displays the provider icons again (the if condition above).
+      	 */
+      	$_SESSION['social_login_session_open'] = 0;
+      }
       break;
 
     // Login Page.
