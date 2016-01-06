@@ -31,6 +31,33 @@ class m2_initial_data extends \phpbb\db\migration\migration
 {
 	public function update_data ()
 	{
-		return array ();
+		return array(
+			array('custom', array(array($this, 'add_group_register_oneall'))),
+		);
+	}
+	
+	public function add_group_register_oneall()
+	{
+		$group_data = array (
+				'group_type' => GROUP_SPECIAL,
+				'group_name' => 'OA_SOCIAL_LOGIN_REGISTER',
+				'group_desc' => 'Members registered via OneAll social login',
+				'group_colour' => '',
+		);
+		$sql = 'INSERT INTO '. GROUPS_TABLE .' '. $this->db->sql_build_array('INSERT', $group_data);
+		$this->db->sql_query($sql);
+	}
+	
+	public function revert_data()
+	{
+		return array(
+			array('custom', array(array($this, 'del_group_register_oneall'))),
+		);
+	}
+	
+	public function del_group_register_oneall()
+	{
+		$sql = 'DELETE FROM '. GROUPS_TABLE ." WHERE group_name = 'OA_SOCIAL_LOGIN_REGISTER'";
+		$this->db->sql_query($sql);
 	}
 }

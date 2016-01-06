@@ -143,4 +143,5 @@ $lang = array_merge ($lang, array (
 	'OA_SOCIAL_LOGIN_VALIDATION_SESSION_ERROR' => 'Missing session information.',
 	'OA_SOCIAL_LOGIN_VIEW_CREDENTIALS' => '<a href="https://app.oneall.com/applications/" class="button1 external">Create and view my API Credentials</a>',
 	'OA_SOCIAL_LOGIN_WIDGET_TITLE' => 'Login with a social network',
+	'G_OA_SOCIAL_LOGIN_REGISTER' => 'Registered OneAll users',
 ));
