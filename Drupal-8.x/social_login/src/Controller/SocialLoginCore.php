@@ -18,8 +18,6 @@ class SocialLoginCore extends ControllerBase
 	 */
 	public function callback_handler() {
 
-		\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'()');
-
 		// Read Settings.
 		$settings = \social_login_get_settings();
 
@@ -29,8 +27,6 @@ class SocialLoginCore extends ControllerBase
 			// Clear session.
 			\social_login_clear_session();
 			
-			\Drupal::logger('social_login')->notice('- '. __FUNCTION__ .'@'. __LINE__ .' conn_token='. $_POST['connection_token']);
-
 			// API Connection Credentials.
 			$api_subdomain = (!empty($settings['api_subdomain']) ? $settings['api_subdomain'] : '');
 			$api_key = (!empty($settings['api_key']) ? $settings['api_key'] : '');
@@ -66,7 +62,6 @@ class SocialLoginCore extends ControllerBase
 			// Settings missing.
 			if (empty($api_subdomain) || empty($api_key) || empty($api_secret)) {
 				drupal_set_message(t('OneAll Social Login is not setup correctly, please request the administrator to verify the API Settings'), 'error');
-				// consitency: how about
 				\Drupal::logger('social_login')->notice('The API Settings are not filled out correctly', array());
 			}
 			// Settings filled out.
@@ -111,8 +106,6 @@ class SocialLoginCore extends ControllerBase
 						// Existing user.
 						if (is_object($user_for_token) && !empty($user_for_token->id())) {
 							
-							\Drupal::logger('social_login')->notice('- '. __FUNCTION__ .'@'. __LINE__ .' found uid '. $user_for_token->id());
-							
 							// Social Login Plugin used?
 							if ($data['plugin']['key'] == 'social_login') {
 								// Make sure that the user has not been blocked.
@@ -129,8 +122,6 @@ class SocialLoginCore extends ControllerBase
 							}
 							// Social Link Plugin used?
 							elseif ($data['plugin']['key'] == 'social_link') {
-								
-								\Drupal::logger('social_login')->notice('- '. __FUNCTION__ .'@'. __LINE__ .' social_link');
 
 								// The user should be logged in.
 								$user = \Drupal::currentUser();

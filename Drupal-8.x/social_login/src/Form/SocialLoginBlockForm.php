@@ -39,8 +39,6 @@ class SocialLoginBlockForm extends FormBase {
 	public function buildForm(array $form, FormStateInterface $form_state) {
 		global $is_https;
 
-		\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'()');
-
 		// Read Settings.
 		$settings = \social_login_get_settings();
 
@@ -52,7 +50,6 @@ class SocialLoginBlockForm extends FormBase {
 
 		$current_uri = \social_login_get_current_url($is_https);
 		$callback_uri = Url::fromRoute('social_login.core', [], array('absolute' => TRUE, 'query' => array('origin' => $current_uri)))->toString();
-		\Drupal::logger('social_login')->notice('- '. __FUNCTION__ .'@'. __LINE__ .' callback:'. $callback_uri);
 
 		$provider_string = "\"". implode("\",\"", $settings['enabled_providers']) ."\"";
 
