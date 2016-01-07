@@ -30,18 +30,6 @@ namespace oneall\sociallogin\migrations\v10x;
 class m4_group_data extends \phpbb\db\migration\migration
 {
 	
-	/**
-	* Check if the special OneAll group already exists
-	*/
-	public function effectively_installed ()
-	{
-		$sql = 'SELECT * FROM '. GROUPS_TABLE ." WHERE group_name = 'OA_SOCIAL_LOGIN_REGISTER'";
-		$result = $this->db->sql_query_limit ($sql, 1);
-		$row = $this->db->sql_fetchrow ($result);
-
-		return $row != false;
-	}
-	
 	public function update_data ()
 	{
 		return array (
