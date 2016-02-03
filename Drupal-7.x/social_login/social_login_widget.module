@@ -22,7 +22,7 @@ function social_login_widget_add_js_plugin($plugin_type, $subdomain, $providers,
   if (!empty($containerid) AND !empty($subdomain)) {
 
     // Build the callback uri.
-    $current_uri = social_login_get_current_url();
+    $current_uri = social_login_get_current_url($is_https);
     $callback_uri = url('social_login/callback', array('absolute' => TRUE, 'query' => array('origin' => $current_uri)));
 
     // Add social library.
