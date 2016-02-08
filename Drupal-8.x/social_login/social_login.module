@@ -35,8 +35,6 @@ function social_login_help($route_name, RouteMatchInterface $route_match) {
  */
 function social_login_form_USER_FORM_alter(&$form, FormStateInterface $form_state, $form_id) {
 
-	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'('. $form_id .')');
-
 	// Display social link when editing a profile.
 	if ($form_id == 'user_form') {
 		// But only for our profile:
@@ -59,8 +57,6 @@ function social_login_form_USER_FORM_alter(&$form, FormStateInterface $form_stat
  */
 function social_login_form_USER_LOGIN_FORM_alter(&$form, FormStateInterface $form_state, $form_id) {
 
-	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'()');
-
 	if (isset($_SESSION) && empty($_SESSION['social_login_session_open']) && !empty($_SESSION['social_login_session_open'])) {
 		// Clear leftover session (none possible on login page, but we may come from an interrupted registration process).
 		social_login_clear_session();
@@ -73,12 +69,8 @@ function social_login_form_USER_LOGIN_FORM_alter(&$form, FormStateInterface $for
  */
 function social_login_form_USER_REGISTER_FORM_alter(&$form, FormStateInterface $form_state, $form_id) {
 
-	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'()');
-
 	// Check if we come from a valid session.
 	if (isset($_SESSION) && !empty($_SESSION['social_login_session_open']) && !empty($_SESSION['social_login_social_data'])) {
-
-		\Drupal::logger('social_login')->notice('- '. __FUNCTION__ .'@'. __LINE__ .' found session');
 
 		// To ensure that the SESSION data is used for registration once (see if condition above).
 		$_SESSION['social_login_session_open'] = 0;
@@ -148,8 +140,6 @@ function social_login_form_USER_REGISTER_FORM_alter(&$form, FormStateInterface $
  */
 function social_login_show_providers(&$form, $form_state, $target) {
 	global $is_https;
-
-	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'('. $target .')');
 
 	// Read Settings.
 	$settings = social_login_get_settings();
@@ -248,7 +238,6 @@ function social_login_show_providers(&$form, $form_state, $target) {
 
 		$current_uri = social_login_get_current_url($is_https);
 		$callback_uri = Url::fromRoute('social_login.core', [], array('absolute' => TRUE, 'query' => array('origin' => $current_uri)))->toString();
-		\Drupal::logger('social_login')->notice('- '. __FUNCTION__ .'@'. __LINE__ .' callback:'. $callback_uri);
 
 		$provider_string = "\"". implode("\",\"", $settings['enabled_providers']) ."\"";
 
@@ -297,8 +286,6 @@ function social_login_show_providers(&$form, $form_state, $target) {
  */
 function social_login_theme($existing, $type, $theme, $path) {
 
-	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'('.	$type .', '. $theme .', '. $path .')');
-
 	return array(
 			'provider_container' => array(
 					'variables' => array(
@@ -317,8 +304,6 @@ function social_login_theme($existing, $type, $theme, $path) {
  * Adds the Javascript asynchronous library.
  */
 function social_login_add_js_plugin(&$form, $subdomain) {
-
-	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'('. $subdomain .')');
 
 	if (!empty($subdomain)) {
 		// Add library:
@@ -344,12 +329,8 @@ function social_login_add_js_plugin(&$form, $subdomain) {
  */
 function social_login_user_insert($account) {
 
-	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'('. $account->id() .')');
-
 	// Check if we come from a valid session.
 	if (isset($_SESSION) && !empty($_SESSION['social_login_social_data'])) {
-
-		\Drupal::logger('social_login')->notice('- '. __FUNCTION__ .'@'. __LINE__ .' found session');
 
 		// Restore data.
 		$social_data = @unserialize($_SESSION['social_login_social_data']);
@@ -414,12 +395,8 @@ function social_login_user_insert($account) {
  */
 function social_login_user_login($account) {
 
-	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'('. $account->id() .')');
-
 	// Check if we come from a valid session.
 	if (isset($_SESSION) && !empty($_SESSION['social_login_session_open']) && !empty($_SESSION['social_login_social_data'])) {
-
-		\Drupal::logger('social_login')->notice('- '. __FUNCTION__ .'@'. __LINE__ .' found session');
 
 		// Restore data.
 		$social_data = @unserialize($_SESSION['social_login_social_data']);
@@ -485,8 +462,6 @@ function social_login_user_login($account) {
  * Implements hook_user_delete().
  */
 function social_login_user_delete($account) {
-
-	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'('. $account->id() .')');
 
 	$aids = db_query("SELECT aid FROM {oneall_social_login_authmap} WHERE uid = :userid", array(
 			':userid' => $account->id(),
@@ -584,8 +559,6 @@ function social_login_check_fsockopen($protocol = 'https') {
  * Sends an API request by using the given handler.
  */
 function social_login_do_api_request($handler, $url, $options = array(), $timeout = 30) {
-
-	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'('. $handler .', '. $url .')');
 
 	$user_agent_string = 'SocialLogin/1.0 Drupal/8.x (+http://www.oneall.com/)';
 	$http_code = 'n/a';
@@ -688,8 +661,6 @@ function social_login_do_api_request($handler, $url, $options = array(), $timeou
  * Grabs the social network avatar and links it to a user account.
  */
 function social_login_link_social_network_avatar($social_data, $account) {
-
-	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'('. $account->id() .')');
 
 	// User pictures are not available:
 	if (! user_picture_enabled()) {
@@ -800,8 +771,6 @@ function social_login_link_social_network_avatar($social_data, $account) {
  */
 function social_login_unmap_identity_token($identity_token) {
 
-	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'('. $identity_token .')');
-
 	db_delete('oneall_social_login_identities')->condition('identity_token', $identity_token)->execute();
 
 	// TODO: remove authmap records, when no identity left?
@@ -812,13 +781,6 @@ function social_login_unmap_identity_token($identity_token) {
  * Links a user_token/identity_token to an existing user account.
  */
 function social_login_map_identity_token_to_user_token($account, $identity_token, $user_token, $provider_name) {
-
-	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .
-			'(id='. $account->id() .
-			', user='. $user_token .
-			', identity='. $identity_token .
-			', provider='. $provider_name .
-			')');
 
 	// Start transaction.
 	$db_transaction = db_transaction();
@@ -873,8 +835,6 @@ function social_login_map_identity_token_to_user_token($account, $identity_token
  */
 function social_login_get_user_for_user_token($user_token) {
 
-	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'('. $user_token .')');
-
 	if (($uid = social_login_get_uid_for_user_token($user_token)) === FALSE) {
 		return FALSE;
 	}
@@ -892,8 +852,6 @@ function social_login_get_user_for_user_token($user_token) {
  */
 function social_login_get_uid_for_user_token($user_token) {
 
-	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'('. $user_token .')');
-
 	$uid = db_query("SELECT uid FROM {oneall_social_login_authmap} WHERE user_token = :token", array(
 			':token' => $user_token,
 	))->fetchField();
@@ -904,8 +862,6 @@ function social_login_get_uid_for_user_token($user_token) {
  * Return the user_token for a uid.
  */
 function social_login_get_user_token_for_uid($uid) {
-
-	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'('. $uid .')');
 
 	$user_token = db_query("SELECT user_token FROM {oneall_social_login_authmap} WHERE uid = :uid", array(
 			':uid' => $uid,
@@ -918,8 +874,6 @@ function social_login_get_user_token_for_uid($uid) {
  */
 function social_login_get_uid_for_name($name) {
 
-	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'('. $name .')');
-
 	$users = \Drupal::entityManager()->getStorage('user')->loadByProperties(array('name' => $name));
 	return (empty($users) ? FALSE : $users);  // indexed by uid
 }
@@ -928,8 +882,6 @@ function social_login_get_uid_for_name($name) {
  * Get the user(s) for an email address.
  */
 function social_login_get_uid_for_email($mail) {
-
-	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'('. $mail .')');
 
 	$users = \Drupal::entityManager()->getStorage('user')->loadByProperties(array('mail' => $mail));
 	return (empty($users) ? FALSE : $users);  // indexed by uid
@@ -1089,8 +1041,6 @@ function social_login_get_available_providers() {
 
 function social_login_get_current_url($https_enabled = FALSE) {
 
-	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'('. $https_enabled .')');
-
 	$request_uri = ((!isset($_SERVER['REQUEST_URI'])) ? $_SERVER['PHP_SELF'] : $_SERVER['REQUEST_URI']);
 	$request_port = ((!empty($_SERVER['SERVER_PORT']) AND $_SERVER['SERVER_PORT'] <> '80') ? (":" . $_SERVER['SERVER_PORT']) : '');
 	$request_protocol = ($https_enabled ? 'https' : 'http') . "://";
@@ -1102,8 +1052,6 @@ function social_login_get_current_url($https_enabled = FALSE) {
  * Remove the session data.
  */
 function social_login_clear_session() {
-
-	\Drupal::logger('social_login')->notice('> '. __FUNCTION__ .'@'. __LINE__ .'()');
 
 	foreach (array(
 			'session_open',
