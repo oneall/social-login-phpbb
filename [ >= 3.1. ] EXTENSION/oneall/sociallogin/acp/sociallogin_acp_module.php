@@ -28,7 +28,7 @@ namespace oneall\sociallogin\acp;
 class sociallogin_acp_module
 {
 	// Version
-	const USER_AGENT = 'SocialLogin/2.4.9 phpBB/3.1.x (+http://www.oneall.com/)'; 
+	const USER_AGENT = 'SocialLogin/2.4.10 phpBB/3.1.x (+http://www.oneall.com/)'; 
 	
 	// @var \phpbb\config\config
 	protected $config;
@@ -2186,6 +2186,17 @@ class sociallogin_acp_module
 		// User added successfully.
 		else
 		{
+			// Add user to special group of OneAll registered users OA_SOCIAL_LOGIN_REGISTER.
+			$sql = 'SELECT group_id FROM '. GROUPS_TABLE ."
+				WHERE group_name = 'OA_SOCIAL_LOGIN_REGISTER' AND group_type = ". GROUP_SPECIAL;
+			$result = $db->sql_query ($sql);
+			$oa_group_id = (int) $db->sql_fetchfield ('group_id');
+			$db->sql_freeresult ($result);
+			$error = group_user_add ($oa_group_id, $user_id_tmp);
+			if ($error !== false) 
+			{
+				trigger_error ($error, E_USER_ERROR);
+			}
 			// Link the user to this social network.
 			if ($this->link_tokens_to_user_id ($user_id_tmp, $user_data ['user_token'], $user_data ['identity_token'], $user_data ['identity_provider']) !== false)
 			{
