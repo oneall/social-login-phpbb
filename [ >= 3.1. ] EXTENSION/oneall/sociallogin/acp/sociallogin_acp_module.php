@@ -2302,7 +2302,7 @@ class sociallogin_acp_module
 	 */
 	protected function social_login_redirect ($error_message, $user_id, $user_data)
 	{
-		global $user, $phpbb_root_path, $phpEx;
+		global $user, $phpbb_root_path, $phpEx, $config;
 		
 		// Display an error message
 		if (isset ($error_message))
