@@ -2324,7 +2324,7 @@ class sociallogin_acp_module
 				// Redirect to a custom page
 				if (!empty ($config ['oa_social_login_redirect']))
 				{
-					redirect ($config ['oa_social_login_redirect'], false, true);
+					redirect (append_sid ($config ['oa_social_login_redirect']), false, true);
 				}
 				
 				// Do not stay on the login/registration page
