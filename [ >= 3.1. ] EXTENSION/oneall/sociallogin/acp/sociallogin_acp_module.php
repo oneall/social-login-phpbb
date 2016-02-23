@@ -25,6 +25,16 @@
  */
 namespace oneall\sociallogin\acp;
 
+
+function sociallogin_redirect ($url, $return = false, $disable_cd_check = false)
+{
+	$mod_url = redirect ($url, $return, $disable_cd_check);
+	// If we did not redirect, we're now here, so force the redirect to the new URL.
+	garbage_collection();
+	header('Location: ' . $mod_url);
+	exit;
+}
+
 class sociallogin_acp_module
 {
 	// Version
@@ -1952,7 +1962,7 @@ class sociallogin_acp_module
 										$this->do_login ($user_id_login_token);
 										
 										// Redirect to the same page
-										redirect (append_sid (self::get_current_url ()));
+										\oneall\sociallogin\acp\sociallogin_redirect (append_sid (self::get_current_url ()));
 									}
 								}
 							}
@@ -2324,7 +2334,7 @@ class sociallogin_acp_module
 				// Redirect to a custom page
 				if (!empty ($config ['oa_social_login_redirect']))
 				{
-					redirect (append_sid ($config ['oa_social_login_redirect']), false, true);
+					\oneall\sociallogin\acp\sociallogin_redirect (append_sid ($config ['oa_social_login_redirect']), false, true);
 				}
 				
 				// Do not stay on the login/registration page
@@ -2333,17 +2343,17 @@ class sociallogin_acp_module
 					'register' 
 				)))
 				{
-					redirect (append_sid ($phpbb_root_path . 'index.' . $phpEx));
+					\oneall\sociallogin\acp\sociallogin_redirect (append_sid ($phpbb_root_path . 'index.' . $phpEx));
 				}
 				
 				// If the user validated his credentials, then the original page is in session data:
 				if (isset ($user_data ['redirect']))
 				{
-					redirect (append_sid ($user_data ['redirect']));
+					\oneall\sociallogin\acp\sociallogin_redirect (append_sid ($user_data ['redirect']));
 				}
 				
 				// Redirect to the same page
-				redirect (append_sid (self::get_current_url ()));
+				\oneall\sociallogin\acp\sociallogin_redirect (append_sid (self::get_current_url ()));
 			}
 		}
 	}

@@ -259,7 +259,7 @@ class listener implements EventSubscriberInterface
 				$user_data ['redirect'] = $sociallogin->get_current_url ();
 				$json_user_data = @json_encode ($user_data);
 				$sociallogin->put_session_validation_data ($this->user->data['session_id'], $json_user_data);
-				redirect ($this->controller_helper->route ("oneall_sociallogin_validate"));
+				\oneall\sociallogin\acp\sociallogin_redirect ($this->controller_helper->route ("oneall_sociallogin_validate"));
 			}
 		}
 	}
