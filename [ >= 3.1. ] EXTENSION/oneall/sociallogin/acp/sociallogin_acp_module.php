@@ -38,7 +38,7 @@ function sociallogin_redirect ($url, $return = false, $disable_cd_check = false)
 class sociallogin_acp_module
 {
 	// Version
-	const USER_AGENT = 'SocialLogin/2.4.10 phpBB/3.1.x (+http://www.oneall.com/)'; 
+	const USER_AGENT = 'SocialLogin/2.4.11 phpBB/3.1.x (+http://www.oneall.com/)'; 
 	
 	// @var \phpbb\config\config
 	protected $config;

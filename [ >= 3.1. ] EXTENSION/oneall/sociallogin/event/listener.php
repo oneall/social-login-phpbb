@@ -353,8 +353,8 @@ class listener implements EventSubscriberInterface
 
 	
 	/**
-	 * Event handler for custom field 
-	 * and user roy modifications
+	 * Event handler for custom field, 
+	 * and user row modifications.
 	 */
 	public function modify_data ($event)
 	{
@@ -362,7 +362,8 @@ class listener implements EventSubscriberInterface
 		
 		// Shorthand:
 		$social = $event['social_profile'];
-		
+
+		/*
 		$event['cp_data'] = array (
 				// For example: a custom field named 'tastes':
 				'pf_tastes' => $social['user_languages_simple'][0],  // Risk of E_NOTICE and NULL.
@@ -376,5 +377,6 @@ class listener implements EventSubscriberInterface
 				time(), 
 				$event['cp_data']
 			);
+		 */
 	}
 }
