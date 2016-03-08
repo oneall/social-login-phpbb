@@ -283,18 +283,19 @@ function social_login_core_callback_handler() {
 
             // Social Login Plugin used?
             if ($data['plugin']['key'] == 'social_login') {
-              // Make sure this social login user has confirmed his email
-              watchdog('social_login', 'login: '. print_r($user_for_token, true)); 
-              if (empty($user_for_token->data['social_login_email_to_confirm'])) {
-              	  watchdog('social_login', 'login: confirmed');
-	              // Make sure that the user has not been blocked.
-	              $state['values']['name'] = $user_for_token->name;
-	              user_login_name_validate(array(), $state);
-	              if (!form_get_errors()) {
-	                // Login user.
-	                $form_state['uid'] = $user_for_token->uid;
-	                user_login_submit(array(), $form_state);
-	              }
+              // Make sure this social login user has confirmed his email, if necessary:
+              if (!empty($user_for_token->data['social_login_email_to_confirm'])) {
+              	drupal_set_message(t('Refer to the welcome message which has been sent to your e-mail address.'), 'warning');
+              }
+              else {
+                // Make sure that the user has not been blocked.
+                $state['values']['name'] = $user_for_token->name;
+                user_login_name_validate(array(), $state);
+                if (!form_get_errors()) {
+                  // Login user.
+                  $form_state['uid'] = $user_for_token->uid;
+                  user_login_submit(array(), $form_state);
+                }
               }
               social_login_core_clear_session();
             }
