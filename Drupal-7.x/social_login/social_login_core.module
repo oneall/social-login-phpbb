@@ -285,7 +285,7 @@ function social_login_core_callback_handler() {
             if ($data['plugin']['key'] == 'social_login') {
               // Make sure this social login user has confirmed his email, if necessary:
               if (!empty($user_for_token->data['social_login_email_to_confirm'])) {
-              	drupal_set_message(t('Refer to the welcome message which has been sent to your e-mail address.'), 'warning');
+              	drupal_set_message(t('Please follow the activation link of the welcome message which has been sent to your e-mail address.'), 'warning');
               }
               else {
                 // Make sure that the user has not been blocked.
@@ -472,7 +472,7 @@ function social_login_core_callback_handler() {
 
                 // The new account has been created correctly.
                 if ($account !== FALSE) {
-
+                	
                   // Disable Drupal legacy registration.
                   $registration_method = 'auto';
 
@@ -502,7 +502,6 @@ function social_login_core_callback_handler() {
                     if ($user_email_is_random !== TRUE) {
                       // No approval required.
                       if ($user_status == 1) {
-                        _user_mail_notify('register_no_approval_required', $user);
                         drupal_set_message(t('You have succesfully created an account and linked it with your @social_network account.', array(
                           '@social_network' => $provider_name,
                         )), 'status');
@@ -698,7 +697,7 @@ function social_login_core_user_login(&$edit, $account) {
 	  	if (!empty($acct->data['social_login_email_to_confirm'])) {
 	  		unset($acct->data['social_login_email_to_confirm']);
 	  		$acct = user_save($acct);
-	  		watchdog('social_login', 'cleared: '. print_r($acct, true));
+	  		watchdog('social_login', 'cleared: '. print_r($acct->uid, true));
 	  	}
   	}
   }
@@ -852,18 +851,10 @@ function social_login_core_mail_alter(&$message) {
 		$acct = empty($message['params']['account']) ? FALSE : $message['params']['account'];
 		// If this is a social login user:
 		if ($acct !== FALSE && social_login_core_get_user_token_for_uid($acct->uid) !== FALSE) {
-			$settings = social_login_core_get_settings();
-		    $registration_method = (!empty($settings['registration_method']) ? $settings['registration_method'] : '');
-		    if ($registration_method <> 'manual') {
-		    	$message['send'] = FALSE;
-		    	watchdog('social_login', 'cancelling email '. print_r($acct->uid, true));
-		    }
-		    else {
-				// block this social login user.
-				$acct->data['social_login_email_to_confirm'] = TRUE;
-				$acct = user_save($acct);
-				watchdog('social_login', 'blocked '. print_r($acct->uid, true));
-		    }
+			// block this social login user.
+			$acct->data['social_login_email_to_confirm'] = TRUE;
+			$acct = user_save($acct);
+			watchdog('social_login', 'blocked '. print_r($acct->uid, true));
 		}
 	}
 }
