@@ -485,18 +485,13 @@ function social_login_core_callback_handler() {
                     social_login_core_link_social_network_avatar($social_data, $account);
                   }
 
-                  // FIXME If email confirmation is required do not login, unless email is random.
-                  if ($user_email_is_random !== TRUE && variable_get('user_email_verification', true)) {
-                  	drupal_set_message(t('A welcome message with further instructions has been sent to your e-mail address.'));
-                  	drupal_goto('user/login');
-                  }
                   // Log the new user in.
                   if (($uid = user_authenticate($user_login, $user_password)) !== FALSE) {
-                    global $user;
-
-                    // Loads a user object.
+                  	global $user;
+                  	
+                  	// Loads a user object.
                     $user = user_load($uid);
-
+                  	
                     // Finalize the login process.
                     $login_array = array(
                       'name' => $user_login,
@@ -855,12 +850,20 @@ function social_login_core_mail_alter(&$message) {
 	
 	if (in_array($message['key'], array('register_admin_created', 'register_no_approval_required'))) {
 		$acct = empty($message['params']['account']) ? FALSE : $message['params']['account'];
-		// We're sending a confirmation email for a social login user, mark as blocked:
+		// If this is a social login user:
 		if ($acct !== FALSE && social_login_core_get_user_token_for_uid($acct->uid) !== FALSE) {
-			// block this user.
-			$acct->data['social_login_email_to_confirm'] = TRUE;
-			$acct = user_save($acct);
-			watchdog('social_login', print_r($acct, true));
+			$settings = social_login_core_get_settings();
+		    $registration_method = (!empty($settings['registration_method']) ? $settings['registration_method'] : '');
+		    if ($registration_method <> 'manual') {
+		    	$message['send'] = FALSE;
+		    	watchdog('social_login', 'cancelling email '. print_r($acct->uid, true));
+		    }
+		    else {
+				// block this social login user.
+				$acct->data['social_login_email_to_confirm'] = TRUE;
+				$acct = user_save($acct);
+				watchdog('social_login', 'blocked '. print_r($acct->uid, true));
+		    }
 		}
 	}
 }
