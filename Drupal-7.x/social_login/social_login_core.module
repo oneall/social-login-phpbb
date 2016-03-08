@@ -283,15 +283,20 @@ function social_login_core_callback_handler() {
 
             // Social Login Plugin used?
             if ($data['plugin']['key'] == 'social_login') {
-
-              // Make sure that the user has not been blocked.
-              $state['values']['name'] = $user_for_token->name;
-              user_login_name_validate(array(), $state);
-              if (!form_get_errors()) {
-                // Login user.
-                $form_state['uid'] = $user_for_token->uid;
-                user_login_submit(array(), $form_state);
+              // Make sure this social login user has confirmed his email
+              watchdog('social_login', 'login: '. print_r($user_for_token, true)); 
+              if (empty($user_for_token->data['social_login_email_to_confirm'])) {
+              	  watchdog('social_login', 'login: confirmed');
+	              // Make sure that the user has not been blocked.
+	              $state['values']['name'] = $user_for_token->name;
+	              user_login_name_validate(array(), $state);
+	              if (!form_get_errors()) {
+	                // Login user.
+	                $form_state['uid'] = $user_for_token->uid;
+	                user_login_submit(array(), $form_state);
+	              }
               }
+              social_login_core_clear_session();
             }
             // Social Link Plugin used?
             elseif ($data['plugin']['key'] == 'social_link') {
@@ -479,6 +484,11 @@ function social_login_core_callback_handler() {
                     social_login_core_link_social_network_avatar($social_data, $account);
                   }
 
+                  // FIXME If email confirmation is required do not login, unless email is random.
+                  if ($user_email_is_random !== TRUE && variable_get('user_email_verification', true)) {
+                  	drupal_set_message(t('A welcome message with further instructions has been sent to your e-mail address.'));
+                  	drupal_goto('user/login');
+                  }
                   // Log the new user in.
                   if (($uid = user_authenticate($user_login, $user_password)) !== FALSE) {
                     global $user;
@@ -685,6 +695,17 @@ function social_login_core_user_login(&$edit, $account) {
       drupal_goto($origin);  // aborts hook processing.
 	}
   }
+  if (preg_match('#user/reset/(\d+)/#', current_path(), $matches) === 1) {
+  	$uid = $matches[1];
+  	if (social_login_core_get_user_token_for_uid($uid) !== FALSE) {
+	  	$acct = user_load($uid);
+	  	if (!empty($acct->data['social_login_email_to_confirm'])) {
+	  		unset($acct->data['social_login_email_to_confirm']);
+	  		$acct = user_save($acct);
+	  		watchdog('social_login', 'cleared: '. print_r($acct, true));
+	  	}
+  	}
+  }
 }
 
 
@@ -822,6 +843,25 @@ function social_login_core_form_alter(&$form, &$form_state) {
     	social_login_core_clear_session();
     }
   }
+}
+
+
+/**
+ * Implements hook_mail_alter().
+ * Cancels email confirmation for social login registrations.
+ */
+function social_login_core_mail_alter(&$message) {
+	
+	if (in_array($message['key'], array('register_admin_created', 'register_no_approval_required'))) {
+		$acct = empty($message['params']['account']) ? FALSE : $message['params']['account'];
+		// We're sending a confirmation email for a social login user, mark as blocked:
+		if ($acct !== FALSE && social_login_core_get_user_token_for_uid($acct->uid) !== FALSE) {
+			// block this user.
+			$acct->data['social_login_email_to_confirm'] = TRUE;
+			$acct = user_save($acct);
+			watchdog('social_login', print_r($acct, true));
+		}
+	}
 }
 
 
