@@ -697,7 +697,6 @@ function social_login_core_user_login(&$edit, $account) {
 	  	if (!empty($acct->data['social_login_email_to_confirm'])) {
 	  		unset($acct->data['social_login_email_to_confirm']);
 	  		$acct = user_save($acct);
-	  		watchdog('social_login', 'cleared: '. print_r($acct->uid, true));
 	  	}
   	}
   }
@@ -854,7 +853,6 @@ function social_login_core_mail_alter(&$message) {
 			// block this social login user.
 			$acct->data['social_login_email_to_confirm'] = TRUE;
 			$acct = user_save($acct);
-			watchdog('social_login', 'blocked '. print_r($acct->uid, true));
 		}
 	}
 }
