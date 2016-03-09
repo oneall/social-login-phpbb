@@ -456,6 +456,20 @@ function social_login_core_callback_handler() {
                   // Call modules that implements the hook.
                   $user_roles = module_invoke_all('social_login_core_default_user_roles', $user_roles);
                 }
+                
+                // User fields (depends on name defined in the administration setup!):
+                $field_firstname = empty($identity['name']['givenName']) ? '' : $identity['name']['givenName'];
+                $field_lastname  = empty($identity['name']['familyName']) ? '' : $identity['name']['familyName'];
+                // If these fields were not provided, guess from displayName:
+                if (empty($field_firstname) or empty($field_lastname)) {
+                	if (!empty($identity['displayName'])) {
+                		$guess = explode(" ", $identity['displayName']);
+                		if (count($guess) >= 2) {
+                			$field_firstname = empty($field_firstname) ? $guess[0] : $field_firstname;
+                			$field_lastname  = empty($field_lastname) ? $guess[1]  : $field_lastname;
+                		}
+                	}
+                }
 
                 // Setup the user fields.
                 $user_fields = array(
@@ -465,6 +479,8 @@ function social_login_core_callback_handler() {
                   'status' => $user_status,
                   'init' => $user_email,
                   'roles' => $user_roles,
+                  'field_first_name' => array(LANGUAGE_NONE => array(0 => array('value' => $field_firstname))),
+                  'field_last_name'  => array(LANGUAGE_NONE => array(0 => array('value' => $field_lastname))), 
                 );
 
                 // Create a new user.
@@ -880,7 +896,7 @@ function social_login_core_form_user_register_form_alter(&$form, &$form_state) {
       $identity = $data['user']['identity'];
       $identity_id = $identity['id'];
       $provider_name = $identity['source']['name'];
-
+      
       // Email.
       $user_email = '';
       $user_email_is_verified = FALSE;
@@ -909,6 +925,22 @@ function social_login_core_form_user_register_form_alter(&$form, &$form_state) {
       // Prepopulate.
       $form['account']['name']['#default_value'] = $user_login;
       $form['account']['mail']['#default_value'] = $user_email;
+      
+      // User fields (depends on name defined in the administration setup!):
+      $user_firstname = empty($identity['name']['givenName']) ? '' : $identity['name']['givenName'];
+      $user_lastname  = empty($identity['name']['familyName']) ? '' : $identity['name']['familyName'];
+      // If these fields were not provided, guess from displayName:
+      if (empty($user_firstname) or empty($user_lastname)) {
+      	if (!empty($identity['displayName'])) {
+      		$guess = explode(" ", $identity['displayName']);
+      		if (count($guess) >= 2) {
+      			$user_firstname = empty($user_firstname) ? $guess[0] : $user_firstname;
+      			$user_lastname  = empty($user_lastname) ? $guess[1] : $user_lastname;
+      		}
+      	}
+      }
+      $form['field_first_name'][LANGUAGE_NONE][0]['value']['#default_value'] = $user_firstname;
+      $form['field_last_name'][LANGUAGE_NONE][0]['value']['#default_value']  = $user_lastname;
 
       // Tell the user what is going on.
       $form['social_login_core_create_account'] = array(
