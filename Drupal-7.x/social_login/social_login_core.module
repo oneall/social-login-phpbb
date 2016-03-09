@@ -846,7 +846,8 @@ function social_login_core_form_alter(&$form, &$form_state) {
  */
 function social_login_core_mail_alter(&$message) {
 	
-	if (in_array($message['key'], array('register_admin_created', 'register_no_approval_required'))) {
+	if (variable_get('user_email_verification', FALSE) &&
+			in_array($message['key'], array('register_admin_created', 'register_no_approval_required'))) {
 		$acct = empty($message['params']['account']) ? FALSE : $message['params']['account'];
 		// If this is a social login user:
 		if ($acct !== FALSE && social_login_core_get_user_token_for_uid($acct->uid) !== FALSE) {
