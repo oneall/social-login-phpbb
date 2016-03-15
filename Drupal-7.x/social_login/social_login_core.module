@@ -488,12 +488,9 @@ function social_login_core_callback_handler() {
                 if ($account !== FALSE) {
                 	
                   if (module_exists('rules')) {
-                  	rules_invoke_event_by_args('social_login_core_user_insert', 
-                  			array(
-                  					'account' => $account,
-                  					'socialprovider' => $identity['provider']
-                  			)
-                  	);
+                  	$oa_fields = social_login_core_listfields($data['user']);
+                  	$oa_fields['account'] = $account;
+                  	rules_invoke_event_by_args('social_login_core_user_insert', $oa_fields); 
                   }
                 
                   // Disable Drupal legacy registration.
@@ -1168,4 +1165,52 @@ function social_login_core_get_available_providers() {
     ),
   );
   return $providers;
+}
+
+/*
+ * Build a flat list of names => values from the profile data, with descriptions.
+ * Used for the Rules module.
+ */
+function social_login_core_listfields($oauser = array()) {
+	$oaid = !empty($oauser['identity']) ? $oauser['identity'] : array();
+	return array(
+		'oneall_usertoken' => array(
+				'value' => (!empty($oauser['user_token']) ? $oauser['user_token'] : ''), 'label' => t('User token'), 'type' => 'text'),
+		'oneall_identity_token' => array(
+				'value' => (!empty($oaid['identity_token']) ? $oaid['identity_token'] : ''), 'label' => t('Identity token'), 'type' => 'text'),
+		'oneall_identity_provider' => array(
+				'value' => (!empty($oaid['provider']) ? $oaid['provider'] : ''), 'label' => t('Social provider'), 'type' => 'text'),
+		'oneall_identity_id' => array(
+				'value' => (!empty($oaid['id']) ? $oaid['id'] : ''), 'label' => t('Social identity ID'), 'type' => 'text'),
+		'oneall_identity_displayname' => array(
+				'value' => (!empty($oaid['displayName']) ? $oaid['displayName'] : ''), 'label' => t('Display name'), 'type' => 'text'),
+		'oneall_identity_formattedname' => array(
+				'value' => (!empty($oaid['name']['formatted']) ? $oaid['name']['formatted'] : ''), 'label' => t('Formatted name'), 'type' => 'text'),
+		'oneall_identity_givenname' => array(
+				'value' => (!empty($oaid['name']['givenName']) ? $oaid['name']['givenName'] : ''), 'label' => t('Given name'), 'type' => 'text'),
+		'oneall_identity_familyname' => array(
+				'value' => (!empty($oaid['name']['familyName']) ? $oaid['name']['familyName'] : ''), 'label' => t('Family name'), 'type' => 'text'),
+		'oneall_identity_preferredname' => array(
+				'value' => (!empty($oaid['preferredUsername']) ? $oaid['preferredUsername'] : ''), 'label' => t('Preferred name'), 'type' => 'text'),
+		'oneall_identity_profileurl' => array(
+				'value' => (!empty($oaid['profileUrl']) ? $oaid['profileUrl'] : ''), 'label' => t('Profile URL'), 'type' => 'text'),
+		'oneall_identity_thumbnailurl' => array(
+				'value' => (!empty($oaid['thumbnailUrl']) ? $oaid['thumbnailUrl'] : ''), 'label' => t('Thumbnail URL'), 'type' => 'text'),
+		'oneall_identity_pictureurl' => array(
+				'value' => (!empty($oaid['pictureUrl']) ? $oaid['pictureUrl'] : ''), 'label' => t('Picture URL'), 'type' => 'text'),
+		'oneall_identity_gender' => array(
+				'value' => (!empty($oaid['gender']) ? $oaid['gender'] : ''), 'label' => t('Gender'), 'type' => 'text'),
+		'oneall_identity_birthday' => array(
+				'value' => (!empty($oaid['birthday']) ? $oaid['birthday'] : ''), 'label' => t('Birthday'), 'type' => 'text'),
+		'oneall_identity_email' => array(
+				'value' => (!empty($oaid['emails'][0]['value']) ? $oaid['emails'][0]['value'] : ''), 'label' => t('Email'), 'type' => 'text'),
+		'oneall_identity_account_domain' => array(
+				'value' => (!empty($oaid['accounts'][0]['domain']) ? $oaid['accounts'][0]['domain'] : ''), 'label' => t('Social account'), 'type' => 'text'),
+		'oneall_identity_account_id' => array(
+				'value' => (!empty($oaid['accounts'][0]['userid']) ? $oaid['accounts'][0]['userid'] : ''), 'label' => t('Social account id'), 'type' => 'text'),
+		'oneall_identity_account_name' => array(
+				'value' => (!empty($oaid['accounts'][0]['username']) ? $oaid['accounts'][0]['username'] : ''), 'label' => t('Social account name'), 'type' => 'text'),
+		'oneall_identity_language' => array(
+				'value' => (!empty($oaid['languages'][0]['value']) ? $oaid['languages'][0]['value'] : ''), 'label' => t('Spoken language'), 'type' => 'text'),
+	);
 }
