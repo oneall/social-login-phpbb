@@ -14,7 +14,7 @@ function social_login_core_rules_event_info() {
     );
 	$oa_fields = social_login_core_listfields();
     foreach ($oa_fields as $name => $desc) {
-    	$oa_vars[$name] = array_intersect_key($desc, array('label' => true, 'type' => true));
+    	$oa_vars[$name] = array_intersect_key($desc, array('label' => true, 'type' => true, 'description' => true));
     }
 	return array(
 		/* Rules event when OneAll user is created */

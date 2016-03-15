@@ -1167,42 +1167,61 @@ function social_login_core_listfields($oauser = array()) {
 	$oaid = !empty($oauser['identity']) ? $oauser['identity'] : array();
 	return array(
 		'oneall_user_token' => array(
-				'value' => (!empty($oauser['user_token']) ? $oauser['user_token'] : ''), 'label' => t('User token'), 'type' => 'text'),
+				'value' => (!empty($oauser['user_token']) ? $oauser['user_token'] : ''), 
+				'label' => t('User token'), 'type' => 'text', 'description' => 'OneAll user token.'),
 		'oneall_identity_token' => array(
-				'value' => (!empty($oaid['identity_token']) ? $oaid['identity_token'] : ''), 'label' => t('Identity token'), 'type' => 'text'),
+				'value' => (!empty($oaid['identity_token']) ? $oaid['identity_token'] : ''), 
+				'label' => t('Identity token'), 'type' => 'text', 'description' => 'OneAll user identity token.'),
 		'oneall_identity_provider' => array(
-				'value' => (!empty($oaid['provider']) ? $oaid['provider'] : ''), 'label' => t('Social provider'), 'type' => 'text'),
+				'value' => (!empty($oaid['provider']) ? $oaid['provider'] : ''), 
+				'label' => t('Social provider'), 'type' => 'text', 'description' => 'Social network provider.'),
 		'oneall_identity_id' => array(
-				'value' => (!empty($oaid['id']) ? $oaid['id'] : ''), 'label' => t('Social identity ID'), 'type' => 'text'),
+				'value' => (!empty($oaid['id']) ? $oaid['id'] : ''), 
+				'label' => t('Social identity ID'), 'type' => 'text', 'description' => 'Social network identity ID.'),
 		'oneall_identity_displayname' => array(
-				'value' => (!empty($oaid['displayName']) ? $oaid['displayName'] : ''), 'label' => t('Display name'), 'type' => 'text'),
+				'value' => (!empty($oaid['displayName']) ? $oaid['displayName'] : ''), 
+				'label' => t('Display name'), 'type' => 'text', 'description' => 'Social network identity displayed name.'),
 		'oneall_identity_formattedname' => array(
-				'value' => (!empty($oaid['name']['formatted']) ? $oaid['name']['formatted'] : ''), 'label' => t('Formatted name'), 'type' => 'text'),
+				'value' => (!empty($oaid['name']['formatted']) ? $oaid['name']['formatted'] : ''), 
+				'label' => t('Formatted name'), 'type' => 'text', 'description' => 'Social network identity formatted full name.'),
 		'oneall_identity_givenname' => array(
-				'value' => (!empty($oaid['name']['givenName']) ? $oaid['name']['givenName'] : ''), 'label' => t('Given name'), 'type' => 'text'),
+				'value' => (!empty($oaid['name']['givenName']) ? $oaid['name']['givenName'] : ''), 
+				'label' => t('Given name'), 'type' => 'text', 'description' => 'Social network identity given name.'),
 		'oneall_identity_familyname' => array(
-				'value' => (!empty($oaid['name']['familyName']) ? $oaid['name']['familyName'] : ''), 'label' => t('Family name'), 'type' => 'text'),
+				'value' => (!empty($oaid['name']['familyName']) ? $oaid['name']['familyName'] : ''), 
+				'label' => t('Family name'), 'type' => 'text', 'description' => 'Social network identity family name.'),
 		'oneall_identity_preferredname' => array(
-				'value' => (!empty($oaid['preferredUsername']) ? $oaid['preferredUsername'] : ''), 'label' => t('Preferred name'), 'type' => 'text'),
+				'value' => (!empty($oaid['preferredUsername']) ? $oaid['preferredUsername'] : ''), 
+				'label' => t('Preferred name'), 'type' => 'text', 'description' => 'Social network identity preferred username.'),
 		'oneall_identity_profileurl' => array(
-				'value' => (!empty($oaid['profileUrl']) ? $oaid['profileUrl'] : ''), 'label' => t('Profile URL'), 'type' => 'text'),
+				'value' => (!empty($oaid['profileUrl']) ? $oaid['profileUrl'] : ''), 
+				'label' => t('Profile URL'), 'type' => 'text', 'description' => 'Social network profile URL.'),
 		'oneall_identity_thumbnailurl' => array(
-				'value' => (!empty($oaid['thumbnailUrl']) ? $oaid['thumbnailUrl'] : ''), 'label' => t('Thumbnail URL'), 'type' => 'text'),
+				'value' => (!empty($oaid['thumbnailUrl']) ? $oaid['thumbnailUrl'] : ''), 
+				'label' => t('Thumbnail URL'), 'type' => 'text', 'description' => 'Social network identity thumbnail picture.'),
 		'oneall_identity_pictureurl' => array(
-				'value' => (!empty($oaid['pictureUrl']) ? $oaid['pictureUrl'] : ''), 'label' => t('Picture URL'), 'type' => 'text'),
+				'value' => (!empty($oaid['pictureUrl']) ? $oaid['pictureUrl'] : ''), 
+				'label' => t('Picture URL'), 'type' => 'text', 'description' => 'Social network identity picture URL.'),
 		'oneall_identity_gender' => array(
-				'value' => (!empty($oaid['gender']) ? $oaid['gender'] : ''), 'label' => t('Gender'), 'type' => 'text'),
+				'value' => (!empty($oaid['gender']) ? $oaid['gender'] : ''), 
+				'label' => t('Gender'), 'type' => 'text', 'description' => 'Social network identity gender.'),
 		'oneall_identity_birthday' => array(
-				'value' => (!empty($oaid['birthday']) ? $oaid['birthday'] : ''), 'label' => t('Birthday'), 'type' => 'text'),
+				'value' => (!empty($oaid['birthday']) ? $oaid['birthday'] : ''), 
+				'label' => t('Birthday'), 'type' => 'text', 'description' => 'Social network identity birthday (string).'),
 		'oneall_identity_email' => array(
-				'value' => (!empty($oaid['emails'][0]['value']) ? $oaid['emails'][0]['value'] : ''), 'label' => t('Email'), 'type' => 'text'),
+				'value' => (!empty($oaid['emails'][0]['value']) ? $oaid['emails'][0]['value'] : ''), 
+				'label' => t('Email'), 'type' => 'text', 'description' => 'Social network identity email (first one listed)'),
 		'oneall_identity_account_domain' => array(
-				'value' => (!empty($oaid['accounts'][0]['domain']) ? $oaid['accounts'][0]['domain'] : ''), 'label' => t('Social account'), 'type' => 'text'),
+				'value' => (!empty($oaid['accounts'][0]['domain']) ? $oaid['accounts'][0]['domain'] : ''), 
+				'label' => t('Social account'), 'type' => 'text', 'description' => 'Social network identity domain for account.'),
 		'oneall_identity_account_id' => array(
-				'value' => (!empty($oaid['accounts'][0]['userid']) ? $oaid['accounts'][0]['userid'] : ''), 'label' => t('Social account id'), 'type' => 'text'),
+				'value' => (!empty($oaid['accounts'][0]['userid']) ? $oaid['accounts'][0]['userid'] : ''), 
+				'label' => t('Social account id'), 'type' => 'text', 'description' => 'Social network identity userid in domain.'),
 		'oneall_identity_account_name' => array(
-				'value' => (!empty($oaid['accounts'][0]['username']) ? $oaid['accounts'][0]['username'] : ''), 'label' => t('Social account name'), 'type' => 'text'),
+				'value' => (!empty($oaid['accounts'][0]['username']) ? $oaid['accounts'][0]['username'] : ''), 
+				'label' => t('Social account name'), 'type' => 'text', 'description' => 'Social network identity username in domain.'),
 		'oneall_identity_language' => array(
-				'value' => (!empty($oaid['languages'][0]['value']) ? $oaid['languages'][0]['value'] : ''), 'label' => t('Spoken language'), 'type' => 'text'),
+				'value' => (!empty($oaid['languages'][0]['value']) ? $oaid['languages'][0]['value'] : ''), 
+				'label' => t('Spoken language'), 'type' => 'text', 'description' => 'Social network identity spoken language (first listed).'),
 	);
 }
