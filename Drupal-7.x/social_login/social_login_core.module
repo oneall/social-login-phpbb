@@ -457,20 +457,6 @@ function social_login_core_callback_handler() {
                   $user_roles = module_invoke_all('social_login_core_default_user_roles', $user_roles);
                 }
                 
-                // User fields (depends on name defined in the administration setup!):
-                $field_firstname = empty($identity['name']['givenName']) ? '' : $identity['name']['givenName'];
-                $field_lastname  = empty($identity['name']['familyName']) ? '' : $identity['name']['familyName'];
-                // If these fields were not provided, guess from displayName:
-                if (empty($field_firstname) or empty($field_lastname)) {
-                	if (!empty($identity['displayName'])) {
-                		$guess = explode(" ", $identity['displayName']);
-                		if (count($guess) >= 2) {
-                			$field_firstname = empty($field_firstname) ? $guess[0] : $field_firstname;
-                			$field_lastname  = empty($field_lastname) ? $guess[1]  : $field_lastname;
-                		}
-                	}
-                }
-
                 // Setup the user fields.
                 $user_fields = array(
                   'name' => $user_login,
@@ -488,9 +474,12 @@ function social_login_core_callback_handler() {
                 if ($account !== FALSE) {
                 	
                   if (module_exists('rules')) {
+                  	$oa_fields_invoke = array('account' => $account);
                   	$oa_fields = social_login_core_listfields($data['user']);
-                  	$oa_fields['account'] = $account;
-                  	rules_invoke_event_by_args('social_login_core_user_insert', $oa_fields); 
+                  	foreach ($oa_fields as $name => $desc) {
+                  		$oa_fields_invoke[$name] = $desc['value'];
+                  	}
+                  	rules_invoke_event_by_args('social_login_core_user_insert', $oa_fields_invoke); 
                   }
                 
                   // Disable Drupal legacy registration.
@@ -931,6 +920,7 @@ function social_login_core_form_user_register_form_alter(&$form, &$form_state) {
       $form['account']['mail']['#default_value'] = $user_email;
       
       // User fields (depends on name defined in the administration setup!):
+      /*
       $user_firstname = empty($identity['name']['givenName']) ? '' : $identity['name']['givenName'];
       $user_lastname  = empty($identity['name']['familyName']) ? '' : $identity['name']['familyName'];
       // If these fields were not provided, guess from displayName:
@@ -943,7 +933,8 @@ function social_login_core_form_user_register_form_alter(&$form, &$form_state) {
       		}
       	}
       }
-      //$form['field_first_name'][LANGUAGE_NONE][0]['value']['#default_value'] = $formfields['field_first_name'];
+      $form['field_first_name'][LANGUAGE_NONE][0]['value']['#default_value'] = $user_firstname;
+      */
       
       // Tell the user what is going on.
       $form['social_login_core_create_account'] = array(
@@ -1169,12 +1160,13 @@ function social_login_core_get_available_providers() {
 
 /*
  * Build a flat list of names => values from the profile data, with descriptions.
- * Used for the Rules module.
+ * Used for the Rules module. 
+ * Used when either invoking the rule and defining the event variables.
  */
 function social_login_core_listfields($oauser = array()) {
 	$oaid = !empty($oauser['identity']) ? $oauser['identity'] : array();
 	return array(
-		'oneall_usertoken' => array(
+		'oneall_user_token' => array(
 				'value' => (!empty($oauser['user_token']) ? $oauser['user_token'] : ''), 'label' => t('User token'), 'type' => 'text'),
 		'oneall_identity_token' => array(
 				'value' => (!empty($oaid['identity_token']) ? $oaid['identity_token'] : ''), 'label' => t('Identity token'), 'type' => 'text'),
