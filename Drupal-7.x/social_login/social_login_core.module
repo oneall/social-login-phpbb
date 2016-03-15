@@ -479,8 +479,6 @@ function social_login_core_callback_handler() {
                   'status' => $user_status,
                   'init' => $user_email,
                   'roles' => $user_roles,
-                  'field_first_name' => array(LANGUAGE_NONE => array(0 => array('value' => $field_firstname))),
-                  'field_last_name'  => array(LANGUAGE_NONE => array(0 => array('value' => $field_lastname))), 
                 );
 
                 // Create a new user.
@@ -489,6 +487,15 @@ function social_login_core_callback_handler() {
                 // The new account has been created correctly.
                 if ($account !== FALSE) {
                 	
+                  if (module_exists('rules')) {
+                  	rules_invoke_event_by_args('social_login_core_user_insert', 
+                  			array(
+                  					'account' => $account,
+                  					'socialprovider' => $identity['provider']
+                  			)
+                  	);
+                  }
+                
                   // Disable Drupal legacy registration.
                   $registration_method = 'auto';
 
@@ -939,9 +946,8 @@ function social_login_core_form_user_register_form_alter(&$form, &$form_state) {
       		}
       	}
       }
-      $form['field_first_name'][LANGUAGE_NONE][0]['value']['#default_value'] = $user_firstname;
-      $form['field_last_name'][LANGUAGE_NONE][0]['value']['#default_value']  = $user_lastname;
-
+      //$form['field_first_name'][LANGUAGE_NONE][0]['value']['#default_value'] = $formfields['field_first_name'];
+      
       // Tell the user what is going on.
       $form['social_login_core_create_account'] = array(
         '#type' => 'item',
