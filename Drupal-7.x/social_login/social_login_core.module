@@ -475,7 +475,7 @@ function social_login_core_callback_handler() {
                 	
                   if (module_exists('rules')) {
                   	$oa_fields_invoke = array('account' => $account);
-                  	$oa_fields = social_login_core_listfields($data['user']);
+                  	$oa_fields = social_login_core_profilefields($data['user']);
                   	foreach ($oa_fields as $name => $desc) {
                   		$oa_fields_invoke[$name] = $desc['value'];
                   	}
@@ -919,8 +919,8 @@ function social_login_core_form_user_register_form_alter(&$form, &$form_state) {
       $form['account']['name']['#default_value'] = $user_login;
       $form['account']['mail']['#default_value'] = $user_email;
       
-      // User fields (depends on name defined in the administration setup!):
-      /*
+      /* 
+      // To prepopulate custom fields, here is an example for field_first_name and field_last_name:
       $user_firstname = empty($identity['name']['givenName']) ? '' : $identity['name']['givenName'];
       $user_lastname  = empty($identity['name']['familyName']) ? '' : $identity['name']['familyName'];
       // If these fields were not provided, guess from displayName:
@@ -934,6 +934,7 @@ function social_login_core_form_user_register_form_alter(&$form, &$form_state) {
       	}
       }
       $form['field_first_name'][LANGUAGE_NONE][0]['value']['#default_value'] = $user_firstname;
+      $form['field_last_name'][LANGUAGE_NONE][0]['value']['#default_value'] = $user_lastname;
       */
       
       // Tell the user what is going on.
@@ -1159,11 +1160,11 @@ function social_login_core_get_available_providers() {
 }
 
 /*
- * Build a flat list of names => values from the profile data, with descriptions.
+ * Build a flat list social profile data.
  * Used for the Rules module. 
- * Used when either invoking the rule and defining the event variables.
+ * Function called both when invoking the rule event and defining the event variables (without arguments).
  */
-function social_login_core_listfields($oauser = array()) {
+function social_login_core_profilefields($oauser = array()) {
 	$oaid = !empty($oauser['identity']) ? $oauser['identity'] : array();
 	return array(
 		'oneall_user_token' => array(
@@ -1174,7 +1175,7 @@ function social_login_core_listfields($oauser = array()) {
 				'label' => t('Identity token'), 'type' => 'text', 'description' => 'OneAll user identity token.'),
 		'oneall_identity_provider' => array(
 				'value' => (!empty($oaid['provider']) ? $oaid['provider'] : ''), 
-				'label' => t('Social provider'), 'type' => 'text', 'description' => 'Social network provider.'),
+				'label' => t('Social provider'), 'type' => 'text', 'description' => 'Social network.'),
 		'oneall_identity_id' => array(
 				'value' => (!empty($oaid['id']) ? $oaid['id'] : ''), 
 				'label' => t('Social identity ID'), 'type' => 'text', 'description' => 'Social network identity ID.'),
