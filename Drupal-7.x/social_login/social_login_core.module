@@ -236,7 +236,7 @@ function social_login_core_callback_handler() {
     // Settings missing.
     if (empty($api_subdomain) || empty($api_key) || empty($api_secret)) {
       drupal_set_message(t('OneAll Social Login is not setup correctly, please request the administrator to verify the API Settings'), 'error');
-      watchdog('social_login_core', 'The API Settings are not filled out correctly', WATCHDOG_ERROR);
+      watchdog('social_login_core', 'The API Settings are not filled out correctly', array(), WATCHDOG_ERROR);
     }
     // Settings filled out.
     else {
@@ -474,12 +474,12 @@ function social_login_core_callback_handler() {
                 if ($account !== FALSE) {
                 	
                   if (module_exists('rules')) {
-                  	$oa_fields_invoke = array('account' => $account);
-                  	$oa_fields = social_login_core_profilefields($data['user']);
-                  	foreach ($oa_fields as $name => $desc) {
-                  		$oa_fields_invoke[$name] = $desc['value'];
-                  	}
-                  	rules_invoke_event_by_args('social_login_core_user_insert', $oa_fields_invoke); 
+                    $oa_fields_invoke = array('account' => $account);
+                    $oa_fields = social_login_core_profilefields($data['user']);
+                    foreach ($oa_fields as $name => $desc) {
+                      $oa_fields_invoke[$name] = $desc['value'];
+                    }
+                    rules_invoke_event_by_args('social_login_core_user_insert', $oa_fields_invoke); 
                   }
                 
                   // Disable Drupal legacy registration.
@@ -561,7 +561,7 @@ function social_login_core_callback_handler() {
         }
       }
       else {
-        watchdog('social_login_core', 'Invalid JSON received from resource', WATCHDOG_ERROR);
+        watchdog('social_login_core', 'Invalid JSON received from resource', array(), WATCHDOG_ERROR);
       }
     }
   }
@@ -677,7 +677,7 @@ function social_login_core_user_login(&$edit, $account) {
       }
     }
     else {
-      watchdog('social_login_core', 'Invalid JSON received from resource', WATCHDOG_ERROR);
+      watchdog('social_login_core', 'Invalid JSON received from resource', array(), WATCHDOG_ERROR);
     }
 
     // Restore to origin.
@@ -919,7 +919,6 @@ function social_login_core_form_user_register_form_alter(&$form, &$form_state) {
       $form['account']['name']['#default_value'] = $user_login;
       $form['account']['mail']['#default_value'] = $user_email;
       
-      /* 
       // To prepopulate custom fields, here is an example for field_first_name and field_last_name:
       $user_firstname = empty($identity['name']['givenName']) ? '' : $identity['name']['givenName'];
       $user_lastname  = empty($identity['name']['familyName']) ? '' : $identity['name']['familyName'];
@@ -935,8 +934,7 @@ function social_login_core_form_user_register_form_alter(&$form, &$form_state) {
       }
       $form['field_first_name'][LANGUAGE_NONE][0]['value']['#default_value'] = $user_firstname;
       $form['field_last_name'][LANGUAGE_NONE][0]['value']['#default_value'] = $user_lastname;
-      */
-      
+
       // Tell the user what is going on.
       $form['social_login_core_create_account'] = array(
         '#type' => 'item',
