@@ -472,16 +472,7 @@ function social_login_core_callback_handler() {
 
                 // The new account has been created correctly.
                 if ($account !== FALSE) {
-                	
-                  if (module_exists('rules')) {
-                    $oa_fields_invoke = array('account' => $account);
-                    $oa_fields = social_login_core_profilefields($data['user']);
-                    foreach ($oa_fields as $name => $desc) {
-                      $oa_fields_invoke[$name] = $desc['value'];
-                    }
-                    rules_invoke_event_by_args('social_login_core_user_insert', $oa_fields_invoke); 
-                  }
-                
+
                   // Disable Drupal legacy registration.
                   $registration_method = 'auto';
 
@@ -621,6 +612,14 @@ function social_login_core_user_insert(&$edit, $account, $category) {
             db_update('users')->fields(array('status' => 0))->condition('uid', $account->uid)->execute();
             break;
         }
+      }
+      if (module_exists('rules')) {
+        $oa_fields_invoke = array('account' => $account);
+        $oa_fields = social_login_core_profilefields($user_data);
+        foreach ($oa_fields as $name => $desc) {
+        	$oa_fields_invoke[$name] = $desc['value'];
+        }
+        rules_invoke_event_by_args('social_login_core_user_insert', $oa_fields_invoke); 
       }
     }
 
@@ -869,7 +868,7 @@ function social_login_core_mail_alter(&$message) {
 
 
 /**
- * Implements hook_form_USER_REGISTER_alter().
+ * Implements hook_form_USER_REGISTER_form_alter().
  */
 function social_login_core_form_user_register_form_alter(&$form, &$form_state) {
 

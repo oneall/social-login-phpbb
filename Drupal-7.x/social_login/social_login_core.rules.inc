@@ -26,3 +26,5 @@ function social_login_core_rules_event_info() {
 			),
 	);
 }
+
+
