@@ -5,9 +5,3 @@ core = 7.x
 configure = admin/config/people/social_login
 dependencies[] = "social_login_core"
 
-; Information added by Drupal.org packaging script on 2014-10-29
-version = "7.x-1.9"
-core = "7.x"
-project = "social_login"
-datestamp = "1414581457"
-
