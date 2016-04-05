@@ -5,7 +5,10 @@ new users and provides permission-based social data retrieved from the social ne
 
 
 ## Installation guide
-https://docs.oneall.com/plugins/guide/social-login-drupal/
+https://docs.oneall.com/plugins/
+https://docs.oneall.com/plugins/guide/social-login-drupal/7/
+https://docs.oneall.com/plugins/guide/social-login-drupal/8/
+
 
 ## Official Drupal Module
 https://www.drupal.org/project/social_login
