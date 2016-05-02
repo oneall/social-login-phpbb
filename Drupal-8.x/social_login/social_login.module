@@ -57,7 +57,7 @@ function social_login_form_USER_FORM_alter(&$form, FormStateInterface $form_stat
  */
 function social_login_form_USER_LOGIN_FORM_alter(&$form, FormStateInterface $form_state, $form_id) {
 
-	if (isset($_SESSION) && empty($_SESSION['social_login_session_open']) && !empty($_SESSION['social_login_session_open'])) {
+	if (isset($_SESSION) && isset($_SESSION['social_login_session_open'])) {
 		// Clear leftover session (none possible on login page, but we may come from an interrupted registration process).
 		social_login_clear_session();
 	}
@@ -368,18 +368,22 @@ function social_login_user_insert($account) {
 				switch ($settings['registration_approval']) {
 					// Disable approval.
 					case 'disable':
-						db_update('users')->fields(array('status' => 1))->condition('uid', $account->id())->execute();
+						$account->activate();
 						break;
 
-						// Enable approval.
+					// Enable approval.
 					case 'enable':
-						db_update('users')->fields(array('status' => 0))->condition('uid', $account->id())->execute();
+						$account->block();
 						break;
 
-						// Use the system-wide setting.
+					// Use the system-wide setting.
 					default:
-						$user_status = \Drupal::config('user.settings')->get('register') == USER_REGISTER_VISITORS ? 1 : 0;
-						db_update('users')->fields(array('status' => $user_status))->condition('uid', $account->id())->execute();
+						if (\Drupal::config('user.settings')->get('register') == USER_REGISTER_VISITORS) {
+							$account->activate();
+						} 
+						else {
+							$account->block();
+						}
 						break;
 				}
 			}
