@@ -14,5 +14,5 @@ social_login.core:
     _title: 'OneAll Social Login Callback'
     _controller: '\Drupal\social_login\Controller\SocialLoginCore::callback_handler'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
     
