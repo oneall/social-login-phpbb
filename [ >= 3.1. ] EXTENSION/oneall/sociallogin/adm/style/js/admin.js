@@ -99,7 +99,7 @@ jQuery.noConflict();
 					var secret = $('#oa_social_login_api_secret').val();
 					
 					/* Do not pass CURL in the URL, this is blocked by some hosts */
-					var handler = (radio_fsockopen_val === 'fsockopen' ? 'fs' : 'cr');
+					var handler = (radio_fsockopen_val === 'fs' ? 'fs' : 'cr');
 					var port = (radio_port_443 === '443' ? 443 : 80);
 					var sid = $('#sid').html();
 
@@ -108,7 +108,7 @@ jQuery.noConflict();
 					  'api_key' : key,
 					  'api_secret' : secret,
 					  'api_connection_port': port,
-					  'api_connection_handler' : handler					  
+					  'api_connection_handler' : handler
 					};
 
 					var ajaxurl = 'index.php?sid=' + sid + '&i=-oneall-sociallogin-acp-sociallogin_acp_module&mode=settings&task=verify_api_settings';
