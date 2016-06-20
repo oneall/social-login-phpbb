@@ -272,7 +272,7 @@ function social_login_widget_show_providers(&$form, &$form_state, $target) {
     //Get Javscript Library
     $js_library = social_login_widget_get_js_library($settings['api_subdomain'], $is_https);
     //Get inline Javascript.
-    $js_inline = social_login_widget_get_js_plugin('social_login', $settings['api_subdomain'], $settings['enabled_providers'], $containerid);
+    $js_inline = social_login_widget_get_js_plugin($plugin_type, $settings['api_subdomain'], $settings['enabled_providers'], $containerid, $token);
     // Add javascript to the form
     $form['content']['#attached']['js'] = array(
         $js_library => array('type' => 'external'),
