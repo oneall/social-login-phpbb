@@ -6,16 +6,16 @@
  */
 
 /**
- * Adds the javascript library.
+ * Gets the path to the javascript library.
  */
-function social_login_widget_add_js_library($subdomain, $https_enabled = FALSE) {
-  drupal_add_js(($https_enabled ? 'https' : 'http') . '://' . $subdomain . '.api.oneall.com/socialize/library.js', 'external');
+function social_login_widget_get_js_library($subdomain, $https_enabled = FALSE) {
+  return ($https_enabled ? 'https' : 'http') . '://' . $subdomain . '.api.oneall.com/socialize/library.js';
 }
 
 /**
- * Adds the social network buttons.
+ * Gets the build code for the social network buttons. Returns the code as a string.
  */
-function social_login_widget_add_js_plugin($plugin_type, $subdomain, $providers, $containerid, $token = NULL) {
+function social_login_widget_get_js_plugin($plugin_type, $subdomain, $providers, $containerid, $token = NULL) {
   global $is_https, $base_url;
 
   // Check required settings.
@@ -24,9 +24,6 @@ function social_login_widget_add_js_plugin($plugin_type, $subdomain, $providers,
     // Build the callback uri.
     $current_uri = social_login_get_current_url($is_https);
     $callback_uri = url('social_login/callback', array('absolute' => TRUE, 'query' => array('origin' => $current_uri)));
-
-    // Add social library.
-    social_login_widget_add_js_library($subdomain, $is_https);
 
     // Build Javascript.
     $js = array();
@@ -39,8 +36,7 @@ function social_login_widget_add_js_plugin($plugin_type, $subdomain, $providers,
     $js[] = "}); <!-- OneAll.com / " . ucwords(str_replace("_", " ", $plugin_type)) . " for Drupal -->";
     $js = implode("\n", $js);
 
-    // Add login buttons.
-    drupal_add_js($js, array('type' => 'inline', 'scope' => 'footer'));
+    return $js;
   }
 }
 
@@ -71,26 +67,33 @@ function social_login_widget_block_info() {
  * Implements hook_block_view().
  */
 function social_login_widget_block_view($delta = '') {
+  global $is_https, $user;
+
   $block = array();
   if ($delta == 'social_login_widget') {
 
     // Read Settings.
     $settings = social_login_widget_get_settings();
 
-    // Read User.
-    global $user;
-
     // Hide the block for logged in users.
     if (empty($user->uid) OR $settings['block_icons_loggedin'] <> 'hide') {
       // Container to add the buttons to.
       $containerid = 'social_login_providers_' . rand(99999, 9999999);
 
-      // Add Javascript.
-      social_login_widget_add_js_plugin('social_login', $settings['api_subdomain'], $settings['enabled_providers'], $containerid);
+      //Get Javscript Library
+      $js_library = social_login_widget_get_js_library($settings['api_subdomain'], $is_https);
+      //Get inline Javascript.
+      $js_inline = social_login_widget_get_js_plugin('social_login', $settings['api_subdomain'], $settings['enabled_providers'], $containerid);
 
       // Setup Block.
       $block['subject'] = t('Login with your Social Network account.');
-      $block['content'] = theme('social_login_widget_provider_container_block', array('containerid' => $containerid));
+      $block['content']['#markup'] = theme('social_login_widget_provider_container_block', array('containerid' => $containerid));
+
+      // Attached cacheable Javascript
+      $block['content']['#attached']['js'] = array(
+        $js_library => array('type' => 'external'),
+        $js_inline => array('type' => 'inline', 'scope' => 'footer'),
+      );
     }
   }
   return $block;
@@ -135,6 +138,8 @@ function social_login_widget_form_user_login_block_alter(&$form, &$form_state) {
  * Generic function called to display the social providers.
  */
 function social_login_widget_show_providers(&$form, &$form_state, $target) {
+
+  global $is_https;
 
   // Read Settings.
   $settings = social_login_widget_get_settings();
@@ -246,9 +251,6 @@ function social_login_widget_show_providers(&$form, &$form_state, $target) {
     // Container to add the buttons to.
     $containerid = 'social_login_providers_' . rand(99999, 9999999);
 
-    // Add javascript to display the plugin.
-    social_login_widget_add_js_plugin($plugin_type, $settings['api_subdomain'], $settings['enabled_providers'], $containerid, $token);
-
     // Show in fieldset.
     if ($widget_in_fieldset) {
       $form['social_login_' . $containerid] = array(
@@ -266,6 +268,16 @@ function social_login_widget_show_providers(&$form, &$form_state, $target) {
         '#weight' => $position,
       );
     }
+
+    //Get Javscript Library
+    $js_library = social_login_widget_get_js_library($settings['api_subdomain'], $is_https);
+    //Get inline Javascript.
+    $js_inline = social_login_widget_get_js_plugin('social_login', $settings['api_subdomain'], $settings['enabled_providers'], $containerid);
+    // Add javascript to the form
+    $form['content']['#attached']['js'] = array(
+        $js_library => array('type' => 'external'),
+        $js_inline => array('type' => 'inline', 'scope' => 'footer'),
+    );
   }
 }
 
