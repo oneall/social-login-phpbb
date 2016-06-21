@@ -48,7 +48,7 @@ class listener implements EventSubscriberInterface
 
 	// @var \phpbb\user
 	protected $user;
-
+	
 	// @var string php_root_path
 	protected $phpbb_root_path;
 
@@ -82,7 +82,8 @@ class listener implements EventSubscriberInterface
 			'core.page_header_after' => 'setup',
 			'core.user_setup' => 'add_language',
 			'core.ucp_profile_reg_details_data' => 'set_oa_user',
-			'core.ucp_profile_reg_details_validate' => 'skip_cur_password_check'
+			'core.ucp_profile_reg_details_validate' => 'skip_cur_password_check',
+			'oneall_sociallogin.user_add_modify_data' => 'modify_data',
 		);
 	}
 
@@ -348,5 +349,34 @@ class listener implements EventSubscriberInterface
 			);
 			return $this->controller_helper->render ('sociallogin_validation_body.html', 'validation');
 		}
+	}
+
+	
+	/**
+	 * Event handler for custom field, 
+	 * and user row modifications.
+	 */
+	public function modify_data ($event)
+	{
+		global $phpbb_log, $user;
+		
+		// Shorthand:
+		$social = $event['social_profile'];
+
+		/*
+		$event['cp_data'] = array (
+				// For example: a custom field named 'tastes':
+				'pf_tastes' => $social['user_languages_simple'][0],  // Risk of E_NOTICE and NULL.
+			);
+		
+		// Remove next lines if logging not needed beyond tests:
+		$phpbb_log->add ('admin', 
+				$user->data['user_id'], 
+				$user->ip, 
+				'LOG_PROFILE_FIELD_EDIT', 
+				time(), 
+				$event['cp_data']
+			);
+		 */
 	}
 }

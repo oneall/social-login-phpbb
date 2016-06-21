@@ -38,7 +38,7 @@ function sociallogin_redirect ($url, $return = false, $disable_cd_check = false)
 class sociallogin_acp_module
 {
 	// Version
-	const USER_AGENT = 'SocialLogin/2.4.10 phpBB/3.1.x (+http://www.oneall.com/)'; 
+	const USER_AGENT = 'SocialLogin/2.4.11 phpBB/3.1.x (+http://www.oneall.com/)'; 
 	
 	// @var \phpbb\config\config
 	protected $config;
@@ -2112,7 +2112,7 @@ class sociallogin_acp_module
 	 */
 	protected function social_login_user_add ($user_random_email, $user_data)
 	{
-		global $db, $auth, $user, $config, $template, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $auth, $user, $config, $template, $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_dispatcher;
 		
 		$error_message = null;
 		$user_id = null;
@@ -2185,8 +2185,22 @@ class sociallogin_acp_module
 			$user_row ['user_new'] = 1;
 		}
 		
-		// Register user.
-		$user_id_tmp = user_add ($user_row, false);
+		/**
+		* Use this event to modify the values to be inserted when a user is added
+		* Inspired by the core event: core.user_add_modify_data (which does not get our profile data)
+		*
+		* @event oneall_sociallogin.user_add_modify_data
+		* @var array	user_row		Array of user details submited to user_add
+		* @var array	cp_data			Array of Custom profile fields submited to user_add
+		* @var array	social_profile	Array of social network profile, as read only
+		*/
+		$cp_data = array();
+		$social_profile = $user_data;  // Copy of profile user_data, updates ignore, to simulate read-only.
+		$evt_vars = array('user_row', 'cp_data', 'social_profile');
+		extract ($phpbb_dispatcher->trigger_event ('oneall_sociallogin.user_add_modify_data', compact ($evt_vars)));
+		
+		// Register user, with optional custom fields.
+		$user_id_tmp = user_add ($user_row, $cp_data);
 		
 		// This should not happen, because the required variables are listed above.
 		if ($user_id_tmp === false)
