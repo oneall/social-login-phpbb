@@ -328,7 +328,7 @@ class sociallogin_acp_module
 		// Check FSOCKOPEN HTTP - Port 80.
 		elseif (self::check_fsockopen (false) == true)
 		{
-			$status_message = 'success|fsockopen_80|' . sprintf ($user->lang ['OA_SOCIAL_LOGIN_API_DETECT_FSOCKOPEN'], 443);
+			$status_message = 'success|fsockopen_80|' . sprintf ($user->lang ['OA_SOCIAL_LOGIN_API_DETECT_FSOCKOPEN'], 80);
 		}
 		// No working handler found.
 		else
