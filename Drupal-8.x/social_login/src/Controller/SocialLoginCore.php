@@ -170,6 +170,45 @@ class SocialLoginCore extends ControllerBase
 								}
 							}
 						}
+						// Not an existing Social Login user, maybe another user linking their account:
+						elseif ($data['plugin']['key'] == 'social_link') {
+
+							// The user should be logged in.
+							$user = \Drupal::currentUser();
+
+							// User is logged in.
+							if (is_object($user) && $user->isAuthenticated()) {
+								// Link identity.
+								if ($data['plugin']['data']['action'] == 'link_identity') {
+									\social_login_map_identity_token_to_user_token($user, $identity_token, $user_token, $provider_name);
+									drupal_set_message(t('The @social_network account has been linked to your account.', array(
+										'@social_network' => $provider_name,
+									)), 'status');
+								}
+								// Unlink identity.
+								else {
+									\social_login_unmap_identity_token($identity_token);
+									drupal_set_message(t('The social network account has been unlinked from your account.'), 'status');
+								}
+
+								// Clear session.
+								\social_login_clear_session();
+
+								// Redirect to profile.
+								\Drupal::logger('social_login')->notice('- '. __FUNCTION__ .'@'. __LINE__ .' redirecting to '. \Drupal::url('user.page'));
+								return new RedirectResponse(\Drupal::url('user.page'));
+							}
+							// User is not logged in.
+							else {
+								drupal_set_message(t('You must be logged in to perform this action.'), 'error');
+
+								// Clear session.
+								\social_login_clear_session();
+
+								// Redirect to home.
+								return new RedirectResponse(\Drupal::url('<front>'));
+							}
+						}
 						// New user.
 						else {
 							
