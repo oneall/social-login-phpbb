@@ -6,10 +6,10 @@ new users and provides permission-based social data retrieved from the social ne
 
 ## Installation guide
 
-#### Drupal 8
+##### Drupal 8
 https://docs.oneall.com/plugins/guide/social-login-drupal/8/
 
-#### Drupal 7 
+##### Drupal 7 
 https://docs.oneall.com/plugins/guide/social-login-drupal/7/
 
 
