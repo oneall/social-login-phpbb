@@ -12,7 +12,7 @@ social_login.core:
   path: /social_login/callback
   defaults:
     _title: 'OneAll Social Login Callback'
-    _controller: '\Drupal\social_login\Controller\SocialLoginCore::callback_handler'
+    _controller: '\Drupal\social_login\Controller\SocialLoginCore::callbackHandler'
   requirements:
     _access: 'TRUE'
     

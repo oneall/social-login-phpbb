@@ -1,8 +1,8 @@
 <?php
+
 /**
  * @file
- * On Install: creates the tables required by the OneAll Social Login module.
- * On UnInstall: removes the previously created tables.
+ * Containes the database tables required by the OneAll Social Login module.
  */
 
 /**
@@ -59,8 +59,8 @@ function social_login_schema() {
       'oasliid',
     ),
   );
-  
-  // new authmap entries (authmap removed in D8).
+
+  // New authmap entries (authmap removed in D8).
   $schema['oneall_social_login_authmap'] = array(
     'description' => 'D7 equivalent authmap entries.',
     'fields' => array(
@@ -122,34 +122,4 @@ function social_login_schema() {
   );
 
   return $schema;
-}
-
-/**
- * Implements hook_install().
- */
-function social_login_install() {
-
-  // Start transaction.
-  $db_transaction = db_transaction();
-
-  // Install.
-  try {
-    drupal_install_schema('oneall_social_login_identities');
-    drupal_install_schema('oneall_social_login_authmap');
-    drupal_install_schema('oneall_social_login_settings');
-  }
-  catch (Exception $e) {
-    $db_transaction->rollback();
-  }
-}
-
-/**
- * Implements hook_uninstall().
- */
-function social_login_uninstall() {
-
-  // Drop tables.
-  drupal_uninstall_schema('oneall_social_login_identities');
-  drupal_uninstall_schema('oneall_social_login_authmap');
-  drupal_uninstall_schema('oneall_social_login_settings');
 }

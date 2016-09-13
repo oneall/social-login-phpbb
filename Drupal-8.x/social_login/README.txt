@@ -1,5 +1,6 @@
 Module:  OneAll Social Login
-Authors: Claude Schlesser <cschlesser@oneall.com>, Frederic Pinel <fpinel@oneall.com>
+Authors: Claude Schlesser <cschlesser@oneall.com>
+Authors: Frederic Pinel <fpinel@oneall.com>
 
 Description
 ===========
@@ -49,8 +50,11 @@ OneAll Social Login for Drupal currently supports the following social
 networks and identity providers:
 
 - Amazon
+- Battle.net
 - Blogger
 - Disqus
+- Draugiem
+- Dribbble
 - Facebook
 - Foursquare
 - Github.com
@@ -62,6 +66,8 @@ networks and identity providers:
 - Odnoklassniki
 - OpenID
 - PayPal
+- Pinterest
+- PixelPin
 - Reddit
 - Skyrock.com		
 - StackExchange
