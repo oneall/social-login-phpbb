@@ -2262,7 +2262,6 @@ class sociallogin_acp_module
 					$messenger = new \messenger (false);
 					$messenger->template ($email_template, $user_row ['user_lang']);
 					$messenger->to ($user_row ['user_email'], $user_row ['username']);
-					$messenger->set_addresses ($user_row);
 					$messenger->anti_abuse_headers ($config, $user);
 					$messenger->assign_vars (array(
 						'WELCOME_MSG' => htmlspecialchars_decode (sprintf ($user->lang ['WELCOME_SUBJECT'], $config ['sitename'])),
