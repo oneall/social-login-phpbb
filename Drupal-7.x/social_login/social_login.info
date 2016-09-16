@@ -1,4 +1,4 @@
-name = "OneAll Social Login"
+name = "OneAll Social Login, Interface"
 description = Allows your users to register and login with 30+ social networks like for example Twitter, Facebook, Paypal, LinkedIn, Instagram, Vimeo, Google and Yahoo 
 package = "OneAll Social Login"
 core = 7.x

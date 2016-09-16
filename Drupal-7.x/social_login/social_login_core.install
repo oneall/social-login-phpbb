@@ -1,8 +1,8 @@
 <?php
+
 /**
  * @file
- * On Install: creates the tables required by the OneAll Social Login module.
- * On UnInstall: removes the previously created tables.
+ * Creates/removes the tables required by the OneAll Social Login module.
  */
 
 /**
@@ -79,7 +79,7 @@ function social_login_core_schema() {
       'value' => array(
         'description' => 'The value of the setting.',
         'type' => 'varchar',
-        'length' => '64',
+        'length' => '255',
         'not null' => TRUE,
       ),
     ),
@@ -94,35 +94,4 @@ function social_login_core_schema() {
   );
 
   return $schema;
-}
-
-/**
- * Implements hook_install().
- */
-function social_login_core_install() {
-
-  // Start transaction.
-  $db_transaction = db_transaction();
-
-  // Install.
-  try {
-    drupal_install_schema('oneall_social_login_identities');
-    drupal_install_schema('oneall_social_login_settings');
-  }
-  catch (Exception $e) {
-    $db_transaction->rollback();
-  }
-}
-
-/**
- * Implements hook_uninstall().
- */
-function social_login_core_uninstall() {
-
-  // Drop tables.
-  drupal_uninstall_schema('oneall_social_login_identities');
-  drupal_uninstall_schema('oneall_social_login_settings');
-
-  // Remove entries that the module might have created.
-  db_delete('authmap')->condition('module', 'oneall_social_login')->execute();
 }

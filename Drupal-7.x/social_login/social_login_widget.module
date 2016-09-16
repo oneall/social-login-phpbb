@@ -6,34 +6,47 @@
  */
 
 /**
- * Gets the path to the javascript library.
+ * Return the URL of the JavaScript library.
  */
 function social_login_widget_get_js_library($subdomain, $https_enabled = FALSE) {
-  return ($https_enabled ? 'https' : 'http') . '://' . $subdomain . '.api.oneall.com/socialize/library.js';
+  return (($https_enabled ? 'https' : 'http') . '://' . $subdomain . '.api.oneall.com/socialize/library.js');
 }
 
 /**
- * Gets the build code for the social network buttons. Returns the code as a string.
+ * Builds the code for the social network buttons and returns it as string.
  */
-function social_login_widget_get_js_plugin($plugin_type, $subdomain, $providers, $containerid, $token = NULL) {
+function social_login_widget_get_js_plugin($plugin_type, $subdomain, $providers, $containerid, $user_token = '') {
   global $is_https, $base_url;
 
   // Check required settings.
   if (!empty($containerid) AND !empty($subdomain)) {
 
+  	// We cannot redirect to a page build using Ajax. 
+  	if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+  		$origin = $base_url;
+  	} else {
+  		$origin = social_login_get_current_url($is_https);
+  	}
+  	
     // Build the callback uri.
-    $current_uri = social_login_get_current_url($is_https);
-    $callback_uri = url('social_login/callback', array('absolute' => TRUE, 'query' => array('origin' => $current_uri)));
+    $callback_uri = url('social_login/callback', array('absolute' => TRUE, 'query' => array ('origin' => $origin)));
 
     // Build Javascript.
     $js = array();
-    $js[] = "oneall.api.plugins." . $plugin_type . ".build(\"" . $containerid . "\", {";
-    $js[] = " 'providers' : ['" . implode("','", $providers) . "'],";
-    $js[] = " 'callback_uri': '" . $callback_uri . "', ";
-    $js[] = " 'force_reauth' : " . ($plugin_type == 'social_link' ? 'true' : 'false') . ", ";
-    $js[] = " 'user_token': '" . (!empty($token) ? $token : '') . "', ";
-    $js[] = " 'css_theme_uri' : '" . (($is_https ? 'https://secure.' : ' http://public.') . 'oneallcdn.com/css/api/socialize/themes/drupal/default.css') . "' ";
-    $js[] = "}); <!-- OneAll.com / " . ucwords(str_replace("_", " ", $plugin_type)) . " for Drupal -->";
+    $js[] = "var _oneall = _oneall || [];";
+    $js[] = "_oneall.push(['". $plugin_type ."', 'set_providers', ['". implode("','", $providers) . "']]);";
+    $js[] = "_oneall.push(['". $plugin_type ."', 'set_callback_uri', '". $callback_uri ."']);";  
+    
+    if ($plugin_type == 'social_link') {
+      $js[] = "_oneall.push(['". $plugin_type ."', 'set_force_re_authentication', true]);";
+      
+      if ( ! empty ($user_token)) {
+        $js[] = "_oneall.push(['". $plugin_type ."', 'set_user_token', '". $user_token ."']);";
+      }
+    }
+    
+    $js[] = "_oneall.push(['". $plugin_type ."', 'do_render_ui', '". $containerid ."']);";
+    $js[] = "<!-- OneAll.com / Social Login for Drupal -->";
     $js = implode("\n", $js);
 
     return $js;
@@ -41,13 +54,45 @@ function social_login_widget_get_js_plugin($plugin_type, $subdomain, $providers,
 }
 
 /**
- * Returns the current url.
+ * Returns the current url of the page.
  */
 function social_login_get_current_url($https_enabled = FALSE) {
-  $request_uri = ((!isset($_SERVER['REQUEST_URI'])) ? $_SERVER['PHP_SELF'] : $_SERVER['REQUEST_URI']);
-  $request_port = ((!empty($_SERVER['SERVER_PORT']) AND $_SERVER['SERVER_PORT'] <> '80') ? (":" . $_SERVER['SERVER_PORT']) : '');
-  $request_protocol = ($https_enabled ? 'https' : 'http') . "://";
-  $redirect_to = $request_protocol . $_SERVER['SERVER_NAME'] . $request_port . $request_uri;
+
+  // Curent URI.
+  $request_uri = (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : $_SERVER['PHP_SELF']);
+
+  // Pantheon.io (only provides port 80 and 443)
+  if (isset($_SERVER['PANTHEON_ENVIRONMENT'])) {
+    $redirect_to = $_SERVER['HTTP_X_PROTO'] . $_SERVER['HTTP_HOST'] . $request_uri;
+  }
+  // Default.
+  else {
+    // Request Host.
+    $request_host = (isset($_SERVER['HTTP_X_FORWARDED_HOST']) ? $_SERVER['HTTP_X_FORWARDED_HOST'] : (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME']));
+
+    // Request Protocol.
+    $request_protocol = ($https_enabled ? 'https' : 'http');
+
+    // SERVER_PORT is usually wrong on proxies, don't use it!
+    if (isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
+      $request_port = intval($_SERVER['HTTP_X_FORWARDED_PORT']);
+    }
+    // Does not seem like a proxy.
+    elseif (isset($_SERVER['SERVER_PORT'])) {
+      $request_port = intval($_SERVER['SERVER_PORT']);
+    }
+    // No port.
+    else {
+      $request_port = '';
+    }
+
+    // Remove standard ports.
+    $request_port = (!in_array($request_port, array(80, 443)) ? $request_port : '');
+
+    // Build url.
+    $redirect_to = $request_protocol . '://' . $request_host . (!empty($request_port) ? (':' . $request_port) : '') . $request_uri;
+  }
+
   return $redirect_to;
 }
 
@@ -82,6 +127,7 @@ function social_login_widget_block_view($delta = '') {
 
       //Get Javscript Library
       $js_library = social_login_widget_get_js_library($settings['api_subdomain'], $is_https);
+      
       //Get inline Javascript.
       $js_inline = social_login_widget_get_js_plugin('social_login', $settings['api_subdomain'], $settings['enabled_providers'], $containerid);
 
@@ -150,8 +196,8 @@ function social_login_widget_show_providers(&$form, &$form_state, $target) {
   // Show in fieldset?
   $widget_in_fieldset = FALSE;
 
-  // Unique token.
-  $token = '';
+  // OneAll User Token.
+  $user_token = '';
 
   // Where are the buttons shown?
   switch ($target) {
@@ -212,7 +258,7 @@ function social_login_widget_show_providers(&$form, &$form_state, $target) {
         global $user;
 
         // Unique token.
-        $token = social_login_core_get_user_token_for_uid($user->uid);
+        $user_token = social_login_core_get_user_token_for_uid($user->uid);
 
         // Type of plugin.
         $plugin_type = 'social_link';
@@ -248,35 +294,50 @@ function social_login_widget_show_providers(&$form, &$form_state, $target) {
 
   // Enabled.
   if ($widget_enabled === TRUE) {
+  	
     // Container to add the buttons to.
     $containerid = 'social_login_providers_' . rand(99999, 9999999);
 
+    // Icon Block
+    $social_login_block =  theme('html_tag', array('element' => array(
+    	'#tag' => 'script',
+    	'#value_prefix' => "\n<!--//--><![CDATA[//><!--\n",
+    	'#value' => social_login_widget_get_js_plugin($plugin_type, $settings['api_subdomain'], $settings['enabled_providers'], $containerid, $user_token),
+    	'#value_suffix' => "\n//--><!]]>\n",
+    	'#attributes' => array(
+    		'type' => 'text/javascript',
+    	)
+     )));    
+    
     // Show in fieldset.
     if ($widget_in_fieldset) {
+    	
       $form['social_login_' . $containerid] = array(
         '#type' => 'fieldset',
         '#title' => $title,
         '#weight' => $position,
       );
+      
       $form['social_login_' . $containerid]['inner_block'] = array(
         '#prefix' => theme('social_login_widget_provider_container', array('containerid' => $containerid, 'label' => '')),
+      	'#suffix' => $social_login_block,
       );
     }
     else {
+    	
       $form['social_login_' . $containerid] = array(
         '#prefix' => theme('social_login_widget_provider_container', array('containerid' => $containerid, 'label' => $title)),
+      	'#suffix' => $social_login_block,
         '#weight' => $position,
       );
     }
 
     //Get Javscript Library
     $js_library = social_login_widget_get_js_library($settings['api_subdomain'], $is_https);
-    //Get inline Javascript.
-    $js_inline = social_login_widget_get_js_plugin($plugin_type, $settings['api_subdomain'], $settings['enabled_providers'], $containerid, $token);
+    
     // Add javascript to the form
     $form['content']['#attached']['js'] = array(
-        $js_library => array('type' => 'external'),
-        $js_inline => array('type' => 'inline', 'scope' => 'footer'),
+        $js_library => array('type' => 'external')
     );
   }
 }

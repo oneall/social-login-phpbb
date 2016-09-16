@@ -160,7 +160,7 @@ function social_login_admin_settings($form, &$form_state) {
     '#title' => t('Social Login Icons: Caption [Leave empty for none]'),
     '#default_value' => (!isset($settings['side_panel_caption']) ? t('Register/Login with:') : $settings['side_panel_caption']),
     '#size' => 60,
-    '#maxlength' => 60,
+    '#maxlength' => 255,
     '#description' => t('This is the title displayed above the social network icons.'),
   );
 
@@ -187,7 +187,7 @@ function social_login_admin_settings($form, &$form_state) {
     '#title' => t('Social Login Icons: Caption [Leave empty for none]'),
     '#default_value' => (!isset($settings['login_page_caption']) ? t('Login with:') : $settings['login_page_caption']),
     '#size' => 60,
-    '#maxlength' => 60,
+    '#maxlength' => 255,
     '#description' => t('This is the title displayed above the social network icons.'),
   );
 
@@ -214,7 +214,7 @@ function social_login_admin_settings($form, &$form_state) {
     '#title' => t('Social Login Icons: Caption [Leave empty for none]'),
     '#default_value' => (!isset($settings['registration_page_caption']) ? t('Instantly register with:') : $settings['registration_page_caption']),
     '#size' => 60,
-    '#maxlength' => 60,
+    '#maxlength' => 255,
     '#description' => t('This is the title displayed above the social network icons.'),
   );
 
@@ -241,7 +241,7 @@ function social_login_admin_settings($form, &$form_state) {
     '#title' => t('Social Login Icons: Caption [Leave empty for none]'),
     '#default_value' => (!isset($settings['profile_page_caption']) ? t('Link your account to a social network:') : $settings['profile_page_caption']),
     '#size' => 60,
-    '#maxlength' => 60,
+    '#maxlength' => 255,
     '#description' => t('This is the title displayed above the social network icons.'),
   );
 

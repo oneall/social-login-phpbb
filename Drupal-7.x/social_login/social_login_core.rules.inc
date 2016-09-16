@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Functions for integrating the Oneall Social Login module with Rules.
