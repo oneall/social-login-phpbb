@@ -25,6 +25,16 @@
  */
 namespace oneall\sociallogin\acp;
 
+
+function sociallogin_redirect ($url, $return = false, $disable_cd_check = false)
+{
+	$mod_url = redirect ($url, $return, $disable_cd_check);
+	// If we did not redirect, we're now here, so force the redirect to the new URL.
+	garbage_collection();
+	header('Location: ' . $mod_url);
+	exit;
+}
+
 class sociallogin_acp_module
 {
 	// Version
@@ -318,7 +328,7 @@ class sociallogin_acp_module
 		// Check FSOCKOPEN HTTP - Port 80.
 		elseif (self::check_fsockopen (false) == true)
 		{
-			$status_message = 'success|fsockopen_80|' . sprintf ($user->lang ['OA_SOCIAL_LOGIN_API_DETECT_FSOCKOPEN'], 443);
+			$status_message = 'success|fsockopen_80|' . sprintf ($user->lang ['OA_SOCIAL_LOGIN_API_DETECT_FSOCKOPEN'], 80);
 		}
 		// No working handler found.
 		else
@@ -1224,10 +1234,7 @@ class sociallogin_acp_module
 			$result->http_error = null;
 			
 			// Check if we have a redirection header
-			if (in_array ($result->http_code, array(
-				301,
-				302 
-			)) && $num_redirects < 4)
+			if (in_array ($result->http_code, array(301, 302)) && $num_redirects < 4)
 			{
 				// Make sure we have http headers
 				if (is_array ($result->http_headers))
@@ -1952,7 +1959,7 @@ class sociallogin_acp_module
 										$this->do_login ($user_id_login_token);
 										
 										// Redirect to the same page
-										redirect (append_sid (self::get_current_url ()));
+										\oneall\sociallogin\acp\sociallogin_redirect (append_sid (self::get_current_url ()));
 									}
 								}
 							}
@@ -2102,7 +2109,7 @@ class sociallogin_acp_module
 	 */
 	protected function social_login_user_add ($user_random_email, $user_data)
 	{
-		global $db, $auth, $user, $config, $template, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $auth, $user, $config, $template, $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_dispatcher;
 		
 		$error_message = null;
 		$user_id = null;
@@ -2175,8 +2182,22 @@ class sociallogin_acp_module
 			$user_row ['user_new'] = 1;
 		}
 		
-		// Register user.
-		$user_id_tmp = user_add ($user_row, false);
+		/**
+		* Use this event to modify the values to be inserted when a user is added
+		* Inspired by the core event: core.user_add_modify_data (which does not get our profile data)
+		*
+		* @event oneall_sociallogin.user_add_modify_data
+		* @var array	user_row		Array of user details submited to user_add
+		* @var array	cp_data			Array of Custom profile fields submited to user_add
+		* @var array	social_profile	Array of social network profile, as read only
+		*/
+		$cp_data = array();
+		$social_profile = $user_data;  // Copy of profile user_data, updates ignore, to simulate read-only.
+		$evt_vars = array('user_row', 'cp_data', 'social_profile');
+		extract ($phpbb_dispatcher->trigger_event ('oneall_sociallogin.user_add_modify_data', compact ($evt_vars)));
+		
+		// Register user, with optional custom fields.
+		$user_id_tmp = user_add ($user_row, $cp_data);
 		
 		// This should not happen, because the required variables are listed above.
 		if ($user_id_tmp === false)
@@ -2238,7 +2259,6 @@ class sociallogin_acp_module
 					$messenger = new \messenger (false);
 					$messenger->template ($email_template, $user_row ['user_lang']);
 					$messenger->to ($user_row ['user_email'], $user_row ['username']);
-					$messenger->set_addresses ($user_row);
 					$messenger->anti_abuse_headers ($config, $user);
 					$messenger->assign_vars (array(
 						'WELCOME_MSG' => htmlspecialchars_decode (sprintf ($user->lang ['WELCOME_SUBJECT'], $config ['sitename'])),
@@ -2302,7 +2322,7 @@ class sociallogin_acp_module
 	 */
 	protected function social_login_redirect ($error_message, $user_id, $user_data)
 	{
-		global $user, $phpbb_root_path, $phpEx;
+		global $user, $phpbb_root_path, $phpEx, $config;
 		
 		// Display an error message
 		if (isset ($error_message))
@@ -2324,7 +2344,7 @@ class sociallogin_acp_module
 				// Redirect to a custom page
 				if (!empty ($config ['oa_social_login_redirect']))
 				{
-					redirect ($config ['oa_social_login_redirect'], false, true);
+					\oneall\sociallogin\acp\sociallogin_redirect (append_sid ($config ['oa_social_login_redirect']), false, true);
 				}
 				
 				// Do not stay on the login/registration page
@@ -2333,17 +2353,17 @@ class sociallogin_acp_module
 					'register' 
 				)))
 				{
-					redirect (append_sid ($phpbb_root_path . 'index.' . $phpEx));
+					\oneall\sociallogin\acp\sociallogin_redirect (append_sid ($phpbb_root_path . 'index.' . $phpEx));
 				}
 				
 				// If the user validated his credentials, then the original page is in session data:
 				if (isset ($user_data ['redirect']))
 				{
-					redirect (append_sid ($user_data ['redirect']));
+					\oneall\sociallogin\acp\sociallogin_redirect (append_sid ($user_data ['redirect']));
 				}
 				
 				// Redirect to the same page
-				redirect (append_sid (self::get_current_url ()));
+				\oneall\sociallogin\acp\sociallogin_redirect (append_sid (self::get_current_url ()));
 			}
 		}
 	}
