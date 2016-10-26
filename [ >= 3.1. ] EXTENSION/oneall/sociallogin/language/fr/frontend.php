@@ -4,7 +4,7 @@
 * OneAll Social Login extension for the phpBB Forum Software package.
 * French translation by Galixte (http://www.galixte.com)
 *
-* @copyright (c) 2013-2015 <http://www.oneall.com> - All rights reserved.
+* @copyright (c) 2013-2016 <http://www.oneall.com> - All rights reserved.
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */

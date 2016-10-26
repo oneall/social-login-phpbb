@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   	OneAll Social Login
- * @copyright 	Copyright 2013-2015 http://www.oneall.com - All rights reserved.
+ * @copyright 	Copyright 2013-2016 http://www.oneall.com - All rights reserved.
  * @license   	GNU/GPL 2 or later
  *
  * This program is free software; you can redistribute it and/or
@@ -83,8 +83,8 @@ $lang = array_merge ($lang, array (
 	'OA_SOCIAL_LOGIN_DO_VALIDATION' => 'Prompt validation of new user’s profile ?',
 	'OA_SOCIAL_LOGIN_DO_VALIDATION_ALWAYS' => 'Enable profile validation',
 	'OA_SOCIAL_LOGIN_DO_VALIDATION_ASK' => 'Prompt new users to validate username and email ?',
-	'OA_SOCIAL_LOGIN_DO_VALIDATION_DEPENDS' => 'Exceptional profile validation',
-	'OA_SOCIAL_LOGIN_DO_VALIDATION_DESC' => 'If enabled, new users will be asked to complete or review their username and email address.<br /> If selected, exceptional validation occurs when username is taken, email is missing, email is taken but automatic Social Linking is disabled.',
+	'OA_SOCIAL_LOGIN_DO_VALIDATION_DEPENDS' => 'Profile validation if necessary',
+	'OA_SOCIAL_LOGIN_DO_VALIDATION_DESC' => 'If enabled, new users will be asked to complete or review their username and email address.<br /> The necessary validation only occurs in case the username is taken, the email address is missing or the email address is taken and Social Link is disabled.',
 	'OA_SOCIAL_LOGIN_DO_VALIDATION_NEVER' => 'Disable profile validation',
 	'OA_SOCIAL_LOGIN_ENABLE_NETWORKS' => 'Choose the social networks to enable on your forum',
 	'OA_SOCIAL_LOGIN_ENABLE_SOCIAL_NETWORK' => 'You have to enable at least one social network',

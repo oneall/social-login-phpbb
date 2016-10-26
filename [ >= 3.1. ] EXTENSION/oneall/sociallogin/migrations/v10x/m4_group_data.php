@@ -1,7 +1,8 @@
 <?php
+
 /**
  * @package   	OneAll Social Login
- * @copyright 	Copyright 2013-2015 http://www.oneall.com - All rights reserved.
+ * @copyright 	Copyright 2013-2016 http://www.oneall.com - All rights reserved.
  * @license   	GNU/GPL 2 or later
  *
  * This program is free software; you can redistribute it and/or
@@ -29,35 +30,51 @@ namespace oneall\sociallogin\migrations\v10x;
  */
 class m4_group_data extends \phpbb\db\migration\migration
 {
-	
+
 	public function update_data ()
 	{
-		return array (
-			array ('custom', array (array ($this, 'add_group_register_oneall'))),
+		return array(
+			array(
+				'custom',
+				array(
+					array(
+						$this,
+						'add_group_register_oneall' 
+					) 
+				) 
+			) 
 		);
 	}
-	
+
 	public function add_group_register_oneall ()
 	{
-		$group_data = array (
-				'group_type' => GROUP_SPECIAL,
-				'group_name' => 'OA_SOCIAL_LOGIN_REGISTER',
-				'group_desc' => 'Members registered via OneAll social login',
+		$group_data = array(
+			'group_type' => GROUP_SPECIAL,
+			'group_name' => 'OA_SOCIAL_LOGIN_REGISTER',
+			'group_desc' => 'Members registered via OneAll social login' 
 		);
-		$sql = 'INSERT INTO '. GROUPS_TABLE .' '. $this->db->sql_build_array('INSERT', $group_data);
+		$sql = 'INSERT INTO ' . GROUPS_TABLE . ' ' . $this->db->sql_build_array ('INSERT', $group_data);
 		$this->db->sql_query ($sql);
 	}
-	
+
 	public function revert_data ()
 	{
-		return array (
-			array ('custom', array (array ($this, 'del_group_register_oneall'))),
+		return array(
+			array(
+				'custom',
+				array(
+					array(
+						$this,
+						'del_group_register_oneall' 
+					) 
+				) 
+			) 
 		);
 	}
-	
+
 	public function del_group_register_oneall ()
 	{
-		$sql = 'DELETE FROM '. GROUPS_TABLE ." WHERE group_name = 'OA_SOCIAL_LOGIN_REGISTER'";
+		$sql = 'DELETE FROM ' . GROUPS_TABLE . " WHERE group_name = 'OA_SOCIAL_LOGIN_REGISTER'";
 		$this->db->sql_query ($sql);
 	}
 }
