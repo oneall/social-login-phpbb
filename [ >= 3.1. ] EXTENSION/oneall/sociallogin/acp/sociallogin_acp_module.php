@@ -145,7 +145,11 @@ class sociallogin_acp_module
 		
 		// Login Page.
 		$oa_social_login_login_page_disable = ((isset ($config ['oa_social_login_login_page_disable']) && $config ['oa_social_login_login_page_disable'] == '1') ? '1' : '0');
-		$oa_social_login_login_page_caption = (isset ($config ['oa_social_login_login_page_caption']) ? $config ['oa_social_login_login_page_caption'] : 'Login with your social network account');
+        $oa_social_login_login_page_caption = (isset ($config ['oa_social_login_login_page_caption']) ? $config ['oa_social_login_login_page_caption'] : 'Login with your social network account');
+
+        // Login Page - Inline.
+		$oa_social_login_inline_page_disable = ((isset ($config ['oa_social_login_inline_page_disable']) && $config ['oa_social_login_inline_page_disable'] == '1') ? '1' : '0');
+        $oa_social_login_inline_page_caption = (isset ($config ['oa_social_login_inline_page_caption']) ? $config ['oa_social_login_inline_page_caption'] : 'or Login with your social network account');
 		
 		// Registration Page.
 		$oa_social_login_registration_page_disable = ((isset ($config ['oa_social_login_registration_page_disable']) && $config ['oa_social_login_registration_page_disable'] == '1') ? '1' : '0');
@@ -223,6 +227,10 @@ class sociallogin_acp_module
 			$oa_social_login_login_page_disable = ((request_var ('oa_social_login_login_page_disable', 0) == 1) ? 1 : 0);
 			$oa_social_login_login_page_caption = request_var ('oa_social_login_login_page_caption', '', true);
 			
+			// Login page inline, default 1.
+			$oa_social_login_inline_page_disable = ((request_var ('oa_social_login_inline_page_disable', 0) == 1) ? 1 : 0);
+            $oa_social_login_linline_page_caption = request_var ('oa_social_login_inline_page_caption', '', true);
+
 			// Registration page, default 1.
 			$oa_social_login_registration_page_disable = ((request_var ('oa_social_login_registration_page_disable', 0) == 1) ? 1 : 0);
 			$oa_social_login_registration_page_caption = request_var ('oa_social_login_registration_page_caption', '', true);
@@ -248,6 +256,8 @@ class sociallogin_acp_module
 			set_config ('oa_social_login_api_connection_port', $oa_social_login_api_connection_port);
 			set_config ('oa_social_login_login_page_disable', $oa_social_login_login_page_disable);
 			set_config ('oa_social_login_login_page_caption', $oa_social_login_login_page_caption);
+			set_config ('oa_social_login_inline_page_disable', $oa_social_login_inline_page_disable);
+			set_config ('oa_social_login_inline_page_caption', $oa_social_login_inline_page_caption);
 			set_config ('oa_social_login_registration_page_disable', $oa_social_login_registration_page_disable);
 			set_config ('oa_social_login_registration_page_caption', $oa_social_login_registration_page_caption);
 			set_config ('oa_social_login_index_page_disable', $oa_social_login_index_page_disable);
@@ -288,6 +298,8 @@ class sociallogin_acp_module
 			'OA_SOCIAL_LOGIN_API_CONNECTION_PORT_80' => ($oa_social_login_api_connection_port == '80'),
 			'OA_SOCIAL_LOGIN_LOGIN_PAGE_DISABLE' => ($oa_social_login_login_page_disable == '1'),
 			'OA_SOCIAL_LOGIN_LOGIN_PAGE_CAPTION' => $oa_social_login_login_page_caption,
+			'OA_SOCIAL_LOGIN_INLINE_PAGE_DISABLE' => ($oa_social_login_inline_page_disable == '1'),
+			'OA_SOCIAL_LOGIN_INLINE_PAGE_CAPTION' => $oa_social_login_inline_page_caption,
 			'OA_SOCIAL_LOGIN_REGISTRATION_PAGE_DISABLE' => ($oa_social_login_registration_page_disable == '1'),
 			'OA_SOCIAL_LOGIN_REGISTRATION_PAGE_CAPTION' => $oa_social_login_registration_page_caption,
 			'OA_SOCIAL_LOGIN_INDEX_PAGE_DISABLE' => ($oa_social_login_index_page_disable == '1'),

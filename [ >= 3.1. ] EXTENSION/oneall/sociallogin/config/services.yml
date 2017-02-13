@@ -12,3 +12,6 @@ services:
             - %core.php_ext%
         tags:
             - { name: event.listener }
+
+imports:
+    - { resource: auth.yml }    

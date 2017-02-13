@@ -204,6 +204,17 @@ class listener implements EventSubscriberInterface
 							$this->template->assign_var ('OA_SOCIAL_LOGIN_PAGE_CAPTION', $this->config ['oa_social_login_login_page_caption']);
 						}
 					}
+					if (empty ($this->config ['oa_social_login_inline_page_disable']))
+					{
+						// Trigger icons.
+						$this->template->assign_var ('OA_SOCIAL_LOGIN_EMBED_SOCIAL_LOGIN_INLINE', 1);
+
+						// Set caption
+						if (! empty ($this->config ['oa_social_login_inline_page_caption']))
+						{
+							$this->template->assign_var ('OA_SOCIAL_LOGIN_INLINE_PAGE_CAPTION', $this->config ['oa_social_login_inline_page_caption']);
+						}
+					}
 				}
 				// Embed on the registration page ?
 				elseif (request_var ('mode', '') == 'register')
