@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   	OneAll Social Login
- * @copyright 	Copyright 2013-2016 http://www.oneall.com - All rights reserved.
+ * @copyright 	Copyright 2011-2017 http://www.oneall.com
  * @license   	GNU/GPL 2 or later
  *
  * This program is free software; you can redistribute it and/or
@@ -271,7 +271,7 @@ class listener implements EventSubscriberInterface
 				$user_data ['redirect'] = $sociallogin->get_current_url ();
 				$json_user_data = @json_encode ($user_data);
 				$sociallogin->put_session_validation_data ($this->user->data['session_id'], $json_user_data);
-				\oneall\sociallogin\acp\sociallogin_redirect ($this->controller_helper->route ("oneall_sociallogin_validate"));
+				\oneall\sociallogin\acp\sociallogin_acp_module::redirect ($this->controller_helper->route ("oneall_sociallogin_validate"));
 			}
 		}
 	}

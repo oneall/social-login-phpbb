@@ -3,6 +3,15 @@ Social Login for phpBB allows your users to login and register with 25+ social n
 It increases your phpBB user registration rate by simplifying the registration process for 
 new users and provides permission-based social data retrieved from the social network profiles.
 
+## Contributors ##
+
+* Galixte (http://www.galixte.com)
+	French translations
+
+* Chris Vavruska (https://github.com/vavruska)
+	OneAll Authentication Provider
+	
+Many Thanks!
 
 ## Installation guide
 https://docs.oneall.com/plugins/guide/social-login-phpbb/

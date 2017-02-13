@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   	OneAll Social Login
- * @copyright 	Copyright 2013-2016 http://www.oneall.com - All rights reserved.
+ * @copyright 	Copyright 2011-2017 http://www.oneall.com
  * @license   	GNU/GPL 2 or later
  *
  * This program is free software; you can redistribute it and/or
@@ -110,10 +110,10 @@ $lang = array_merge ($lang, array (
 	'OA_SOCIAL_LOGIN_LOGIN_PAGE_NO' => 'No',
 	'OA_SOCIAL_LOGIN_LOGIN_PAGE_YES' => 'Yes, show on the login page',
 	'OA_SOCIAL_LOGIN_INLINE_PAGE' => 'Forum Login Page (inline with login form)',
-	'OA_SOCIAL_LOGIN_INLINE_PAGE_CAPTION' => 'Login page inline caption',
-	'OA_SOCIAL_LOGIN_INLINE_PAGE_CAPTION_DESC' => 'This title is displayed above the inlined Social Login icons on the login page. You must also select oneall for the authentication method on the GENERAL->CLIENT COMMUNICATIONS->AUTHENTICATION page for this to function.',
-	'OA_SOCIAL_LOGIN_INLINE_PAGE_ENABLE' => 'Display inlined authentication on the login page ?',
-	'OA_SOCIAL_LOGIN_INLINE_PAGE_ENABLE_DESC' => 'If enabled, Social Login will be displayed inlined on the login page.',
+	'OA_SOCIAL_LOGIN_INLINE_PAGE_CAPTION' => 'Inline login form caption',
+	'OA_SOCIAL_LOGIN_INLINE_PAGE_CAPTION_DESC' => 'This title is displayed above the Social Login icons embedded inline on the login page.',
+	'OA_SOCIAL_LOGIN_INLINE_PAGE_ENABLE' => 'Display as inline form on the login page ?',
+	'OA_SOCIAL_LOGIN_INLINE_PAGE_ENABLE_DESC' => 'If enabled, Social Login will be embedded as inline form on the login page. To enable the inline display you must select OneAll as authentication method in the GENERAL \ CLIENT COMMUNICATIONS \ AUTHENTICATION setting.',
 	'OA_SOCIAL_LOGIN_INLINE_PAGE_NO' => 'No',
 	'OA_SOCIAL_LOGIN_INLINE_PAGE_YES' => 'Yes, show inline on the login page',
 	'OA_SOCIAL_LOGIN_OTHER_PAGE' => 'Any Other Pages',

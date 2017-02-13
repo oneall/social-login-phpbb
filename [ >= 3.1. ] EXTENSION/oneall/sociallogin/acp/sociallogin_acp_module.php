@@ -1,8 +1,7 @@
 <?php
-
 /**
  * @package   	OneAll Social Login
- * @copyright 	Copyright 2013-2016 http://www.oneall.com - All rights reserved.
+ * @copyright 	Copyright 2011-2017 http://www.oneall.com
  * @license   	GNU/GPL 2 or later
  *
  * This program is free software; you can redistribute it and/or
@@ -25,20 +24,10 @@
  */
 namespace oneall\sociallogin\acp;
 
-
-function sociallogin_redirect ($url, $return = false, $disable_cd_check = false)
-{
-	$mod_url = redirect ($url, $return, $disable_cd_check);
-	// If we did not redirect, we're now here, so force the redirect to the new URL.
-	garbage_collection();
-	header('Location: ' . $mod_url);
-	exit;
-}
-
 class sociallogin_acp_module
 {
 	// Version
-	const USER_AGENT = 'SocialLogin/2.5 phpBB/3.1.x (+http://www.oneall.com/)'; 
+	const USER_AGENT = 'SocialLogin/2.6 phpBB/3.1.x (+http://www.oneall.com/)'; 
 	
 	// @var \phpbb\config\config
 	protected $config;
@@ -497,25 +486,32 @@ class sociallogin_acp_module
 		$query = $db->sql_query ($sql);
 		$result = $db->sql_fetchrow ($query);
 		$db->sql_freeresult ($query);
+		
+		// No identity token found
 		if (!is_array ($result) || empty ($result ['oasl_user_id']))
 		{
 			return false;
 		}
+		
 		$user_id = $result ['oasl_user_id'];
+		
 		// Delete the identity_token.
 		$sql = "DELETE FROM " . $table_prefix . 'oasl_identity' . " WHERE  identity_token = '" . $db->sql_escape ($identity_token) . "'";
 		$query = $db->sql_query ($sql);
+		
 		// Check if there are any other identities linked to the user_id.
 		$sql = "SELECT oasl_user_id FROM " . $table_prefix . 'oasl_identity' . " WHERE oasl_user_id = '" . $db->sql_escape ($user_id) . "'";
 		$query = $db->sql_query ($sql);
 		$result = $db->sql_fetchrow ($query);
 		$db->sql_freeresult ($query);
+		
 		// If no identity linked to the oasl_user_id: delete oasl_user_id row from oasl_user table.
 		if (!is_array ($result))
 		{
 			$sql = "DELETE FROM " . $table_prefix . 'oasl_user' . " WHERE  oasl_user_id = '" . $db->sql_escape ($user_id) . "'";
 			$query = $db->sql_query ($sql);
 		}
+		
 		return true;
 	}
 
@@ -541,8 +537,7 @@ class sociallogin_acp_module
 			$oasl_identity_id = null;
 			
 			// Delete superfluous user_token.
-			$sql = "SELECT oasl_user_id
-							FROM " . $table_prefix . 'oasl_user' . "
+			$sql = "SELECT oasl_user_id FROM " . $table_prefix . 'oasl_user' . "
 							WHERE user_id = " . intval ($user_id) . " AND user_token <> '" . $db->sql_escape ($user_token) . "'";
 			$query = $db->sql_query ($sql);
 			while ( $row = $db->sql_fetchrow ($query) )
@@ -1383,10 +1378,7 @@ class sociallogin_acp_module
 		$result->http_data = $response_body;
 		
 		// Make sure we we have a redirection status code
-		if (in_array ($result->http_code, array(
-			301,
-			302 
-		)) && $num_redirects <= 4)
+		if (in_array ($result->http_code, array(301, 302)) && $num_redirects <= 4)
 		{
 			// Make sure we have http headers
 			if (is_array ($result->http_headers))
@@ -1971,7 +1963,7 @@ class sociallogin_acp_module
 										$this->do_login ($user_id_login_token);
 										
 										// Redirect to the same page
-										\oneall\sociallogin\acp\sociallogin_redirect (append_sid (self::get_current_url ()));
+										self::http_redirect (append_sid (self::get_current_url ()));
 									}
 								}
 							}
@@ -2356,30 +2348,35 @@ class sociallogin_acp_module
 				// Redirect to a custom page
 				if (!empty ($config ['oa_social_login_redirect']))
 				{
-					\oneall\sociallogin\acp\sociallogin_redirect (append_sid ($config ['oa_social_login_redirect']), false, true);
+					self::http_redirect (append_sid ($config ['oa_social_login_redirect']));
 				}
 				
 				// Do not stay on the login/registration page
-				if (in_array (request_var ('mode', ''), array(
-					'login',
-					'register' 
-				)))
+				if (in_array (request_var ('mode', ''), array('login', 'register')))
 				{
-					\oneall\sociallogin\acp\sociallogin_redirect (append_sid ($phpbb_root_path . 'index.' . $phpEx));
+					self::http_redirect (append_sid ($phpbb_root_path . 'index.' . $phpEx));
 				}
 				
 				// If the user validated his credentials, then the original page is in session data:
 				if (isset ($user_data ['redirect']))
 				{
-					\oneall\sociallogin\acp\sociallogin_redirect (append_sid ($user_data ['redirect']));
+					self::http_redirect (append_sid ($user_data ['redirect']));
 				}
 				
-				// Redirect to the same page
-				\oneall\sociallogin\acp\sociallogin_redirect (append_sid (self::get_current_url ()));
+				// Default: Reload the page
+				self::http_redirect (append_sid (self::get_current_url ()));
 			}
 		}
 	}
 
+
+	// Redirection
+	public static function http_redirect ($url)
+	{
+		redirect ($url, false, true);
+		exit;
+	}
+	
 	/**
 	 * Check if the current connection is being made over https
 	 */
@@ -2409,7 +2406,7 @@ class sociallogin_acp_module
 	}
 
 	/**
-	 * Return the current url
+	 * Returns the current url
 	 */
 	function get_current_url ($remove_vars = array ('oa_social_login_login_token', 'sid'))
 	{
@@ -2424,6 +2421,8 @@ class sociallogin_acp_module
 		{
 			$request_uri = trim ($request->server ('PHP_SELF'));
 		}
+		
+		// Decod
 		$request_uri = htmlspecialchars_decode ($request_uri);
 		
 		// Extract Protocol
@@ -2466,10 +2465,7 @@ class sociallogin_acp_module
 		}
 		
 		// Remove standard ports
-		$request_port = (!in_array ($request_port, array(
-			80,
-			443 
-		)) ? $request_port : '');
+		$request_port = (!in_array ($request_port, array(80, 443)) ? $request_port : '');
 		
 		// Build url
 		$current_url = $request_protocol . '://' . $request_host . (!empty ($request_port) ? (':' . $request_port) : '') . $request_uri;

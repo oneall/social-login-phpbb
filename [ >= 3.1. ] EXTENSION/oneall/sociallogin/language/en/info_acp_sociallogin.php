@@ -19,6 +19,6 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, array(
-    'OA_SOCIAL_LOGIN_ACP_AUTH_SETTTING_INFO' => 'Configurations for oneall authentication is done on the EXTENSION->ONEALL SOCIAL LOGIN page. Fall back authentication uses the DB for authentication.',
+    'OA_SOCIAL_LOGIN_ACP_AUTH_SETTTING_INFO' => 'Provides the authentication with a username/password (Db Authentication) as well as the login with a social network account. The social network authentication can be setup in EXTENSIONS \ ONEALL SOCIAL LOGIN.',
 ));
 

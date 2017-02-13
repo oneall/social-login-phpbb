@@ -1,9 +1,9 @@
 {
 	"name": "oneall/sociallogin",
 	"type": "phpbb-extension",
-	"description": "Social Login for phpBB allows your users to login and register with 25+ Social Networks like for example Twitter, Facebook, LinkedIn and Google+",
+	"description": "Social Login for phpBB allows your users to login and register with 30+ Social Networks like for example Twitter, Facebook, LinkedIn and Google+",
 	"homepage": "https://docs.oneall.com/plugins/guide/social-login-phpbb/",
-	"version": "2.5",
+	"version": "2.6",
 	"keywords": ["phpBB", "Extension", "OneAll", "Social Login"],
 	"license": "GPL-2.0",
 	"authors": [
@@ -26,7 +26,7 @@
 	"extra": {
 		"display-name": "OneAll Social Login",
 		"soft-require": {
-			"phpbb/phpbb": ">=3.1.0-RC2,<3.2.*@dev"
+			"phpbb/phpbb": ">=3.1.0-RC2"
 		}
 	}
 }
