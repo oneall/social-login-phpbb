@@ -190,7 +190,7 @@ class listener implements EventSubscriberInterface
 					}
 				}
 				// Embed on the login page ?
-				elseif (request_var ('mode', '') == 'login')
+				elseif ($this->request->variable ('mode', '') == 'login')
 				{
 					// Can be changed in the social login settings.
 					if (empty ($this->config ['oa_social_login_login_page_disable']))
@@ -217,18 +217,18 @@ class listener implements EventSubscriberInterface
 					}
 				}
 				// Embed on the registration page ?
-				elseif (request_var ('mode', '') == 'register')
+				elseif ($this->request->variable ('mode', '') == 'register')
 				{
 					// Can be changed in the social login settings.
 					if (empty ($this->config ['oa_social_login_registration_page_disable']))
 					{
 						// Only if the user has agreed to the terms
-						if (request_var ('agreed', '') != '')
+						if ($this->request->variable ('agreed', '') != '')
 						{
 							// Trigger icons.
 							$this->template->assign_var ('OA_SOCIAL_LOGIN_EMBED_SOCIAL_LOGIN', 1);
 
-							// Set caption
+							// Set Social Loin caption.
 							if (! empty ($this->config ['oa_social_login_registration_page_caption']))
 							{
 								$this->template->assign_var ('OA_SOCIAL_LOGIN_PAGE_CAPTION', $this->config ['oa_social_login_registration_page_caption']);
@@ -262,7 +262,7 @@ class listener implements EventSubscriberInterface
 	 */
 	public function check_callback ()
 	{
-		if (strlen ((request_var ('oa_action', ''))) > 0 && strlen (request_var ('connection_token', '')) > 0)
+		if (strlen ($this->request->variable ('oa_action', '')) > 0 && strlen ($this->request->variable ('connection_token', '')) > 0)
 		{
 			$sociallogin = new \oneall\sociallogin\acp\sociallogin_acp_module ();
 			$user_data = $sociallogin->handle_callback ();
@@ -284,10 +284,10 @@ class listener implements EventSubscriberInterface
 	{
 		$this->user->add_lang ('ucp');
 		$sociallogin = new \oneall\sociallogin\acp\sociallogin_acp_module ();
-		if (strlen ((request_var ('submit', ''))) > 0)
+		if (strlen (($this->request->variable ('submit', ''))) > 0)
 		{
-			$login = request_var ('username', '');
-			$email = request_var ('email', '');
+			$login = $this->request->variable ('username', '');
+			$email = $this->request->variable ('email', '');
 			$validation_error = array ();
 			if (! function_exists ('validate_data'))
 			{
@@ -364,30 +364,27 @@ class listener implements EventSubscriberInterface
 
 	
 	/**
-	 * Event handler for custom field, 
-	 * and user row modifications.
+	 * Event handler for custom fields and user row modifications.
 	 */
 	public function modify_data ($event)
 	{
 		global $phpbb_log, $user;
 		
-		// Shorthand:
+		// The data retrieved from the social network profile.
 		$social = $event['social_profile'];
 
+		// The following code serves as example for custom changes.
+		
 		/*
+		
 		$event['cp_data'] = array (
 				// For example: a custom field named 'tastes':
 				'pf_tastes' => $social['user_languages_simple'][0],  // Risk of E_NOTICE and NULL.
 			);
+			
+		*/
 		
-		// Remove next lines if logging not needed beyond tests:
-		$phpbb_log->add ('admin', 
-				$user->data['user_id'], 
-				$user->ip, 
-				'LOG_PROFILE_FIELD_EDIT', 
-				time(), 
-				$event['cp_data']
-			);
-		 */
+		// Uncomment following line if you need logs.
+		$phpbb_log->add ('admin', $user->data['user_id'], $user->ip, 'LOG_PROFILE_FIELD_EDIT', time(), $event['cp_data']);
 	}
 }

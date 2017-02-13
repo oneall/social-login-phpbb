@@ -52,14 +52,10 @@ class sociallogin_ucp_module
 					$template->assign_var ('OA_SOCIAL_LINK_USER_TOKEN', $user_token);
 				}
 
-				// We have a login token.
-				if (request_var ('oa_social_login_login_token', '') == '')
-				{
-					// Forge callback uri.
-					$callback_uri = $sociallogin->get_current_url ();
-					$callback_uri .= ((strpos ($callback_uri, '?') === false) ? '?' : '&');
-					$callback_uri .= ('oa_social_login_login_token=' . $sociallogin->create_login_token_for_user_id ($user->data ['user_id']));
-				}
+				// Create callback uri.
+				$callback_uri = $sociallogin->get_current_url ();
+				$callback_uri .= ((strpos ($callback_uri, '?') === false) ? '?' : '&');
+				$callback_uri .= ('oa_social_login_login_token=' . $sociallogin->create_login_token_for_user_id ($user->data ['user_id']));
 
 				// Assign callback uri.
 				$template->assign_var ('OA_SOCIAL_LINK_CALLBACK_URI', $callback_uri);

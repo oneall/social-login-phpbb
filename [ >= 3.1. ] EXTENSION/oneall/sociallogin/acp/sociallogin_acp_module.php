@@ -67,7 +67,13 @@ class sociallogin_acp_module
 	 */
 	public function main ($id, $mode)
 	{
-		switch (request_var ('task', ''))
+		global $request;
+		
+		// Task that needs to be done
+		$task = $request->variable('task', '');
+		
+		// Tasks
+		switch ($task)
 		{
 			// Verify API settings.
 			case 'verify_api_settings' :
@@ -76,10 +82,11 @@ class sociallogin_acp_module
 			// Autodetect API connection.
 			case 'autodetect_api_connection' :
 				return $this->admin_ajax_autodetect_api_connection ();
+				
+			// Show Settings.
+			default:
+				return $this->admin_main ();
 		}
-		
-		// Default.
-		return $this->admin_main ();
 	}
 
 	/**
@@ -87,7 +94,7 @@ class sociallogin_acp_module
 	 */
 	public function admin_main ()
 	{
-		global $db, $user, $auth, $template, $config, $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
+		global $db, $user, $auth, $template, $config, $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $request;
 		
 		// Add the language file.
 		$user->add_lang_ext ('oneall/sociallogin', 'backend');
@@ -159,23 +166,23 @@ class sociallogin_acp_module
 		add_form_key ('oa_social_login');
 		
 		// Form submitted.
-		if (strlen ((request_var ('submit', ''))) > 0)
-		{
-			// Triggers a form message
-			$oa_social_login_settings_saved = true;
-			
-			// Security Check
+		if ($request->variable('submit', '') <> '')
+		{			
+			// Form Security Check.
 			if (!check_form_key ('oa_social_login'))
 			{
 				trigger_error ($user->lang ['FORM_INVALID'] . adm_back_link ($this->u_action), E_USER_WARNING);
 			}
 			
+			// Triggers the settings saved message,
+			$oa_social_login_settings_saved = true;
+			
 			// Gather API Connection details.
-			$oa_social_login_api_connection_handler = (request_var ('oa_social_login_api_connection_handler', 'curl') == 'fs' ? 'fsockopen' : 'curl');
-			$oa_social_login_api_connection_port = (request_var ('oa_social_login_api_connection_port', 443) == 80 ? 80 : 443);
-			$oa_social_login_api_subdomain = request_var ('oa_social_login_api_subdomain', '');
-			$oa_social_login_api_key = request_var ('oa_social_login_api_key', '');
-			$oa_social_login_api_secret = request_var ('oa_social_login_api_secret', '');
+			$oa_social_login_api_connection_handler = ($request->variable ('oa_social_login_api_connection_handler', 'curl') == 'fs' ? 'fsockopen' : 'curl');
+			$oa_social_login_api_connection_port = ($request->variable ('oa_social_login_api_connection_port', 443) == 80 ? 80 : 443);
+			$oa_social_login_api_subdomain = $request->variable ('oa_social_login_api_subdomain', '');
+			$oa_social_login_api_key = $request->variable ('oa_social_login_api_key', '');
+			$oa_social_login_api_secret = $request->variable ('oa_social_login_api_secret', '');
 			
 			// Check for full subdomain.
 			if (preg_match ("/([a-z0-9\-]+)\.api\.oneall\.com/i", $oa_social_login_api_subdomain, $matches))
@@ -187,18 +194,18 @@ class sociallogin_acp_module
 			$oa_social_login_providers = array();
 			foreach (self::get_providers () as $provider_key => $provider_data)
 			{
-				if (request_var ('oa_social_login_provider_' . $provider_key, 0) == 1)
+				if ($request->variable ('oa_social_login_provider_' . $provider_key, 0) == 1)
 				{
 					$oa_social_login_providers [] = $provider_key;
 				}
 			}
 			
 			// Other options.
-			$oa_social_login_disable = ((request_var ('oa_social_login_disable', 0) == 1) ? 1 : 0);
-			$oa_social_login_disable_linking = ((request_var ('oa_social_login_disable_linking', 0) == 1) ? 1 : 0);
-			$oa_social_login_avatars_enable = ((request_var ('oa_social_login_avatars_enable', 0) == 1) ? 1 : 0);
-			$oa_social_login_redirect = request_var ('oa_social_login_redirect', '');
-			$oa_social_login_validate_tmp = request_var ('oa_social_login_validate', 0);
+			$oa_social_login_disable = (($request->variable ('oa_social_login_disable', 0) == 1) ? 1 : 0);
+			$oa_social_login_disable_linking = (($request->variable ('oa_social_login_disable_linking', 0) == 1) ? 1 : 0);
+			$oa_social_login_avatars_enable = (($request->variable ('oa_social_login_avatars_enable', 0) == 1) ? 1 : 0);
+			$oa_social_login_redirect = $request->variable ('oa_social_login_redirect', '');
+			$oa_social_login_validate_tmp = $request->variable ('oa_social_login_validate', 0);
 			if ($oa_social_login_validate_tmp == '1')
 			{
 				$oa_social_login_validate = 1;
@@ -213,47 +220,47 @@ class sociallogin_acp_module
 			}
 			
 			// Login page, default 1.
-			$oa_social_login_login_page_disable = ((request_var ('oa_social_login_login_page_disable', 0) == 1) ? 1 : 0);
-			$oa_social_login_login_page_caption = request_var ('oa_social_login_login_page_caption', '', true);
+			$oa_social_login_login_page_disable = (($request->variable ('oa_social_login_login_page_disable', 0) == 1) ? 1 : 0);
+			$oa_social_login_login_page_caption = $request->variable ('oa_social_login_login_page_caption', '', true);
 			
 			// Login page inline, default 1.
-			$oa_social_login_inline_page_disable = ((request_var ('oa_social_login_inline_page_disable', 0) == 1) ? 1 : 0);
-            $oa_social_login_linline_page_caption = request_var ('oa_social_login_inline_page_caption', '', true);
+			$oa_social_login_inline_page_disable = (($request->variable ('oa_social_login_inline_page_disable', 0) == 1) ? 1 : 0);
+            $oa_social_login_linline_page_caption = $request->variable ('oa_social_login_inline_page_caption', '', true);
 
 			// Registration page, default 1.
-			$oa_social_login_registration_page_disable = ((request_var ('oa_social_login_registration_page_disable', 0) == 1) ? 1 : 0);
-			$oa_social_login_registration_page_caption = request_var ('oa_social_login_registration_page_caption', '', true);
+			$oa_social_login_registration_page_disable = (($request->variable ('oa_social_login_registration_page_disable', 0) == 1) ? 1 : 0);
+			$oa_social_login_registration_page_caption = $request->variable ('oa_social_login_registration_page_caption', '', true);
 			
 			// Main page, default 1.
-			$oa_social_login_index_page_disable = ((request_var ('oa_social_login_index_page_disable', 0) == 1) ? 1 : 0);
-			$oa_social_login_index_page_caption = request_var ('oa_social_login_index_page_caption', '', true);
+			$oa_social_login_index_page_disable = (($request->variable ('oa_social_login_index_page_disable', 0) == 1) ? 1 : 0);
+			$oa_social_login_index_page_caption = $request->variable ('oa_social_login_index_page_caption', '', true);
 			
 			// Other pages, default 0.
-			$oa_social_login_other_page_disable = ((request_var ('oa_social_login_other_page_disable', 1) == 0) ? 0 : 1);
-			$oa_social_login_other_page_caption = request_var ('oa_social_login_other_page_caption', '', true);
+			$oa_social_login_other_page_disable = (($request->variable ('oa_social_login_other_page_disable', 1) == 0) ? 0 : 1);
+			$oa_social_login_other_page_caption = $request->variable ('oa_social_login_other_page_caption', '', true);
 			
 			// Save configuration.
-			set_config ('oa_social_login_disable', $oa_social_login_disable);
-			set_config ('oa_social_login_disable_linking', $oa_social_login_disable_linking);
-			set_config ('oa_social_login_avatars_enable', $oa_social_login_avatars_enable);
-			set_config ('oa_social_login_redirect', $oa_social_login_redirect);
-			set_config ('oa_social_login_api_subdomain', $oa_social_login_api_subdomain);
-			set_config ('oa_social_login_api_key', $oa_social_login_api_key);
-			set_config ('oa_social_login_api_secret', $oa_social_login_api_secret);
-			set_config ('oa_social_login_providers', implode (",", $oa_social_login_providers));
-			set_config ('oa_social_login_api_connection_handler', $oa_social_login_api_connection_handler);
-			set_config ('oa_social_login_api_connection_port', $oa_social_login_api_connection_port);
-			set_config ('oa_social_login_login_page_disable', $oa_social_login_login_page_disable);
-			set_config ('oa_social_login_login_page_caption', $oa_social_login_login_page_caption);
-			set_config ('oa_social_login_inline_page_disable', $oa_social_login_inline_page_disable);
-			set_config ('oa_social_login_inline_page_caption', $oa_social_login_inline_page_caption);
-			set_config ('oa_social_login_registration_page_disable', $oa_social_login_registration_page_disable);
-			set_config ('oa_social_login_registration_page_caption', $oa_social_login_registration_page_caption);
-			set_config ('oa_social_login_index_page_disable', $oa_social_login_index_page_disable);
-			set_config ('oa_social_login_index_page_caption', $oa_social_login_index_page_caption);
-			set_config ('oa_social_login_other_page_disable', $oa_social_login_other_page_disable);
-			set_config ('oa_social_login_other_page_caption', $oa_social_login_other_page_caption);
-			set_config ('oa_social_login_validate', $oa_social_login_validate);
+			$config->set ('oa_social_login_disable', $oa_social_login_disable);
+			$config->set ('oa_social_login_disable_linking', $oa_social_login_disable_linking);
+			$config->set ('oa_social_login_avatars_enable', $oa_social_login_avatars_enable);
+			$config->set ('oa_social_login_redirect', $oa_social_login_redirect);
+			$config->set ('oa_social_login_api_subdomain', $oa_social_login_api_subdomain);
+			$config->set ('oa_social_login_api_key', $oa_social_login_api_key);
+			$config->set ('oa_social_login_api_secret', $oa_social_login_api_secret);
+			$config->set ('oa_social_login_providers', implode (",", $oa_social_login_providers));
+			$config->set ('oa_social_login_api_connection_handler', $oa_social_login_api_connection_handler);
+			$config->set ('oa_social_login_api_connection_port', $oa_social_login_api_connection_port);
+			$config->set ('oa_social_login_login_page_disable', $oa_social_login_login_page_disable);
+			$config->set ('oa_social_login_login_page_caption', $oa_social_login_login_page_caption);
+			$config->set ('oa_social_login_inline_page_disable', $oa_social_login_inline_page_disable);
+			$config->set ('oa_social_login_inline_page_caption', $oa_social_login_inline_page_caption);
+			$config->set ('oa_social_login_registration_page_disable', $oa_social_login_registration_page_disable);
+			$config->set ('oa_social_login_registration_page_caption', $oa_social_login_registration_page_caption);
+			$config->set ('oa_social_login_index_page_disable', $oa_social_login_index_page_disable);
+			$config->set ('oa_social_login_index_page_caption', $oa_social_login_index_page_caption);
+			$config->set ('oa_social_login_other_page_disable', $oa_social_login_other_page_disable);
+			$config->set ('oa_social_login_other_page_caption', $oa_social_login_other_page_caption);
+			$config->set ('oa_social_login_validate', $oa_social_login_validate);
 		}
 		
 		// Setup Social Network Vars
@@ -349,17 +356,17 @@ class sociallogin_acp_module
 	 */
 	public function admin_ajax_verify_api_settings ()
 	{
-		global $phpbb_root_path, $phpEx, $user;
+		global $phpbb_root_path, $phpEx, $user, $request;
 		
 		// Add language file.
 		$user->add_lang_ext ('oneall/sociallogin', 'backend');
 		
 		// Read arguments.
-		$api_subdomain = trim (strtolower (request_var ('api_subdomain', '')));
-		$api_key = trim (request_var ('api_key', ''));
-		$api_secret = trim (request_var ('api_secret', ''));
-		$api_connection_port = request_var ('api_connection_port', '');
-		$api_connection_handler = request_var ('api_connection_handler', '');
+		$api_subdomain = trim (strtolower ($request->variable ('api_subdomain', '')));
+		$api_key = trim ($request->variable ('api_key', ''));
+		$api_secret = trim ($request->variable ('api_secret', ''));
+		$api_connection_port = $request->variable ('api_connection_port', '');
+		$api_connection_handler = $request->variable ('api_connection_handler', '');
 		
 		// Init status message.
 		$status_message = null;
@@ -1871,15 +1878,15 @@ class sociallogin_acp_module
 	public function handle_callback ()
 	{
 		// Required global variables.
-		global $db, $auth, $user, $config, $template, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $auth, $user, $config, $template, $phpbb_root_path, $phpbb_admin_path, $phpEx, $request;
 		
 		// Add language file.
 		$user->add_lang_ext ('oneall/sociallogin', 'frontend');
 		
 		// Read arguments.
-		$connection_token = trim (request_var ('connection_token', ''));
-		$login_token = trim (request_var ('oa_social_login_login_token', ''));
-		$oa_action = strtolower (trim (request_var ('oa_action', '')));
+		$connection_token = trim ($request->variable ('connection_token', ''));
+		$login_token = trim ($request->variable ('oa_social_login_login_token', ''));
+		$oa_action = strtolower (trim ($request->variable ('oa_action', '')));
 		
 		// Make sure we need to call the callback handler.
 		if (strlen ($oa_action) > 0 && strlen ($connection_token) > 0)
@@ -2113,7 +2120,7 @@ class sociallogin_acp_module
 	 */
 	protected function social_login_user_add ($user_random_email, $user_data)
 	{
-		global $db, $auth, $user, $config, $template, $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_dispatcher;
+		global $db, $auth, $user, $config, $template, $phpbb_root_path, $phpbb_log, $phpbb_admin_path, $phpEx, $phpbb_dispatcher, $phpbb_container;
 		
 		$error_message = null;
 		$user_id = null;
@@ -2165,12 +2172,15 @@ class sociallogin_acp_module
 		// Generate a random password.
 		$new_password = $this->generate_hash ($config ['min_pass_chars'] + rand (3, 5));
 		
+		// Instantiate passwords manager.
+		$passwords_manager = $phpbb_container->get('passwords.manager');
+				
 		// Setup user details.
 		$user_row = array(
 			'group_id' => $group_id,
 			'user_type' => $user_type,
 			'user_actkey' => $user_actkey,
-			'user_password' => phpbb_hash ($new_password),
+			'user_password' => $passwords_manager->hash($new_password),
 			'user_ip' => $user->ip,
 			'user_inactive_reason' => $user_inactive_reason,
 			'user_inactive_time' => $user_inactive_time,
@@ -2271,10 +2281,6 @@ class sociallogin_acp_module
 						'U_ACTIVATE' => $server_url . '/ucp.' . $phpEx . '?mode=activate&u=' . $user_id . '&k=' . $user_actkey 
 					));
 					$messenger->send (NOTIFY_EMAIL);
-					
-					add_log ('admin', 'LOG_USER_REACTIVATE', $user_row ['username']);
-					add_log ('user', $user_id, 'LOG_USER_REACTIVATE_USER');
-					
 					$messenger->save_queue ();
 					
 					// Send email to administrators.
@@ -2326,7 +2332,7 @@ class sociallogin_acp_module
 	 */
 	protected function social_login_redirect ($error_message, $user_id, $user_data)
 	{
-		global $user, $phpbb_root_path, $phpEx, $config;
+		global $user, $phpbb_root_path, $phpEx, $config, $request;
 		
 		// Display an error message
 		if (isset ($error_message))
@@ -2352,7 +2358,7 @@ class sociallogin_acp_module
 				}
 				
 				// Do not stay on the login/registration page
-				if (in_array (request_var ('mode', ''), array('login', 'register')))
+				if (in_array ($request->variable ('mode', ''), array('login', 'register')))
 				{
 					self::http_redirect (append_sid ($phpbb_root_path . 'index.' . $phpEx));
 				}
@@ -2374,7 +2380,6 @@ class sociallogin_acp_module
 	public static function http_redirect ($url)
 	{
 		redirect ($url, false, true);
-		exit;
 	}
 	
 	/**
