@@ -5,11 +5,11 @@ new users and provides permission-based social data retrieved from the social ne
 
 ## Contributors ##
 
-* Galixte (http://www.galixte.com)
-	French translations
+Galixte (http://www.galixte.com)
+* French translations
 
-* Chris Vavruska (https://github.com/vavruska)
-	OneAll Authentication Provider
+Chris Vavruska (https://github.com/vavruska)
+* OneAll Authentication Provider
 	
 Many Thanks!
 
