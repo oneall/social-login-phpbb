@@ -37,7 +37,9 @@ class SocialLoginBlockForm extends FormBase {
 	 * {@inheritdoc}
 	 */
 	public function buildForm(array $form, FormStateInterface $form_state) {
-		global $is_https;
+				
+		// Are we using HTTPs?
+		$is_https = Drupal::request()->isSecure();
 
 		// Read Settings.
 		$settings = \social_login_get_settings();

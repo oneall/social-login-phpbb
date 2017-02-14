@@ -138,8 +138,10 @@ function social_login_form_user_register_form_alter(&$form, FormStateInterface $
  * Generic function called to display the social providers.
  */
 function social_login_show_providers(&$form, $form_state, $target) {
-  global $is_https;
 
+  // Are we using HTTPs?
+  $is_https = Drupal::request()->isSecure();
+	
   // Read Settings.
   $settings = social_login_get_settings();
 
