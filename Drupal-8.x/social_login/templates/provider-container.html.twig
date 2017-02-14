@@ -13,10 +13,9 @@
 	var _oneall = _oneall || [];
 	_oneall.push(["{{ plugintype }}", "set_providers", [{{ providers | raw }}]]);
 	_oneall.push(["{{ plugintype }}", "set_callback_uri", "{{ callbackuri }}"]);
-	_oneall.push(["{{ plugintype }}", "set_force_re_authentication",
-		{% if plugin_type == 'social_link' %}true{% else %}false{% endif %}]);
+	_oneall.push(["{{ plugintype }}", "set_force_re_authentication", {% if plugintype == 'social_link' %}true{% else %}false{% endif %}]);
 	{% if token is not empty %}
-		_oneall.push(["{{ plugintype }}", "set_user_token", "{{ token }}"]);
+	_oneall.push(["{{ plugintype }}", "set_user_token", "{{ token }}"]);
 	{% endif %}
 	_oneall.push(["{{ plugintype }}", "do_render_ui", "{{ containerid }}"]);
 </script>

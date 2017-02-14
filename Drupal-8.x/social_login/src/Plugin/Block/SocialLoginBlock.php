@@ -7,27 +7,22 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Session\AccountInterface;
 
 /**
- * Provides a 'SocialLogin' block.
- *
- * @Block(
- *   id = "social_login_block",
- *   admin_label = @Translation("Social Login"),
- * )
+ * Displays a Social Login block.
  */
 class SocialLoginBlock extends BlockBase {
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function blockAccess(AccountInterface $account) {
-		return AccessResult::allowedIf($account->isAnonymous());
-	}
+  /**
+   * Indicates whether the block should be shown.
+   */
+  public function blockAccess(AccountInterface $account) {
+    return AccessResult::allowedIf($account->isAnonymous());
+  }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function build() {
-		return \Drupal::formBuilder()->getForm('Drupal\social_login\Form\SocialLoginBlockForm');
-	}
+  /**
+   * Display the Social Login Block.
+   */
+  public function build() {
+    return \Drupal::formBuilder()->getForm('Drupal\social_login\Form\SocialLoginBlockForm');
+  }
+
 }
-?>
