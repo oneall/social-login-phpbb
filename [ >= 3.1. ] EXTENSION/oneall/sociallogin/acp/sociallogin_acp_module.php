@@ -27,7 +27,7 @@ namespace oneall\sociallogin\acp;
 class sociallogin_acp_module
 {
 	// Version
-	const USER_AGENT = 'SocialLogin/2.6 phpBB/3.1.x (+http://www.oneall.com/)'; 
+	const USER_AGENT = 'SocialLogin/2.7 phpBB/3.1.x (+http://www.oneall.com/)'; 
 	
 	// @var \phpbb\config\config
 	protected $config;
