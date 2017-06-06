@@ -24,10 +24,10 @@
  */
 
 /**
-* 
-* French translations by Galixte 
+*
+* French translations by Galixte
 * http://www.galixte.com
-* 
+*
 */
 
 /**
@@ -164,8 +164,6 @@ $lang = array_merge($lang, array(
 	'OA_SOCIAL_LOGIN_TITLE' => 'Passerelle de connexion OneAll',
 	'OA_SOCIAL_LOGIN_TITLE_HELP' => 'Aide, mises à jour &amp; documentation',
 	'OA_SOCIAL_LOGIN_VALIDATION_FORM_DESC' => 'L’administrateur requiert la saisie de votre nom d’utilisateur et de votre adresse e-mail.',
-	'OA_SOCIAL_LOGIN_VALIDATION_FORM_EMAIL_EXPLAIN' => 'Accepter ou modifier votre adresse e-mail.',
-	'OA_SOCIAL_LOGIN_VALIDATION_FORM_EMAIL_NONE_EXPLAIN' => 'Votre profil ne comporte pas d’adresse e-mail, merci d’en saisir une sur cette page.',
 	'OA_SOCIAL_LOGIN_VALIDATION_FORM_HEADER' => 'Confirmer votre nom d’utilisateur et votre adresse e-mail.',
 	'OA_SOCIAL_LOGIN_VALIDATION_SESSION_ERROR' => 'Des informations de la session courante sont manquantes.',
 	'OA_SOCIAL_LOGIN_VIEW_CREDENTIALS' => '<a href="https://app.oneall.com/applications/" class="button1 external">Créer et voir mes certificats d’API</a>',

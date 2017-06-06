@@ -22,20 +22,17 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *
  */
-namespace oneall\sociallogin\acp;
-
-class sociallogin_acp_info
+if (!defined('IN_PHPBB'))
 {
-    public function module()
-    {
-        return array(
-            'filename' => '\oneall\sociallogin\acp\sociallogin_acp_module',
-            'title' => 'OA_SOCIAL_LOGIN_ACP',
-            'modes' => array(
-                'settings' => array(
-                    'title' => 'OA_SOCIAL_LOGIN_ACP_SETTINGS',
-                    'auth' => 'ext_oneall/sociallogin && acl_a_board',
-                    'cat' => array(
-                        'OA_SOCIAL_LOGIN_ACP'))));
-    }
+	exit;
 }
+
+if (empty($lang) || !is_array($lang))
+{
+	$lang = array();
+}
+
+$lang = array_merge($lang, array(
+    'OA_SOCIAL_LOGIN_ACP_AUTH_SETTTING_INFO' => 'Offre authentification avec nom d’utilisateur/mot de passe ainsi que la connexion avec le compte d’un résau social. Les réseaux sociaux sont configurables sous EXTENSIONS \ ONEALL SOCIAL LOGIN.',
+));
+

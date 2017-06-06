@@ -51,6 +51,7 @@ class m3_initial_module extends \phpbb\db\migration\migration
 					'OA_SOCIAL_LOGIN_ACP',
 					array (
 						'module_basename' => '\oneall\sociallogin\acp\sociallogin_acp_module',
+					    'module_auth'=> 'ext_oneall/sociallogin',
 						'modes' => array (
 							'settings'
 						)

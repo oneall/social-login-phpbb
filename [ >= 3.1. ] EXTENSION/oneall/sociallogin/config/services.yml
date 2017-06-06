@@ -1,15 +1,33 @@
 services:
+    oneall.sociallogin.helper:
+        class: oneall\sociallogin\core\helper
+        arguments:
+            - '@config'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '@auth'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@passwords.manager'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%core.table_prefix%'
+        tags:
+            - { name: core.helper }
+        
     oneall.sociallogin.listener:
         class: oneall\sociallogin\event\listener
-        arguments:
-            - @config
-            - @config_text
-            - @controller.helper
-            - @request
-            - @template
-            - @user
-            - %core.root_path%
-            - %core.php_ext%
+        arguments:           
+            - '@config'
+            - '@config_text'
+            - '@controller.helper'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@oneall.sociallogin.helper'
         tags:
             - { name: event.listener }
 

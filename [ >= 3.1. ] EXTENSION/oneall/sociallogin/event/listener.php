@@ -48,18 +48,23 @@ class listener implements EventSubscriberInterface
 
 	// @var \phpbb\user
 	protected $user;
-	
+
 	// @var string php_root_path
 	protected $phpbb_root_path;
 
 	// @var string phpEx
 	protected $php_ext;
 
+	// @var \oneall\sociallogin\core\helper
+	protected $helper;
+
+	// Has the current user logged in with Social Login
+	protected $is_oa_user = null;
 
 	/**
 	 * Constructor
 	 */
-	public function __construct (\phpbb\config\config $config,\phpbb\config\db_text $config_text,\phpbb\controller\helper $controller_helper,\phpbb\request\request $request,\phpbb\template\template $template,\phpbb\user $user, $phpbb_root_path, $php_ext)
+	public function __construct (\phpbb\config\config $config,\phpbb\config\db_text $config_text,\phpbb\controller\helper $controller_helper,\phpbb\request\request $request,\phpbb\template\template $template,\phpbb\user $user, $phpbb_root_path, $php_ext, \oneall\sociallogin\core\helper $helper)
 	{
 		$this->config = $config;
 		$this->config_text = $config_text;
@@ -69,7 +74,7 @@ class listener implements EventSubscriberInterface
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
-		$this->oa_user = null;  // is the user logged in with oneall.
+		$this->helper = $helper;
 	}
 
 
@@ -91,14 +96,13 @@ class listener implements EventSubscriberInterface
 	 * Helper function to check if a user is logged in with Social Login.
 	 * Memorizes the result in attribute to avoid rechecks.
 	 */
-	private function is_user_oa ()
+	private function is_oa_user ()
 	{
-		if (! isset ($this->oa_user)) {
-			$sociallogin = new \oneall\sociallogin\acp\sociallogin_acp_module ();
-			$user_token = $sociallogin->get_user_token_for_user_id ($this->user->data['user_id']);
-			$this->oa_user = $user_token !== false;
+		if (is_null ($this->is_oa_user))
+		{
+			$this->is_oa_user = (($this->helper->get_user_token_for_user_id ($this->user->data['user_id']) === false) ? false : true);
 		}
-		return $this->oa_user;
+		return $this->is_oa_user;
 	}
 
 	/**
@@ -107,19 +111,19 @@ class listener implements EventSubscriberInterface
 	 */
 	public function set_oa_user ($event)
 	{
-		$this->template->assign_var ('OA_SOCIAL_LOGIN_USER', $this->is_user_oa ());
+		$this->template->assign_var ('OA_SOCIAL_LOGIN_USER', $this->is_oa_user ());
 	}
 
 	/**
 	 * Allow changes to account settings without password for Social Login users.
-	 * Because the template disabled the input field cur_password.
+	 * This is required because the cur_password field is disabled for Social Login users.
 	 */
 	public function skip_cur_password_check ($event)
 	{
-		if ($this->is_user_oa ())
+		if ($this->is_oa_user ())
 		{
-			$filtered = array_filter ($event['error'], function ($v) { 
-				return $v != 'CUR_PASSWORD_EMPTY';  // from phpbb source code.
+			$filtered = array_filter ($event['error'], function ($v) {
+				return $v != 'CUR_PASSWORD_EMPTY';
 			});
 			$event['error'] = $filtered;
 		}
@@ -161,20 +165,17 @@ class listener implements EventSubscriberInterface
 			// First check for a callback
 			$this->check_callback ();
 
-			// Initialize module.
-			$sociallogin = new \oneall\sociallogin\acp\sociallogin_acp_module ();
-
 			// Setup template placeholders
 			$this->template->assign_var ('OA_SOCIAL_LOGIN_EMBED_LIBRARY', 1);
 			$this->template->assign_var ('OA_SOCIAL_LOGIN_API_SUBDOMAIN', $this->config ['oa_social_login_api_subdomain']);
-			$this->template->assign_var ('OA_SOCIAL_LOGIN_CALLBACK_URI', $sociallogin->get_current_url ());
+			$this->template->assign_var ('OA_SOCIAL_LOGIN_CALLBACK_URI', addslashes ($this->helper->get_current_url ()));
 			$this->template->assign_var ('OA_SOCIAL_LOGIN_PROVIDERS', implode ("','", explode (",", $this->config ['oa_social_login_providers'])));
 
 			// User must not be logged in
 			if ( empty ($this->user->data['user_id']) || $this->user->data['user_id'] == ANONYMOUS)
 			{
 				// Embed on the main page ?
-				if (! empty ($this->user->page['page_name']) && $this->user->page['page_name'] == 'index.php')
+				if (! empty ($this->user->page['page_name']) && $this->user->page['page_name'] == 'index' . $this->php_ext)
 				{
 					// Can be changed in the social login settings.
 					if (empty ($this->config ['oa_social_login_index_page_disable']))
@@ -237,8 +238,8 @@ class listener implements EventSubscriberInterface
 					}
 				}
 				// Embed on any other page, except the validation page ?
-				elseif (! strpos ($this->user->page['page_name'], 
-							substr ($this->controller_helper->route ("oneall_sociallogin_validate"), strlen ('/app.php'))))
+				elseif (! strpos ($this->user->page['page_name'],
+							substr ($this->controller_helper->route ("oneall_sociallogin_validate"), strlen ('/app' . $this->php_ext))))
 				{
 					// Can be changed in the social login settings.
 					if (empty ($this->config ['oa_social_login_other_page_disable']))
@@ -264,14 +265,15 @@ class listener implements EventSubscriberInterface
 	{
 		if (strlen ($this->request->variable ('oa_action', '')) > 0 && strlen ($this->request->variable ('connection_token', '')) > 0)
 		{
-			$sociallogin = new \oneall\sociallogin\acp\sociallogin_acp_module ();
-			$user_data = $sociallogin->handle_callback ();
-			if (is_array ($user_data))  // validation required
+			$user_data = $this->helper->handle_callback ();
+			var_dump($user_data);
+			if (is_array ($user_data))
 			{
-				$user_data ['redirect'] = $sociallogin->get_current_url ();
+				$user_data ['redirect'] = $this->helper->get_current_url ();
 				$json_user_data = @json_encode ($user_data);
-				$sociallogin->put_session_validation_data ($this->user->data['session_id'], $json_user_data);
-				\oneall\sociallogin\acp\sociallogin_acp_module::http_redirect ($this->controller_helper->route ("oneall_sociallogin_validate"));
+
+				$this->helper->put_session_validation_data ($this->user->data['session_id'], $json_user_data);
+				$this->helper->http_redirect ($this->controller_helper->route ("oneall_sociallogin_validate"), false);
 			}
 		}
 	}
@@ -283,20 +285,35 @@ class listener implements EventSubscriberInterface
 	public function handle ()
 	{
 		$this->user->add_lang ('ucp');
-		$sociallogin = new \oneall\sociallogin\acp\sociallogin_acp_module ();
+
+		// Form Values.
+		$this->template->assign_vars (array (
+		    'OA_SOCIAL_LOGIN_USERNAME_EXPLAIN' => $this->user->lang (
+		        $this->config['allow_name_chars'] . '_EXPLAIN',
+		        $this->user->lang ('CHARACTERS', (int) $this->config['min_name_chars']),
+		        $this->user->lang ('CHARACTERS', (int) $this->config['max_name_chars'])),
+		    'OA_SOCIAL_LOGIN_VALIDATE' => $this->controller_helper->route ('oneall_sociallogin_validate')
+		));
+
+		// Form Submitted.
 		if (strlen (($this->request->variable ('submit', ''))) > 0)
 		{
 			$login = $this->request->variable ('username', '');
 			$email = $this->request->variable ('email', '');
-			$validation_error = array ();
+
+			// User Functions
 			if (! function_exists ('validate_data'))
 			{
 				include ($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
 			}
+
+			// Fields to validate.
 			$user_input = array (
 				'username' => $login,
 				'email' => $email,
 			);
+
+			// Checks to do.
 			$user_input_checks = array (
 				'username' => array (
 					array ('username'),
@@ -307,83 +324,93 @@ class listener implements EventSubscriberInterface
 					array ('string', false, 6, 60),
 				),
 			);
-			$validation_error = validate_data ($user_input, $user_input_checks);
-			if ($validation_error)
+
+			// Validate fields.
+			$validation_errors = validate_data ($user_input, $user_input_checks);
+
+			// Errors found.
+			if (is_array ($validation_errors) && count ($validation_errors) > 0)
 			{
-				foreach ($validation_error as $msgs) 
+				foreach ($validation_errors as $validation_error)
 				{
-					$this->template->assign_block_vars ('errors', array ('msg' => $this->user->lang ($msgs)));
+					$this->template->assign_block_vars ('errors', array (
+					    'msg' => $this->user->lang ($validation_error)
+					));
 				}
+
+				// Fill out form.
 				$this->template->assign_vars (array (
-					'ERROR' => true,
+					'OA_SOCIAL_LOGIN_VALIDATION_ERROR' => true,
 					'OA_SOCIAL_LOGIN_VALIDATION_USER_LOGIN' => $login,
-					'OA_SOCIAL_LOGIN_USERNAME_EXPLAIN' => $this->user->lang (
-						$this->config['allow_name_chars'] . '_EXPLAIN', 
-						$this->user->lang ('CHARACTERS', (int) $this->config['min_name_chars']), 
-						$this->user->lang ('CHARACTERS', (int) $this->config['max_name_chars'])),
-					'OA_SOCIAL_LOGIN_VALIDATION_USER_EMAIL' => $email,
-					'OA_SOCIAL_LOGIN_VALIDATION_NO_EMAIL' => empty ($email),
-					'OA_SOCIAL_LOGIN_VALIDATE' => $this->controller_helper->route ("oneall_sociallogin_validate") 
+					'OA_SOCIAL_LOGIN_VALIDATION_USER_EMAIL' => $email
 				));
+
 				return $this->controller_helper->render ('sociallogin_validation_body.html', 'validation');
 			}
-			$val = $sociallogin->get_session_validation_data ($this->user->data['session_id']);
-			$user_data = $val ? json_decode ($val['user_data'], true) : null;
-			if ($user_data === null)
+
+			// Retrieve the temporarily stored social network profile data
+			$social_network_profile_data = $this->helper->get_session_validation_data ($this->user->data['session_id'], true);
+			if ($social_network_profile_data === null)
 			{
 				trigger_error ($this->user->lang ('OA_SOCIAL_LOGIN_VALIDATION_SESSION_ERROR'));
 			}
-			$user_data ['user_login'] = $login;
-			$user_data ['user_email'] = $email;
-			$sociallogin->delete_session_validation_data ($this->user->data['session_id']);
-			$sociallogin->social_login_resume_handle_callback ($user_data);
+
+			// Add the custom values.
+			$social_network_profile_data ['user_login'] = $login;
+			$social_network_profile_data ['user_email'] = $email;
+
+			// Removes data which is no longer required.
+			$this->helper->delete_session_validation_data ($this->user->data['session_id']);
+
+			// Create new user.
+			list ($error_message, $user_id) = $this->helper->social_login_user_add (false, $social_network_profile_data);
+
+			// Redirect.
+			$this->helper->social_login_redirect($error_message, $user_id, $social_network_profile_data);
 		}
+		// Display Initial Form.
 		else
 		{
-			$val = $sociallogin->get_session_validation_data ($this->user->data['session_id']);
-			$user_data = $val ? json_decode ($val['user_data'], true) : null;
-			if ($user_data === null)
-			{
-				trigger_error ($this->user->lang ('OA_SOCIAL_LOGIN_VALIDATION_SESSION_ERROR'));
-			}
-			$this->template->assign_vars (
-					array (
-							'OA_SOCIAL_LOGIN_VALIDATION_USER_LOGIN' => $user_data['user_login'],
-							'OA_SOCIAL_LOGIN_USERNAME_EXPLAIN' => $this->user->lang (
-									$this->config['allow_name_chars'] . '_EXPLAIN',
-									$this->user->lang ('CHARACTERS', (int) $this->config['min_name_chars']),
-									$this->user->lang ('CHARACTERS', (int) $this->config['max_name_chars'])),
-							'OA_SOCIAL_LOGIN_VALIDATION_USER_EMAIL' => $user_data['user_email'],
-							'OA_SOCIAL_LOGIN_VALIDATION_NO_EMAIL' => empty ($user_data['user_email']),
-							'OA_SOCIAL_LOGIN_VALIDATE' => $this->controller_helper->route ("oneall_sociallogin_validate"),
-					)
-			);
+		    // Retrieve the temporarily stored social network profile data
+		    $social_network_profile_data = $this->helper->get_session_validation_data ($this->user->data['session_id'], true);
+		    if ($social_network_profile_data === null)
+		    {
+		        trigger_error ($this->user->lang ('OA_SOCIAL_LOGIN_VALIDATION_SESSION_ERROR'));
+		    }
+
+		    // Fill out form.
+			$this->template->assign_vars (array (
+			    'OA_SOCIAL_LOGIN_VALIDATION_USER_LOGIN' => $social_network_profile_data['user_login'],
+			    'OA_SOCIAL_LOGIN_VALIDATION_USER_EMAIL' => $social_network_profile_data['user_email'],
+			));
+
+			// Display.
 			return $this->controller_helper->render ('sociallogin_validation_body.html', 'validation');
 		}
 	}
 
-	
+
 	/**
 	 * Event handler for custom fields and user row modifications.
 	 */
 	public function modify_data ($event)
 	{
 		global $phpbb_log, $user;
-		
+
 		// The data retrieved from the social network profile.
 		$social = $event['social_profile'];
 
 		// The following code serves as example for custom changes.
-		
+
 		/*
-		
+
 		$event['cp_data'] = array (
 				// For example: a custom field named 'tastes':
 				'pf_tastes' => $social['user_languages_simple'][0],  // Risk of E_NOTICE and NULL.
 			);
-			
+
 		*/
-		
+
 		// Uncomment following line if you need logs.
 		$phpbb_log->add ('admin', $user->data['user_id'], $user->ip, 'LOG_PROFILE_FIELD_EDIT', time(), $event['cp_data']);
 	}

@@ -1,26 +1,27 @@
+<!-- INCLUDEJS /ext/oneall/sociallogin/adm/style/js/admin.js -->
+<!-- INCLUDECSS /ext/oneall/sociallogin/adm/style/css/admin.css -->
 <!-- INCLUDE overall_header.html -->
 
-<script type="text/javascript" src="../ext/oneall/sociallogin/adm/style/js/jquery-1.11.0.min.js"></script>
-<script type="text/javascript" src="../ext/oneall/sociallogin/adm/style/js/admin.js"></script>
-<link rel="stylesheet" type="text/css" href="../ext/oneall/sociallogin/adm/style/css/admin.css" />
-
+<script type="text/javascript">
+// <![CDATA[
+    var OA_SOCIAL_LOGIN_AJAX_URL_AUTODETECT = '{OA_SOCIAL_LOGIN_AJAX_URL_AUTODETECT}';
+    var OA_SOCIAL_LOGIN_AJAX_URL_VERIFY = '{OA_SOCIAL_LOGIN_AJAX_URL_VERIFY}';
+//]]>
+</script>
 
 <div id="oneall_sociallogin">
-
 	<!-- IF OA_SOCIAL_LOGIN_SETTINGS_SAVED -->
 		<div class="successbox">
 			<h3>Information</h3>
 			<p>{L_OA_SOCIAL_LOGIN_SETTNGS_UPDATED}</p>
 		</div>
-	<!-- ENDIF -->
-	
+	<!-- ENDIF -->	
 	<!-- IF S_WARNING -->
 		<div class="errorbox">
 	   	<h3>{L_WARNING}</h3>
 	   	<p>{WARNING_MSG}</p>
 		</div>
 	<!-- ENDIF -->
-
 	<h1>{L_OA_SOCIAL_LOGIN_TITLE}</h1>
 	<div class="section">
 		<p>
@@ -41,10 +42,8 @@
 		<p>
 			{L_OA_SOCIAL_LOGIN_SETUP_FREE_ACCOUNT} | {L_OA_SOCIAL_LOGIN_VIEW_CREDENTIALS}
 		</p>
-	</div>
-		
-	<form id="oneall_social_login_form" method="post" action="{U_ACTION}">
-	
+	</div>		
+	<form id="oneall_social_login_form" method="post" action="{U_ACTION}">	
 		<fieldset>
 			<legend>{L_OA_SOCIAL_LOGIN_DO_ENABLE}</legend>			
 			<dl>
@@ -57,8 +56,7 @@
 					<label><input type="radio" class="radio" id="oa_social_login_disable_1" name="oa_social_login_disable" value="1"<!-- IF OA_SOCIAL_LOGIN_DISABLE --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_DO_ENABLE_NO}</label>
 				</dd>
 			</dl>
-		</fieldset>
-		
+		</fieldset>		
 		<fieldset>
 			<legend>{L_OA_SOCIAL_LOGIN_API_CONNECTION}</legend>
 			<dl>
@@ -93,8 +91,7 @@
 					<input class="button2" type="button" id="oa_social_login_autodetect_api_connection_handler" value="{L_OA_SOCIAL_LOGIN_API_AUTODETECT}" />               
 				</dd>
 			</dl>
-		</fieldset>	
-		
+		</fieldset>			
 		<fieldset>
 			<legend>{L_OA_SOCIAL_LOGIN_API_CREDENTIALS_TITLE}</legend>		
 				<dl>
@@ -130,7 +127,6 @@
 					</dd>
 				</dl>
 		</fieldset>		
-		
 		<fieldset>
 			<legend>{L_OA_SOCIAL_LOGIN_DISPLAY_LOC}</legend>			
 			<dl>
@@ -228,8 +224,7 @@
 					<input type="text" id="oa_social_login_other_page_caption" name="oa_social_login_other_page_caption" value="{OA_SOCIAL_LOGIN_OTHER_PAGE_CAPTION}" size="60" />
 				</dd>
 			</dl>	
-		</fieldset>		
-				
+		</fieldset>						
 		<fieldset>
 			<legend>{L_OA_SOCIAL_LOGIN_DO_AVATARS}</legend>			
 			<dl>
@@ -242,13 +237,12 @@
 					<label><input type="radio" class="radio" id="oa_social_login_avatars_enable_1" name="oa_social_login_avatars_enable" value="1"<!-- IF OA_SOCIAL_LOGIN_AVATARS_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_DO_AVATARS_ENABLE_NO}</label>
 				</dd>
 			</dl>
-		</fieldset>
-		
+		</fieldset>		
 		<fieldset>
 			<legend>{L_OA_SOCIAL_LOGIN_DO_VALIDATION}</legend>		
 			<dl>
 				<dt>
-					<label for="oa_social_login_validation_0">{L_OA_SOCIAL_LOGIN_DO_VALIDATION_ASK}</label>
+					<label for="oa_social_login_validate_0">{L_OA_SOCIAL_LOGIN_DO_VALIDATION_ASK}</label>
 					<br /><span>{L_OA_SOCIAL_LOGIN_DO_VALIDATION_DESC}</span>
 				</dt>
 				<dd>
@@ -258,7 +252,6 @@
 				</dd>
 			</dl>
 		</fieldset>
-
 		<fieldset>
 			<legend>{L_OA_SOCIAL_LOGIN_DO_LINKING}</legend>		
 			<dl>
@@ -271,8 +264,7 @@
 					<label><input type="radio" class="radio" id="oa_social_login_disable_linking_1" name="oa_social_login_disable_linking" value="1"<!-- IF OA_SOCIAL_LOGIN_DISABLE_LINKING --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_DO_LINKING_NO}</label>						
 				</dd>			
 			</dl>
-		</fieldset>
-		
+		</fieldset>		
 		<fieldset>	
 				<legend>{L_OA_SOCIAL_LOGIN_DO_REDIRECT}</legend>		
 				<dl>
@@ -284,8 +276,7 @@
 						<input type="text" id="oa_social_login_redirect" name="oa_social_login_redirect" value="{OA_SOCIAL_LOGIN_REDIRECT}" size="60" />
 					</dd>
 				</dl>	
-		</fieldset>
-		
+		</fieldset>		
 		<fieldset>
 			<legend>{L_OA_SOCIAL_LOGIN_ENABLE_NETWORKS}</legend>						
 			<!-- BEGIN provider -->
@@ -298,13 +289,11 @@
 					<dd></dd>
 				</dl>
 			<!-- END provider -->			
-		</fieldset>
-		
+		</fieldset>		
 		<fieldset class="submit-buttons">
 			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />
 			{S_FORM_TOKEN}
 		</fieldset>
 	</form>
-	<div id="sid" style="display: none;">{CURRENT_SID}</div>
 </div>
 <!-- INCLUDE overall_footer.html -->
