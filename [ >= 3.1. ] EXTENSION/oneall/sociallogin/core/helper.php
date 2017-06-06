@@ -1517,16 +1517,17 @@ class helper
          * Use this event to modify the values to be inserted when a user is added
          * Inspired by the core event: core.user_add_modify_data (which does not get our profile data)
          *
-         * @event oneall_sociallogin.user_add_modify_data
+         * @event oneall.sociallogin.user_add_modify_data
          * @var array	user_row		Array of user details submited to user_add
          * @var array	cp_data			Array of Custom profile fields submited to user_add
          * @var array	social_profile	Array of social network profile, as read only
+         * @since 3.1
          */
+
         $cp_data = array();
         $social_profile = $user_data; // Copy of profile user_data, updates ignore, to simulate read-only.
-        $evt_vars = array('user_row', 'cp_data', 'social_profile');
-
-        extract($this->dispatcher->trigger_event('oneall_sociallogin.user_add_modify_data', compact($evt_vars)));
+        $vars = array('user_row', 'cp_data', 'social_profile');
+        extract($this->dispatcher->trigger_event('oneall.sociallogin.user_add_modify_data', compact($vars)));
 
         // Register user, with optional custom fields.
         $user_id_tmp = user_add($user_row, $cp_data);
@@ -1882,7 +1883,7 @@ class helper
     /**
      * Sends a CURL request.
      */
-    function curl_request($url, $options = array(), $timeout = 30, $num_redirects = 0)
+    public function curl_request($url, $options = array(), $timeout = 30, $num_redirects = 0)
     {
         // Send request
         $curl = curl_init();
@@ -2007,7 +2008,7 @@ class helper
     /**
      * Sends an fsockopen request.
      */
-    protected function fsockopen_request($url, $options = array(), $timeout = 30, $num_redirects = 0)
+    public function fsockopen_request($url, $options = array(), $timeout = 30, $num_redirects = 0)
     {
         // Store the result
         $result = new \oneall\sociallogin\core\api_result();
@@ -2055,31 +2056,31 @@ class helper
         }
 
         // Create HTTP request
-        $defaults = array();
-        $defaults['Host'] = 'Host: ' . $host;
-        $defaults['User-Agent'] = 'User-Agent: ' . self::USER_AGENT;
-
-        // BASIC AUTH?
-        if (isset($options['api_key']) && isset($options['api_secret']))
-        {
-            $defaults['Authorization'] = 'Authorization: Basic ' . base64_encode($options['api_key'] . ":" . $options['api_secret']);
-        }
+        $request = array();
 
         // Custom Request
         if ( !empty($options['method']))
         {
-            $request = strtoupper(trim ($options['method'])) . " " . $path . " HTTP/1.1\r\n";
+            $request[] = strtoupper(trim ($options['method'])) . " " . $path . " HTTP/1.1";
         }
         // Default GET Request
         else
         {
-            $request = 'GET ' . $path . " HTTP/1.0\r\n";
+            $request[] = 'GET ' . $path . " HTTP/1.0";
         }
 
-        // Build and send request
-        $request .= implode("\r\n", $defaults);
+        $request[] = 'Host: ' . $host;
+        $request[] = 'User-Agent: ' . self::USER_AGENT;
+
+        // BASIC AUTH?
+        if (isset($options['api_key']) && isset($options['api_secret']))
+        {
+            $request[] = 'Authorization: Basic ' . base64_encode($options['api_key'] . ":" . $options['api_secret']);
+        }
 
         // Data
+        $content = null;
+
         if (!empty($options['data']))
         {
             if (is_array($options['data']))
@@ -2097,18 +2098,20 @@ class helper
             }
 
             // Setup POST Data
-            $request .= "Content-Type: application/json\r\n";
-            $request .= "Content-Length: " . mb_strlen($content) . "\r\n";
-            $request .= "Connection: Close\r\n\r\n";
-            $request .= $content;
-        }
-        else
-        {
-            $request .= "\r\n\r\n";
+            $request [] = "Content-Type: application/json";
+            $request [] = "Content-Length: " . strlen($content);
+            $request [] = "Connection: Close";
         }
 
-        // Send
-        fwrite($fp, $request);
+
+        // Send Headers
+        fwrite ($fp, (implode ("\r\n", $request))."\r\n\r\n");
+
+        // Send Content
+        if ( ! empty ($content))
+        {
+            fwrite($fp, $content);
+        }
 
         // Fetch response
         $response = '';

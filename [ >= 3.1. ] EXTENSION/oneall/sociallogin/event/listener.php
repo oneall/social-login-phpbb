@@ -167,8 +167,8 @@ class listener implements EventSubscriberInterface
 
 			// Setup template placeholders
 			$this->template->assign_var ('OA_SOCIAL_LOGIN_EMBED_LIBRARY', 1);
-			$this->template->assign_var ('OA_SOCIAL_LOGIN_API_SUBDOMAIN', $this->config ['oa_social_login_api_subdomain']);
-			$this->template->assign_var ('OA_SOCIAL_LOGIN_CALLBACK_URI', addslashes ($this->helper->get_current_url ()));
+			$this->template->assign_var ('OA_SOCIAL_LOGIN_API_SUBDOMAIN', str_replace ("'", "\'", $this->config ['oa_social_login_api_subdomain']));
+			$this->template->assign_var ('OA_SOCIAL_LOGIN_CALLBACK_URI', str_replace ("'", "\'", $this->helper->get_current_url ()));
 			$this->template->assign_var ('OA_SOCIAL_LOGIN_PROVIDERS', implode ("','", explode (",", $this->config ['oa_social_login_providers'])));
 
 			// User must not be logged in
@@ -266,7 +266,7 @@ class listener implements EventSubscriberInterface
 		if (strlen ($this->request->variable ('oa_action', '')) > 0 && strlen ($this->request->variable ('connection_token', '')) > 0)
 		{
 			$user_data = $this->helper->handle_callback ();
-			var_dump($user_data);
+
 			if (is_array ($user_data))
 			{
 				$user_data ['redirect'] = $this->helper->get_current_url ();

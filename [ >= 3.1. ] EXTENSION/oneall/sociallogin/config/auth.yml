@@ -1,5 +1,5 @@
 services:
-    auth.provider.oneall:
+    auth.provider.oneall_sociallogin:
         class: oneall\sociallogin\auth\provider\oneall
         arguments:
             - '@dbal.conn'
