@@ -296,34 +296,50 @@ class sociallogin_acp_module
         // Check CURL HTTPS - Port 443.
         if ($this->check_curl(true) === true)
         {
-            $status_message = 'success|curl_443|' . sprintf($user->lang['OA_SOCIAL_LOGIN_API_DETECT_CURL'], 443);
+            $response = array(
+                'success' => true,
+                'handler' => 'curl',
+                'port' => 443,
+                'message' => sprintf($user->lang['OA_SOCIAL_LOGIN_API_DETECT_CURL'], 443));
         }
         // Check CURL HTTP - Port 80.
         elseif ($this->check_curl(false) === true)
         {
-            $status_message = 'success|curl_80|' . sprintf($user->lang['OA_SOCIAL_LOGIN_API_DETECT_CURL'], 80);
+            $response = array(
+                'success' => true,
+                'handler' => 'curl',
+                'port' => 80,
+                'message' => sprintf($user->lang['OA_SOCIAL_LOGIN_API_DETECT_CURL'], 80));
         }
         // Check FSOCKOPEN HTTPS - Port 443.
         elseif ($this->check_fsockopen(true) == true)
         {
-            $status_message = 'success|fsockopen_443|' . sprintf($user->lang['OA_SOCIAL_LOGIN_API_DETECT_FSOCKOPEN'], 443);
+            $response = array(
+                'success' => true,
+                'handler' => 'fsockopen',
+                'port' => 443,
+                'message' => sprintf($user->lang['OA_SOCIAL_LOGIN_API_DETECT_FSOCKOPEN'], 443));
         }
         // Check FSOCKOPEN HTTP - Port 80.
         elseif ($this->check_fsockopen(false) == true)
         {
-            $status_message = 'success|fsockopen_80|' . sprintf($user->lang['OA_SOCIAL_LOGIN_API_DETECT_FSOCKOPEN'], 80);
+            $response = array(
+                'success' => true,
+                'handler' => 'fsockopen',
+                'port' => 80,
+                'message' => sprintf($user->lang['OA_SOCIAL_LOGIN_API_DETECT_FSOCKOPEN'], 80));
         }
         // No working handler found.
         else
         {
-            $status_message = 'error|none|' . $user->lang['OA_SOCIAL_LOGIN_API_DETECT_NONE'];
+            $response = array(
+                'success' => false,
+                'message' => $user->lang['OA_SOCIAL_LOGIN_API_DETECT_NONE']);
         }
 
-        // Call the garbage collector.
-        garbage_collection();
-
-        // Output for AJAX.
-        die($status_message);
+        // Output for Ajax.
+        $json_response = new \phpbb\json_response();
+        $json_response->send($response);
     }
 
     /**
@@ -344,12 +360,13 @@ class sociallogin_acp_module
         $api_connection_handler = $request->variable('api_connection_handler', '');
 
         // Init status message.
+        $status_success = false;
         $status_message = null;
 
         // Check if all fields have been filled out.
         if (strlen($api_subdomain) == 0 || strlen($api_key) == 0 || strlen($api_secret) == 0)
         {
-            $status_message = 'error_|' . $user->lang['OA_SOCIAL_LOGIN_API_CREDENTIALS_FILL_OUT'];
+            $status_message = $user->lang['OA_SOCIAL_LOGIN_API_CREDENTIALS_FILL_OUT'];
         }
         else
         {
@@ -362,7 +379,7 @@ class sociallogin_acp_module
             {
                 if (!$this->check_fsockopen($api_connection_use_https))
                 {
-                    $status_message = 'error|' . $user->lang['OA_SOCIAL_LOGIN_API_CREDENTIALS_USE_AUTO'];
+                    $status_message = $user->lang['OA_SOCIAL_LOGIN_API_CREDENTIALS_USE_AUTO'];
                 }
             }
             // CURL
@@ -370,7 +387,7 @@ class sociallogin_acp_module
             {
                 if (!$this->check_curl($api_connection_use_https))
                 {
-                    $status_message = 'error|' . $user->lang['OA_SOCIAL_LOGIN_API_CREDENTIALS_USE_AUTO'];
+                    $status_message = $user->lang['OA_SOCIAL_LOGIN_API_CREDENTIALS_USE_AUTO'];
                 }
             }
 
@@ -386,7 +403,7 @@ class sociallogin_acp_module
                 // Check format of the subdomain.
                 if (!preg_match("/^[a-z0-9\-]+$/i", $api_subdomain))
                 {
-                    $status_message = 'error|' . $user->lang['OA_SOCIAL_LOGIN_API_CREDENTIALS_SUBDOMAIN_WRONG'];
+                    $status_message = $user->lang['OA_SOCIAL_LOGIN_API_CREDENTIALS_SUBDOMAIN_WRONG'];
                 }
                 else
                 {
@@ -407,8 +424,7 @@ class sociallogin_acp_module
                             'allowed_domains' => array(
                                 $phpbb_domain))));
 
-
-                    // Try to establish a connection.
+                    // Try to establish a connection, this will also whitelist the domain.
                     $result = $phpbb_container->get('oneall.sociallogin.helper')->do_api_request($api_connection_handler, $api_resource_url, $api_options);
 
                     switch ($result->get_code())
@@ -416,33 +432,34 @@ class sociallogin_acp_module
                         // Connection successfull.
                         case 200:
                         case 201:
-                            $status_message = 'success|' . $user->lang['OA_SOCIAL_LOGIN_API_CREDENTIALS_OK'];
+                            $status_message = $user->lang['OA_SOCIAL_LOGIN_API_CREDENTIALS_OK'];
+                            $status_success = true;
                             break;
 
                         // Authentication Error.
                         case 401:
-                            $status_message = 'error|' . $user->lang['OA_SOCIAL_LOGIN_API_CREDENTIALS_KEYS_WRONG'];
+                            $status_message = $user->lang['OA_SOCIAL_LOGIN_API_CREDENTIALS_KEYS_WRONG'];
                             break;
 
                         // Wrong Subdomain.
                         case 404:
-                            $status_message = 'error|' . $user->lang['OA_SOCIAL_LOGIN_API_CREDENTIALS_SUBDOMAIN_WRONG'];
+                            $status_message = $user->lang['OA_SOCIAL_LOGIN_API_CREDENTIALS_SUBDOMAIN_WRONG'];
                             break;
 
                         // Another error.
                         default:
-                            $status_message = 'error|' . $user->lang['OA_SOCIAL_LOGIN_API_CREDENTIALS_CHECK_COM'];
+                            $status_message = $user->lang['OA_SOCIAL_LOGIN_API_CREDENTIALS_CHECK_COM'];
                             break;
                     }
                 }
             }
         }
 
-        // Garbage Collector.
-        garbage_collection();
-
         // Output for Ajax.
-        die($status_message);
+        $json_response = new \phpbb\json_response();
+        $json_response->send(array(
+            'success' => $status_success,
+            'message' => $status_message));
     }
 
     /**

@@ -19,12 +19,7 @@ $(function() {
                 message_container.removeClass('success_message error_message').addClass('working_message');
                 message_container.html('');
 
-                $.post(OA_SOCIAL_LOGIN_AJAX_URL_AUTODETECT, data, function(response_string) {
-                    console.log(response_string);
-                    var response_parts = response_string.split('|');
-                    var response_status = response_parts[0];
-                    var response_flag = response_parts[1];
-                    var response_text = response_parts[2];
+                $.post(OA_SOCIAL_LOGIN_AJAX_URL_AUTODETECT, data, function(response) {
 
                     /* CURL/FSOCKOPEN Radio Box */
                     var radio_curl = $("#oa_social_login_api_connection_handler_curl");
@@ -37,41 +32,25 @@ $(function() {
                     radio_port_80.removeAttr("checked");
                     radio_port_443.removeAttr("checked");
 
-                    /* CURL detected, HTTPS */
-                    if (response_flag == "curl_443") {
-                        radio_curl.prop("checked", true);
-                        radio_port_443.prop("checked", true);
-                    }
-                    /* CURL detected, HTTP */
-                    else if (response_flag == "curl_80") {
-                        radio_curl.prop("checked", true);
-                        radio_port_80.prop("checked", true);
-                    }
-                    /* FSOCKOPEN detected, HTTPS */
-                    else if (response_flag == "fsockopen_443") {
-                        radio_fsockopen.prop("checked", true);
-                        radio_port_443.prop("checked", true);
-                    }
-                    /* FSOCKOPEN detected, HTTP */
-                    else if (response_flag == "fsockopen_80") {
-                        radio_fsockopen.prop("checked", true);
-                        radio_port_80.prop("checked", true);
-                    }
-                    /* No handler detected */
-                    else {
-                        radio_curl.prop("checked", true);
-                        radio_port_443.prop("checked", true);
-                    }
-
                     message_container.removeClass("working_message");
-                    message_container.html(response_text);
-
-                    if (response_status == "success") {
-                        message_container.addClass("success_message");
+                    message_container.html(response.message);
+                    
+                    if (response.success) {
+                        message_container.addClass("success_message");                        
+                        if (response.handler == 'fsockopen') {
+                            radio_fsockopen.prop("checked", true);     
+                        } else {
+                            radio_curl.prop("checked", true);
+                        }                        
+                        if (response.port == '80') {
+                            radio_port_80.prop("checked", true);
+                        } else {
+                            radio_port_443.prop("checked", true);
+                        }
                     } else {
                         message_container.addClass("error_message");
                     }
-
+  
                     $(button).removeClass("working");
                 });
             }
@@ -109,16 +88,11 @@ $(function() {
                 message_container.removeClass('success_message error_message').addClass('working_message');
                 message_container.html('');
 
-                $.post(OA_SOCIAL_LOGIN_AJAX_URL_VERIFY, data, function(response_string) {
-
-                    var response_parts = response_string.split('|');
-                    var response_status = response_parts[0];
-                    var response_text = response_parts[1];
-
+                $.post(OA_SOCIAL_LOGIN_AJAX_URL_VERIFY, data, function(response) {
                     message_container.removeClass('working_message');
-                    message_container.html(response_text);
+                    message_container.html(response.message);
 
-                    if (response_status == "success") {
+                    if (response.success) {
                         message_container.addClass('success_message');
                     } else {
                         message_container.addClass('error_message');
