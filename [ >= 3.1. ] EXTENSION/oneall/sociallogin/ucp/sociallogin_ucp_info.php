@@ -35,7 +35,7 @@ class sociallogin_ucp_info
 			'modes' => array (
 				'settings' => array (
 					'title' => 'OA_SOCIAL_LOGIN_LINK_UCP',
-				    'auth' => 'acl_u_chgprofileinfo',
+				    'auth' => '',
 					'cat' => array ('UCP_PROFILE')
 				)
 			)
