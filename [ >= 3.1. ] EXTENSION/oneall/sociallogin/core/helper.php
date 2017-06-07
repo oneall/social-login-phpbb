@@ -30,7 +30,7 @@ namespace oneall\sociallogin\core;
 class helper
 {
     // Version
-    const USER_AGENT = 'SocialLogin/3.1 phpBB/3.1.x (+http://www.oneall.com/)';
+    const USER_AGENT = 'SocialLogin/3.2 phpBB/3.1.x (+http://www.oneall.com/)';
 
     // @var \phpbb\config\config
     protected $config;
