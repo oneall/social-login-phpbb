@@ -11,7 +11,6 @@ $(function() {
             if ($(button).hasClass('working') === false) {
                 $(button).addClass('working');
 
-                var message_string;
                 var message_container;
                 var data = {};
  
@@ -63,7 +62,6 @@ $(function() {
             if ($(button).hasClass('working') === false) {
                 $(button).addClass('working');
                 
-                var message_string;
                 var message_container;
 
                 var radio_fsockopen_val = $("#oa_social_login_api_connection_handler_fsockopen:checked").val();
@@ -73,7 +71,7 @@ $(function() {
                 var key = $('#oa_social_login_api_key').val();
                 var secret = $('#oa_social_login_api_secret').val();
 
-                /* Do not pass CURL in the URL, this is blocked by some hosts */
+                /* Do not pass CURL as POST data, this is blocked by some hosts */
                 var handler = (radio_fsockopen_val === 'fs' ? 'fs' : 'cr');
                 var port = (radio_port_443 === '443' ? 443 : 80);
                 var data = {
