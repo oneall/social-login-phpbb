@@ -5,14 +5,15 @@ namespace Drupal\social_login\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Builds the Social Login form for the Social Login block.
+ * Builds the form for the Social Login block.
  */
 class SocialLoginBlockForm extends FormBase {
 
   /**
-   * Determines the ID of a form.
+   * Determines the ID of the form.
    */
   public function getFormId() {
     return 'social_login_block_form';
@@ -35,7 +36,7 @@ class SocialLoginBlockForm extends FormBase {
    * Form constructor.
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    
+
   	// Are we using HTTPs?
   	$is_https = Drupal::request()->isSecure();
 
@@ -67,7 +68,7 @@ class SocialLoginBlockForm extends FormBase {
       '#providers' => $provider_string,
       '#token' => '',
       '#callbackuri' => $callback_uri,
-      // Che cache tag is the callback uri (redirect to the same page).
+      // The cache tag is the callback uri (redirect to the same page).
       '#cache' => array(
         'contexts' => array(
           'url',
@@ -79,5 +80,4 @@ class SocialLoginBlockForm extends FormBase {
     $renderer->addCacheableDependency($form, $callback_uri);
     return $form;
   }
-
 }

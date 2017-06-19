@@ -8,6 +8,11 @@ use Drupal\Core\Session\AccountInterface;
 
 /**
  * Displays a Social Login block.
+ *
+ * @Block(
+ *   id = "social_login_block",
+ *   admin_label = @Translation("Social Login"),
+ * )
  */
 class SocialLoginBlock extends BlockBase {
 
@@ -19,10 +24,9 @@ class SocialLoginBlock extends BlockBase {
   }
 
   /**
-   * Display the Social Login Block.
+   * Returns the Social Login Block.
    */
   public function build() {
     return \Drupal::formBuilder()->getForm('Drupal\social_login\Form\SocialLoginBlockForm');
   }
-
 }

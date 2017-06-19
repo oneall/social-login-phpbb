@@ -60,9 +60,11 @@ networks and identity providers:
 - Github.com
 - Google
 - Instagram
-- LinkedIn'
+- Line
+- LinkedIn
 - LiveJournal
 - Mail.ru
+- Meetup
 - Odnoklassniki
 - OpenID
 - PayPal
@@ -70,6 +72,7 @@ networks and identity providers:
 - PixelPin
 - Reddit
 - Skyrock.com		
+- SoundCloud
 - StackExchange
 - Steam
 - Twitch.tv
