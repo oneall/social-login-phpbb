@@ -1,5 +1,5 @@
 # Social Login
-Social Login for Drupal 7/8 allows your users to login and register with 30+ social networks. 
+Social Login for Drupal 7/8 allows your users to login and register with 35+ social networks. 
 It increases your Drupal user registration rate by simplifying the registration process for 
 new users and provides permission-based social data retrieved from the social network profiles.
 
@@ -25,13 +25,15 @@ https://www.drupal.org/project/social_login
 * Draugiem
 * Dribbble
 * Facebook
-* Foursquare 
+* Foursquare
 * Github.com
 * Google
 * Instagram
+* Line
 * LinkedIn
 * LiveJournal
 * Mail.ru
+* Meetup
 * Odnoklassniki
 * OpenID
 * PayPal
@@ -39,6 +41,7 @@ https://www.drupal.org/project/social_login
 * PixelPin
 * Reddit
 * Skyrock.com
+* SoundCloud
 * StackExchange
 * Steam
 * Twitch.tv
