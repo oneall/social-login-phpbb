@@ -1,6 +1,9 @@
 <?php
 /**
- * @package   	OneAll Social Login
+ *
+ * OneAll Social Login. An extension for the phpBB Forum Software package.
+ * French translation by Galixte (http://www.galixte.com)
+ *
  * @copyright 	Copyright 2011-2017 http://www.oneall.com
  * @license   	GNU/GPL 2 or later
  *
@@ -24,15 +27,8 @@
  */
 
 /**
-* 
-* French translations by Galixte 
-* http://www.galixte.com
-* 
-*/
-
-/**
-* DO NOT CHANGE
-*/
+ * DO NOT CHANGE
+ */
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -59,7 +55,6 @@ if (empty($lang) || !is_array($lang))
 // ’ « » “ ” …
 //
 
-// Social Login Frontend.
 $lang = array_merge($lang, array(
 	'OA_SOCIAL_LOGIN_LINK_UCP' => 'Lier son compte avec les réseaux sociaux',
 	'OA_SOCIAL_LOGIN_LINK' => 'Lier son compte avec réseaux sociaux',
