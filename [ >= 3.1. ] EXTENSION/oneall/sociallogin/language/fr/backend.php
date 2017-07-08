@@ -1,6 +1,9 @@
 <?php
 /**
- * @package   	OneAll Social Login
+ *
+ * OneAll Social Login. An extension for the phpBB Forum Software package.
+ * French translation by Galixte (http://www.galixte.com)
+ *
  * @copyright 	Copyright 2011-2017 http://www.oneall.com
  * @license   	GNU/GPL 2 or later
  *
@@ -24,15 +27,8 @@
  */
 
 /**
-*
-* French translations by Galixte
-* http://www.galixte.com
-*
-*/
-
-/**
-* DO NOT CHANGE
-*/
+ * DO NOT CHANGE
+ */
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -59,7 +55,6 @@ if (empty($lang) || !is_array($lang))
 // ’ « » “ ” …
 //
 
-// Social Login Backend.
 $lang = array_merge($lang, array(
 	'OA_SOCIAL_LOGIN_ACP' => 'Passerelle de connexion OneAll',
 	'OA_SOCIAL_LOGIN_ACP_SETTINGS' => 'Paramètres',
@@ -110,8 +105,8 @@ $lang = array_merge($lang, array(
 	'OA_SOCIAL_LOGIN_DO_VALIDATION' => 'Demander la confirmation du profil aux nouveaux utilisateurs ?',
 	'OA_SOCIAL_LOGIN_DO_VALIDATION_ALWAYS' => 'Activer la confirmation du profil',
 	'OA_SOCIAL_LOGIN_DO_VALIDATION_ASK' => 'Demander aux nouveaux utilisateurs de saisir leur nom d’utilisateur et leur adresse e-mail ?',
-	'OA_SOCIAL_LOGIN_DO_VALIDATION_DEPENDS' => 'Confirmation exceptionnelle du profil',
-	'OA_SOCIAL_LOGIN_DO_VALIDATION_DESC' => 'Si activé, les nouveaux utilisateurs seront invités à saisir ou confirmer leur nom d’utilisateur et leur adresse e-mail.<br /> Si sélectionnée, une confirmation exceptionnelle sera demandée uniquement si la connexion automatique au réseau social est désactivée, que le nom d’utilisateur est récupéré, que l’adresse e-mail est manquante mais a été récupérée.',
+	'OA_SOCIAL_LOGIN_DO_VALIDATION_DEPENDS' => 'Confirmation du profil si nécessaire',
+	'OA_SOCIAL_LOGIN_DO_VALIDATION_DESC' => 'Si activé, les nouveaux utilisateurs seront invités à saisir ou confirmer leur nom d’utilisateur et leur adresse e-mail.<br /> Une confirmation sera demandée uniquement si le nom d’utilisateur est déjà utilisé, que l’adresse e-mail est manquante ou que cette dernière est déjà utilisée et que la connexion au réseau social est désactivée.',
 	'OA_SOCIAL_LOGIN_DO_VALIDATION_NEVER' => 'Désactiver la confirmation du profil',
 	'OA_SOCIAL_LOGIN_ENABLE_NETWORKS' => 'Choisir les réseaux sociaux autorisés sur votre forum',
 	'OA_SOCIAL_LOGIN_ENABLE_SOCIAL_NETWORK' => 'Au moins un réseau social doit être activé',
@@ -136,6 +131,13 @@ $lang = array_merge($lang, array(
 	'OA_SOCIAL_LOGIN_LOGIN_PAGE_ENABLE_DESC' => 'Si activé, la passerelle de connexion OneAll sera affichée sur la page de connexion du forum.',
 	'OA_SOCIAL_LOGIN_LOGIN_PAGE_NO' => 'Désactiver',
 	'OA_SOCIAL_LOGIN_LOGIN_PAGE_YES' => 'Activer',
+	'OA_SOCIAL_LOGIN_INLINE_PAGE' => 'Page de connexion au forum (avec le formulaire de connexion)',
+	'OA_SOCIAL_LOGIN_INLINE_PAGE_CAPTION' => 'Avec le formulaire de connexion',
+	'OA_SOCIAL_LOGIN_INLINE_PAGE_CAPTION_DESC' => 'Permet d’afficher ce titre au-dessus des icônes intégrées de la passerelle de connexion OneAll sur la page de connexion.',
+	'OA_SOCIAL_LOGIN_INLINE_PAGE_ENABLE' => 'Afficher sous forme de ligne sur la page de connexion',
+	'OA_SOCIAL_LOGIN_INLINE_PAGE_ENABLE_DESC' => 'Permet d’activer l’intégration de la passerelle de connexion OneAll sous forme d’une ligne sur la page de connexion. Pour activer l’affichage sous forme d’une ligne il est nécessaire de sélectionner le paramètre OneAll comme méthode d’authentification depuis l’onglet « GÉNÉRAL », catégorie « COMMUNICATION », page « COMMUNICATION ».',
+	'OA_SOCIAL_LOGIN_INLINE_PAGE_NO' => 'Désactiver',
+	'OA_SOCIAL_LOGIN_INLINE_PAGE_YES' => 'Activer',
 	'OA_SOCIAL_LOGIN_OTHER_PAGE' => 'Toutes les autres pages du forum',
 	'OA_SOCIAL_LOGIN_OTHER_PAGE_CAPTION' => 'Légende',
 	'OA_SOCIAL_LOGIN_OTHER_PAGE_CAPTION_DESC' => 'Ce titre sera affiché au-dessus des icônes de la passerelle de connexion OneAll sur les autres pages du forum.',
@@ -168,5 +170,5 @@ $lang = array_merge($lang, array(
 	'OA_SOCIAL_LOGIN_VALIDATION_SESSION_ERROR' => 'Des informations de la session courante sont manquantes.',
 	'OA_SOCIAL_LOGIN_VIEW_CREDENTIALS' => '<a href="https://app.oneall.com/applications/" class="button1 external">Créer et voir mes certificats d’API</a>',
 	'OA_SOCIAL_LOGIN_WIDGET_TITLE' => 'Connexion avec un réseau social',
-	'G_OA_SOCIAL_LOGIN_REGISTER' => 'Utilisateurs inscrits via OneAll',
+	'G_OA_SOCIAL_LOGIN_REGISTER' => 'Utilisateurs enregistrés au moyen de la passerelle de connexion OneAll',
 ));
