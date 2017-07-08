@@ -1,8 +1,7 @@
 <?php
-
 /**
  * @package   	OneAll Social Login
- * @copyright 	Copyright 2013-2015 http://www.oneall.com - All rights reserved.
+ * @copyright 	Copyright 2011-2017 http://www.oneall.com
  * @license   	GNU/GPL 2 or later
  *
  * This program is free software; you can redistribute it and/or
@@ -133,6 +132,34 @@ class m1_initial_schema extends \phpbb\db\migration\migration
 							'oasl_user_id'
 						)
 					)
+				),
+				$this->table_prefix . 'oasl_session' => array (
+					'COLUMNS' => array (
+						'oasl_session_id' => array (
+							'UINT',
+							NULL,
+							'auto_increment'
+						),
+						'session_id' => array (
+							'CHAR:32',
+							''
+						),
+						'user_data' => array (
+							'TEXT',
+							''
+						),
+						'date_creation' => array (
+							'TIMESTAMP',
+							0
+						)
+					),
+					'PRIMARY_KEY' => 'oasl_session_id',
+					'KEYS' => array (
+						'oases' => array (
+							'UNIQUE',
+							'oasl_session_id'
+						)
+					)
 				)
 			)
 		);
@@ -147,7 +174,8 @@ class m1_initial_schema extends \phpbb\db\migration\migration
 			'drop_tables' => array (
 				$this->table_prefix . 'oasl_user',
 				$this->table_prefix . 'oasl_login_token',
-				$this->table_prefix . 'oasl_identity'
+				$this->table_prefix . 'oasl_identity',
+				$this->table_prefix . 'oasl_session'
 			)
 		);
 	}

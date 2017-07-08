@@ -1,0 +1,5 @@
+
+oneall_sociallogin_validate:
+    path: /oneall_sociallogin_validate
+    defaults: { _controller: oneall.sociallogin.listener:handle }
+

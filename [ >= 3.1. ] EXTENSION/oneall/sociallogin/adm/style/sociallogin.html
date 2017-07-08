@@ -1,26 +1,27 @@
+<!-- INCLUDEJS /ext/oneall/sociallogin/adm/style/js/admin.js -->
+<!-- INCLUDECSS /ext/oneall/sociallogin/adm/style/css/admin.css -->
 <!-- INCLUDE overall_header.html -->
 
-<script type="text/javascript" src="../ext/oneall/sociallogin/adm/style/js/jquery-1.11.0.min.js"></script>
-<script type="text/javascript" src="../ext/oneall/sociallogin/adm/style/js/admin.js"></script>
-<link rel="stylesheet" type="text/css" href="../ext/oneall/sociallogin/adm/style/css/admin.css">
-
+<script type="text/javascript">
+// <![CDATA[
+    var OA_SOCIAL_LOGIN_AJAX_URL_AUTODETECT = '{OA_SOCIAL_LOGIN_AJAX_URL_AUTODETECT}';
+    var OA_SOCIAL_LOGIN_AJAX_URL_VERIFY = '{OA_SOCIAL_LOGIN_AJAX_URL_VERIFY}';
+//]]>
+</script>
 
 <div id="oneall_sociallogin">
-
 	<!-- IF OA_SOCIAL_LOGIN_SETTINGS_SAVED -->
 		<div class="successbox">
 			<h3>Information</h3>
 			<p>{L_OA_SOCIAL_LOGIN_SETTNGS_UPDATED}</p>
 		</div>
-	<!-- ENDIF -->
-	
+	<!-- ENDIF -->	
 	<!-- IF S_WARNING -->
 		<div class="errorbox">
 	   	<h3>{L_WARNING}</h3>
 	   	<p>{WARNING_MSG}</p>
 		</div>
 	<!-- ENDIF -->
-
 	<h1>{L_OA_SOCIAL_LOGIN_TITLE}</h1>
 	<div class="section">
 		<p>
@@ -41,10 +42,8 @@
 		<p>
 			{L_OA_SOCIAL_LOGIN_SETUP_FREE_ACCOUNT} | {L_OA_SOCIAL_LOGIN_VIEW_CREDENTIALS}
 		</p>
-	</div>
-		
-	<form id="oneall_social_login_form" method="post" action="{U_ACTION}">
-	
+	</div>		
+	<form id="oneall_social_login_form" method="post" action="{U_ACTION}">	
 		<fieldset>
 			<legend>{L_OA_SOCIAL_LOGIN_DO_ENABLE}</legend>			
 			<dl>
@@ -57,25 +56,24 @@
 					<label><input type="radio" class="radio" id="oa_social_login_disable_1" name="oa_social_login_disable" value="1"<!-- IF OA_SOCIAL_LOGIN_DISABLE --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_DO_ENABLE_NO}</label>
 				</dd>
 			</dl>
-		</fieldset>
-		
+		</fieldset>		
 		<fieldset>
 			<legend>{L_OA_SOCIAL_LOGIN_API_CONNECTION}</legend>
 			<dl>
 				<dt>
-					<label for="oa_social_login_api_connection_handler_curl">{L_OA_SOCIAL_LOGIN_API_CONNECTION_HANDLER}</label>
+					<label for="oa_social_login_api_connection_handler_curl">{L_OA_SOCIAL_LOGIN_API_CONNECTION_HANDLER}{L_COLON}</label>
 					<br /><span>{L_OA_SOCIAL_LOGIN_API_CONNECTION_HANDLER_DESC}</span>
 				</dt>
 				<dd>
-					<label><input type="radio" class="radio" id="oa_social_login_api_connection_handler_curl" name="oa_social_login_api_connection_handler" value="curl"<!-- IF OA_SOCIAL_LOGIN_API_CONNECTION_HANDLER_CURL --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_CURL}</label><br />
+					<label><input type="radio" class="radio" id="oa_social_login_api_connection_handler_curl" name="oa_social_login_api_connection_handler" value="cr"<!-- IF OA_SOCIAL_LOGIN_API_CONNECTION_HANDLER_CURL --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_CURL}</label><br />
 					<span>{L_OA_SOCIAL_LOGIN_CURL_DESC}</span> ({L_OA_SOCIAL_LOGIN_CURL_DOCS})<br /><br />					
-					<label><input type="radio" class="radio" id="oa_social_login_api_connection_handler_fsockopen" name="oa_social_login_api_connection_handler" value="fsockopen"<!-- IF OA_SOCIAL_LOGIN_API_CONNECTION_HANDLER_FSOCKOPEN --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_FSOCKOPEN}</label><br />
+					<label><input type="radio" class="radio" id="oa_social_login_api_connection_handler_fsockopen" name="oa_social_login_api_connection_handler" value="fs"<!-- IF OA_SOCIAL_LOGIN_API_CONNECTION_HANDLER_FSOCKOPEN --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_FSOCKOPEN}</label><br />
 					<span>{L_OA_SOCIAL_LOGIN_FSOCKOPEN_DESC}</span> ({L_OA_SOCIAL_LOGIN_FSOCKOPEN_DOCS})
 				</dd>
 			</dl>
 			<dl>
 				<dt>
-					<label for="oa_social_login_api_connection_port_443">{L_OA_SOCIAL_LOGIN_API_PORT}</label>
+					<label for="oa_social_login_api_connection_port_443">{L_OA_SOCIAL_LOGIN_API_PORT}{L_COLON}</label>
 					<br /><span>{L_OA_SOCIAL_LOGIN_API_PORT_DESC}</span>
 				</dt>
 				<dd>
@@ -93,13 +91,12 @@
 					<input class="button2" type="button" id="oa_social_login_autodetect_api_connection_handler" value="{L_OA_SOCIAL_LOGIN_API_AUTODETECT}" />               
 				</dd>
 			</dl>
-		</fieldset>	
-		
+		</fieldset>			
 		<fieldset>
 			<legend>{L_OA_SOCIAL_LOGIN_API_CREDENTIALS_TITLE}</legend>		
 				<dl>
 					<dt>
-						<label for="oa_social_login_api_subdomain">{L_OA_SOCIAL_LOGIN_API_SUBDOMAIN}</label>
+						<label for="oa_social_login_api_subdomain">{L_OA_SOCIAL_LOGIN_API_SUBDOMAIN}{L_COLON}</label>
 					</dt>
 					<dd>
 						<input type="text" id="oa_social_login_api_subdomain" name="oa_social_login_api_subdomain" value="{OA_SOCIAL_LOGIN_API_SUBDOMAIN}"  size="60" />
@@ -107,7 +104,7 @@
 				</dl>
 				<dl>
 					<dt>
-						<label for="oa_social_login_api_key">{L_OA_SOCIAL_LOGIN_API_PUBLIC_KEY}</label>
+						<label for="oa_social_login_api_key">{L_OA_SOCIAL_LOGIN_API_PUBLIC_KEY}{L_COLON}</label>
 					</dt>
 					<dd>
 						<input type="text" id="oa_social_login_api_key" name="oa_social_login_api_key" value="{OA_SOCIAL_LOGIN_API_KEY}"  size="60" />
@@ -115,7 +112,7 @@
 				</dl>
 				<dl>
 					<dt>
-						<label for="oa_social_login_api_secret">{L_OA_SOCIAL_LOGIN_API_PRIVATE_KEY}</label>
+						<label for="oa_social_login_api_secret">{L_OA_SOCIAL_LOGIN_API_PRIVATE_KEY}{L_COLON}</label>
 					</dt>
 					<dd>
 						<input type="text" id="oa_social_login_api_secret" name="oa_social_login_api_secret" value="{OA_SOCIAL_LOGIN_API_SECRET}"  size="60" />
@@ -130,20 +127,19 @@
 					</dd>
 				</dl>
 		</fieldset>		
-		
 		<fieldset>
-			<legend>{L_OA_SOCIAL_LOGIN_INDEX_PAGE}</legend>			
+			<legend>{L_OA_SOCIAL_LOGIN_DISPLAY_LOC}</legend>			
 			<dl>
 				<dt>
 					<label for="oa_social_login_index_page_disable_0">{L_OA_SOCIAL_LOGIN_INDEX_PAGE_ENABLE}</label>
 					<br /><span>{L_OA_SOCIAL_LOGIN_INDEX_PAGE_ENABLE_DESC}</span>
 				</dt>
 				<dd>
-					<label><input type="radio" class="radio" id="oa_social_login_index_page_disable_0" name="oa_social_login_index_page_disable" value="0"<!-- IF not OA_SOCIAL_LOGIN_INDEX_PAGE_DISABLE --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_INDEX_PAGE_YES} <strong>({L_OA_SOCIAL_LOGIN_DEFAULT})</strong></label><br />
 					<label><input type="radio" class="radio" id="oa_social_login_index_page_disable_1" name="oa_social_login_index_page_disable" value="1"<!-- IF OA_SOCIAL_LOGIN_INDEX_PAGE_DISABLE --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_INDEX_PAGE_NO}</label>
+					<label><input type="radio" class="radio" id="oa_social_login_index_page_disable_0" name="oa_social_login_index_page_disable" value="0"<!-- IF not OA_SOCIAL_LOGIN_INDEX_PAGE_DISABLE --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_INDEX_PAGE_YES} <strong>({L_OA_SOCIAL_LOGIN_DEFAULT})</strong></label>
 				</dd>
 			</dl>
-			<dl>
+			<dl class="dot">
 				<dt>
 					<label for="oa_social_login_index_page_caption">{L_OA_SOCIAL_LOGIN_INDEX_PAGE_CAPTION}</label>
 					<br /><span>{L_OA_SOCIAL_LOGIN_INDEX_PAGE_CAPTION_DESC}</span>
@@ -151,22 +147,18 @@
 				<dd>
 					<input type="text" id="oa_social_login_index_page_caption" name="oa_social_login_index_page_caption" value="{OA_SOCIAL_LOGIN_INDEX_PAGE_CAPTION}" size="60" />
 				</dd>
-			</dl>	
-		</fieldset>		
-	
-		<fieldset>
-			<legend>{L_OA_SOCIAL_LOGIN_LOGIN_PAGE}</legend>			
+			</dl>				
 			<dl>
 				<dt>
 					<label for="oa_social_login_login_page_disable_0">{L_OA_SOCIAL_LOGIN_LOGIN_PAGE_ENABLE}</label>
 					<br /><span>{L_OA_SOCIAL_LOGIN_LOGIN_PAGE_ENABLE_DESC}</span>
 				</dt>
 				<dd>
-					<label><input type="radio" class="radio" id="oa_social_login_login_page_disable_0" name="oa_social_login_login_page_disable" value="0"<!-- IF not OA_SOCIAL_LOGIN_LOGIN_PAGE_DISABLE --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_LOGIN_PAGE_YES} <strong>({L_OA_SOCIAL_LOGIN_DEFAULT})</strong></label><br />
 					<label><input type="radio" class="radio" id="oa_social_login_login_page_disable_1" name="oa_social_login_login_page_disable" value="1"<!-- IF OA_SOCIAL_LOGIN_LOGIN_PAGE_DISABLE --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_LOGIN_PAGE_NO}</label>
+					<label><input type="radio" class="radio" id="oa_social_login_login_page_disable_0" name="oa_social_login_login_page_disable" value="0"<!-- IF not OA_SOCIAL_LOGIN_LOGIN_PAGE_DISABLE --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_LOGIN_PAGE_YES} <strong>({L_OA_SOCIAL_LOGIN_DEFAULT})</strong></label>
 				</dd>
 			</dl>
-			<dl>
+			<dl class="dot">
 				<dt>
 					<label for="oa_social_login_login_page_caption">{L_OA_SOCIAL_LOGIN_LOGIN_PAGE_CAPTION}</label>
 					<br /><span>{L_OA_SOCIAL_LOGIN_LOGIN_PAGE_CAPTION_DESC}</span>
@@ -174,22 +166,37 @@
 				<dd>
 					<input type="text" id="oa_social_login_login_page_caption" name="oa_social_login_login_page_caption" value="{OA_SOCIAL_LOGIN_LOGIN_PAGE_CAPTION}" size="60" />
 				</dd>
-			</dl>	
-		</fieldset>
-		
-		<fieldset>
-			<legend>{L_OA_SOCIAL_LOGIN_REGISTRATION_PAGE}</legend>			
+			</dl>				
+			<dl>
+				<dt>
+					<label for="oa_social_login_inline_page_disable_0">{L_OA_SOCIAL_LOGIN_INLINE_PAGE_ENABLE}</label>
+					<br /><span>{L_OA_SOCIAL_LOGIN_INLINE_PAGE_ENABLE_DESC}</span>
+				</dt>
+				<dd>
+					<label><input type="radio" class="radio" id="oa_social_login_inline_page_disable_1" name="oa_social_login_inline_page_disable" value="1"<!-- IF OA_SOCIAL_LOGIN_INLINE_PAGE_DISABLE --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_INLINE_PAGE_NO}</label>
+					<label><input type="radio" class="radio" id="oa_social_login_inline_page_disable_0" name="oa_social_login_inline_page_disable" value="0"<!-- IF not OA_SOCIAL_LOGIN_INLINE_PAGE_DISABLE --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_INLINE_PAGE_YES} <strong>({L_OA_SOCIAL_LOGIN_DEFAULT})</strong></label>
+				</dd>
+			</dl>
+			<dl class="dot">
+				<dt>
+					<label for="oa_social_login_inline_page_caption">{L_OA_SOCIAL_LOGIN_INLINE_PAGE_CAPTION}</label>
+					<br /><span>{L_OA_SOCIAL_LOGIN_INLINE_PAGE_CAPTION_DESC}</span>
+				</dt>
+				<dd>
+					<input type="text" id="oa_social_login_inline_page_caption" name="oa_social_login_inline_page_caption" value="{OA_SOCIAL_LOGIN_INLINE_PAGE_CAPTION}" size="60" />
+				</dd>
+			</dl>				
 			<dl>
 				<dt>
 					<label for="oa_social_login_registration_page_disable_0">{L_OA_SOCIAL_LOGIN_REGISTRATION_PAGE_ENABLE}</label>
 					<br /><span>{L_OA_SOCIAL_LOGIN_REGISTRATION_PAGE_ENABLE_DESC}</span>
 				</dt>
 				<dd>
-					<label><input type="radio" class="radio" id="oa_social_login_registration_page_disable_0" name="oa_social_login_registration_page_disable" value="0"<!-- IF not OA_SOCIAL_LOGIN_REGISTRATION_PAGE_DISABLE --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_REGISTRATION_PAGE_YES} <strong>({L_OA_SOCIAL_LOGIN_DEFAULT})</strong></label><br />
 					<label><input type="radio" class="radio" id="oa_social_login_registration_page_disable_1" name="oa_social_login_registration_page_disable" value="1"<!-- IF OA_SOCIAL_LOGIN_REGISTRATION_PAGE_DISABLE --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_REGISTRATION_PAGE_NO}</label>
+					<label><input type="radio" class="radio" id="oa_social_login_registration_page_disable_0" name="oa_social_login_registration_page_disable" value="0"<!-- IF not OA_SOCIAL_LOGIN_REGISTRATION_PAGE_DISABLE --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_REGISTRATION_PAGE_YES} <strong>({L_OA_SOCIAL_LOGIN_DEFAULT})</strong></label>					
 				</dd>
 			</dl>
-			<dl>
+			<dl class="dot">
 				<dt>
 					<label for="oa_social_login_registration_page_caption">{L_OA_SOCIAL_LOGIN_REGISTRATION_PAGE_CAPTION}</label>
 					<br /><span>{L_OA_SOCIAL_LOGIN_REGISTRATION_PAGE_CAPTION_DESC}</span>
@@ -197,9 +204,27 @@
 				<dd>
 					<input type="text" id="oa_social_login_registration_page_caption" name="oa_social_login_registration_page_caption" value="{OA_SOCIAL_LOGIN_REGISTRATION_PAGE_CAPTION}" size="60" />
 				</dd>
+			</dl>				
+			<dl>
+				<dt>
+					<label for="oa_social_login_other_page_disable_0">{L_OA_SOCIAL_LOGIN_OTHER_PAGE_ENABLE}</label>
+					<br /><span>{L_OA_SOCIAL_LOGIN_OTHER_PAGE_ENABLE_DESC}</span>
+				</dt>
+				<dd>
+					<label><input type="radio" class="radio" id="oa_social_login_other_page_disable_1" name="oa_social_login_other_page_disable" value="1"<!-- IF OA_SOCIAL_LOGIN_OTHER_PAGE_DISABLE --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_OTHER_PAGE_NO} <strong>({L_OA_SOCIAL_LOGIN_DEFAULT})</strong></label>
+					<label><input type="radio" class="radio" id="oa_social_login_other_page_disable_0" name="oa_social_login_other_page_disable" value="0"<!-- IF not OA_SOCIAL_LOGIN_OTHER_PAGE_DISABLE --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_OTHER_PAGE_YES}</label>				
+				</dd>
+			</dl>
+			<dl>
+				<dt>
+					<label for="oa_social_login_other_page_caption">{L_OA_SOCIAL_LOGIN_OTHER_PAGE_CAPTION}</label>
+					<br /><span>{L_OA_SOCIAL_LOGIN_OTHER_PAGE_CAPTION_DESC}</span>
+				</dt>
+				<dd>
+					<input type="text" id="oa_social_login_other_page_caption" name="oa_social_login_other_page_caption" value="{OA_SOCIAL_LOGIN_OTHER_PAGE_CAPTION}" size="60" />
+				</dd>
 			</dl>	
-		</fieldset>
-		
+		</fieldset>						
 		<fieldset>
 			<legend>{L_OA_SOCIAL_LOGIN_DO_AVATARS}</legend>			
 			<dl>
@@ -212,8 +237,21 @@
 					<label><input type="radio" class="radio" id="oa_social_login_avatars_enable_1" name="oa_social_login_avatars_enable" value="1"<!-- IF OA_SOCIAL_LOGIN_AVATARS_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_DO_AVATARS_ENABLE_NO}</label>
 				</dd>
 			</dl>
+		</fieldset>		
+		<fieldset>
+			<legend>{L_OA_SOCIAL_LOGIN_DO_VALIDATION}</legend>		
+			<dl>
+				<dt>
+					<label for="oa_social_login_validate_0">{L_OA_SOCIAL_LOGIN_DO_VALIDATION_ASK}</label>
+					<br /><span>{L_OA_SOCIAL_LOGIN_DO_VALIDATION_DESC}</span>
+				</dt>
+				<dd>
+					<label><input type="radio" class="radio" id="oa_social_login_validate_0" name="oa_social_login_validate" value="0"<!-- IF OA_SOCIAL_LOGIN_VALIDATE == 0 --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_DO_VALIDATION_NEVER} <strong>({L_OA_SOCIAL_LOGIN_DEFAULT})</strong></label><br />
+					<label><input type="radio" class="radio" id="oa_social_login_validate_1" name="oa_social_login_validate" value="1"<!-- IF OA_SOCIAL_LOGIN_VALIDATE == 1 --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_DO_VALIDATION_ALWAYS}</label><br />	
+					<label><input type="radio" class="radio" id="oa_social_login_validate_2" name="oa_social_login_validate" value="2"<!-- IF OA_SOCIAL_LOGIN_VALIDATE == 2 --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_DO_VALIDATION_DEPENDS}</label>	
+				</dd>
+			</dl>
 		</fieldset>
-		
 		<fieldset>
 			<legend>{L_OA_SOCIAL_LOGIN_DO_LINKING}</legend>		
 			<dl>
@@ -226,21 +264,19 @@
 					<label><input type="radio" class="radio" id="oa_social_login_disable_linking_1" name="oa_social_login_disable_linking" value="1"<!-- IF OA_SOCIAL_LOGIN_DISABLE_LINKING --> checked="checked"<!-- ENDIF --> /> {L_OA_SOCIAL_LOGIN_DO_LINKING_NO}</label>						
 				</dd>			
 			</dl>
-		</fieldset>
-		
+		</fieldset>		
 		<fieldset>	
 				<legend>{L_OA_SOCIAL_LOGIN_DO_REDIRECT}</legend>		
 				<dl>
 					<dt>
-						<label for="oa_social_login_redirect">{L_OA_SOCIAL_LOGIN_DO_REDIRECT_ASK}</label>
+						<label for="oa_social_login_redirect">{L_OA_SOCIAL_LOGIN_DO_REDIRECT_ASK}{L_COLON}</label>
 						<br /><span>{L_OA_SOCIAL_LOGIN_DO_REDIRECT_DESC}</span>
 					</dt>
 					<dd>
 						<input type="text" id="oa_social_login_redirect" name="oa_social_login_redirect" value="{OA_SOCIAL_LOGIN_REDIRECT}" size="60" />
 					</dd>
 				</dl>	
-		</fieldset>
-		
+		</fieldset>		
 		<fieldset>
 			<legend>{L_OA_SOCIAL_LOGIN_ENABLE_NETWORKS}</legend>						
 			<!-- BEGIN provider -->
@@ -253,13 +289,11 @@
 					<dd></dd>
 				</dl>
 			<!-- END provider -->			
-		</fieldset>
-		
+		</fieldset>		
 		<fieldset class="submit-buttons">
 			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />
 			{S_FORM_TOKEN}
 		</fieldset>
 	</form>
-	<div id="sid" style="display: none;">{CURRENT_SID}</div>
 </div>
 <!-- INCLUDE overall_footer.html -->

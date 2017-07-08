@@ -1,8 +1,7 @@
 <?php
-
 /**
  * @package   	OneAll Social Login
- * @copyright 	Copyright 2013-2015 http://www.oneall.com - All rights reserved.
+ * @copyright 	Copyright 2011-2017 http://www.oneall.com
  * @license   	GNU/GPL 2 or later
  *
  * This program is free software; you can redistribute it and/or
@@ -36,7 +35,7 @@ class sociallogin_ucp_info
 			'modes' => array (
 				'settings' => array (
 					'title' => 'OA_SOCIAL_LOGIN_LINK_UCP',
-					'auth' => 'acl_u_chgprofileinfo',
+				    'auth' => '',
 					'cat' => array ('UCP_PROFILE')
 				)
 			)

@@ -1,8 +1,7 @@
 <?php
-
 /**
  * @package   	OneAll Social Login
- * @copyright 	Copyright 2013-2015 http://www.oneall.com - All rights reserved.
+ * @copyright 	Copyright 2011-2017 http://www.oneall.com
  * @license   	GNU/GPL 2 or later
  *
  * This program is free software; you can redistribute it and/or
@@ -36,7 +35,7 @@ class sociallogin_ucp_module
 	// Add Social Link to UCP \ Profile \ Social link.
 	public function main ($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx, $request, $phpbb_dispatcher;
+		global $user, $template, $phpbb_container;
 
 		// User must be logged in and not a bot
 		if (is_object ($user) && empty ($user->data ['isbot']) && (! empty ($user->data ['user_id']) && $user->data ['user_id'] != ANONYMOUS))
@@ -44,26 +43,22 @@ class sociallogin_ucp_module
 			// Only display this in the UCP.
 			if (! empty ($user->page ['page_name']) && strpos ($user->page ['page_name'], 'ucp') !== false)
 			{
-				// Initialize module.
-				$sociallogin = new \oneall\sociallogin\acp\sociallogin_acp_module ();
+			    // Helper.
+			    $helper = $phpbb_container->get('oneall.sociallogin.helper');
 
 				// Retrieve user_token.
-				if (($user_token = $sociallogin->get_user_token_for_user_id ($user->data ['user_id'])) !== false)
+				if (($user_token = $helper->get_user_token_for_user_id ($user->data ['user_id'])) !== false)
 				{
-					$template->assign_var ('OA_SOCIAL_LINK_USER_TOKEN', $user_token);
+					$template->assign_var ('OA_SOCIAL_LINK_USER_TOKEN', addslashes ($user_token));
 				}
 
-				// We have a login token.
-				if (request_var ('oa_social_login_login_token', '') == '')
-				{
-					// Forge callback uri.
-					$callback_uri = $sociallogin->get_current_url ();
-					$callback_uri .= ((strpos ($callback_uri, '?') === false) ? '?' : '&');
-					$callback_uri .= ('oa_social_login_login_token=' . $sociallogin->create_login_token_for_user_id ($user->data ['user_id']));
-				}
+				// Create callback uri.
+				$callback_uri = $helper->get_current_url ();
+				$callback_uri .= ((strpos ($callback_uri, '?') === false) ? '?' : '&');
+				$callback_uri .= ('oa_social_login_login_token=' . $helper->create_login_token_for_user_id ($user->data ['user_id']));
 
 				// Assign callback uri.
-				$template->assign_var ('OA_SOCIAL_LINK_CALLBACK_URI', $callback_uri);
+				$template->assign_var ('OA_SOCIAL_LINK_CALLBACK_URI', addslashes ($callback_uri));
 			}
 		}
 

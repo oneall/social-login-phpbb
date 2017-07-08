@@ -22,20 +22,36 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *
  */
-namespace oneall\sociallogin\acp;
+namespace oneall\sociallogin\auth\provider;
 
-class sociallogin_acp_info
+/**
+* OneAll authentication provider for phpBB3
+*/
+class oneall extends \phpbb\auth\provider\db
 {
-    public function module()
+    /**
+     * {@inheritdoc}
+     */
+    public function get_acp_template($new_config)
     {
         return array(
-            'filename' => '\oneall\sociallogin\acp\sociallogin_acp_module',
-            'title' => 'OA_SOCIAL_LOGIN_ACP',
-            'modes' => array(
-                'settings' => array(
-                    'title' => 'OA_SOCIAL_LOGIN_ACP_SETTINGS',
-                    'auth' => 'ext_oneall/sociallogin && acl_a_board',
-                    'cat' => array(
-                        'OA_SOCIAL_LOGIN_ACP'))));
+            'TEMPLATE_FILE' => '@oneall_sociallogin/auth_provider_oneall.html',
+            'TEMPLATE_VARS' => array(
+            ),
+        );
     }
+
+
+    /**
+    * {@inheritdoc}
+    */
+    public function get_login_data()
+    {
+        $login_data = array(
+            'TEMPLATE_FILE'     => '@oneall_sociallogin/login_body_oneall.html',
+        );
+
+        return $login_data;
+    }
+
 }

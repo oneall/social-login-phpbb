@@ -1,0 +1,55 @@
+<!-- INCLUDE overall_header.html -->
+
+<form method="post" action="{OA_SOCIAL_LOGIN_VALIDATE}" id="oa_social_login_validate">
+    <div class="panel">
+        <div class="inner">
+            <h2>{L_OA_SOCIAL_LOGIN_VALIDATION_FORM_HEADER}</h2>
+            <fieldset class="fields2">
+                <!-- IF OA_SOCIAL_LOGIN_VALIDATION_ERROR -->
+                <dl>                  
+                    <dd class="error">
+                        <!-- BEGIN errors -->                      
+                        {errors.msg}<br />
+                        <!-- END errors -->
+                    </dd>                   
+                </dl>
+                <!-- ENDIF -->
+                <dl>
+                    <dd>
+                        <strong>{L_OA_SOCIAL_LOGIN_VALIDATION_FORM_DESC}</strong>
+                    </dd>
+                </dl>
+                <dl>
+                    <dt>
+                        <label for="username">{L_USERNAME}{L_COLON}</label><br />
+                        <span>{OA_SOCIAL_LOGIN_USERNAME_EXPLAIN}</span>
+                    </dt>
+                    <dd>
+                        <input type="text" tabindex="1" name="username" id="username" size="25" value="{OA_SOCIAL_LOGIN_VALIDATION_USER_LOGIN}" class="inputbox autowidth" />
+                    </dd>
+                </dl>
+                <dl>
+                    <dt>
+                        <label for="email">{L_EMAIL}{L_COLON}</label>
+                    </dt>
+                    <dd>
+                        <input type="email" tabindex="2" name="email" id="email" size="25" maxlength="60" value="{OA_SOCIAL_LOGIN_VALIDATION_USER_EMAIL}" class="inputbox autowidth" />
+                    </dd>
+                </dl>
+            </fieldset>
+        </div>
+    </div>
+    <div class="panel">
+        <div class="inner">
+            <fieldset class="submit-buttons">
+                {S_HIDDEN_FIELDS} 
+                <input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp; 
+                <input type="submit" name="submit" value="{L_SUBMIT}" class="button1" /> 
+                {S_FORM_TOKEN}
+            </fieldset>
+        </div>
+    </div>
+</form>
+
+<!-- INCLUDE overall_footer.html -->
+

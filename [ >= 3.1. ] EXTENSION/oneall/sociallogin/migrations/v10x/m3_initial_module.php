@@ -1,8 +1,7 @@
 <?php
-
 /**
  * @package   	OneAll Social Login
- * @copyright 	Copyright 2013-2015 http://www.oneall.com - All rights reserved.
+ * @copyright 	Copyright 2011-2017 http://www.oneall.com
  * @license   	GNU/GPL 2 or later
  *
  * This program is free software; you can redistribute it and/or
@@ -52,6 +51,7 @@ class m3_initial_module extends \phpbb\db\migration\migration
 					'OA_SOCIAL_LOGIN_ACP',
 					array (
 						'module_basename' => '\oneall\sociallogin\acp\sociallogin_acp_module',
+					    'module_auth'=> 'ext_oneall/sociallogin',
 						'modes' => array (
 							'settings'
 						)
@@ -64,7 +64,7 @@ class m3_initial_module extends \phpbb\db\migration\migration
 				'module.add',
 				array (
 					'ucp',
-					'UCP_PROFILE',
+					'',
 					'OA_SOCIAL_LOGIN_LINK_UCP'
 				)
 			),
