@@ -2,9 +2,9 @@
 
 namespace Drupal\social_login\Form;
 
-use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Component\Utility\Html;
 
 /**
  * Plugin configuration form.
@@ -301,7 +301,7 @@ class SocialLoginAdminSettings extends ConfigFormBase {
     // Add providers.
     foreach ($social_login_available_providers as $key => $provider_data) {
       $form['social_login_providers']['social_login_icon_' . $key] = array(
-        '#title' => SafeMarkup::checkPlain($provider_data['name']),
+        '#title' => Html::escape($provider_data['name']),
         '#type' => 'container',
         '#attributes' => array(
           'class' => array(
@@ -317,7 +317,7 @@ class SocialLoginAdminSettings extends ConfigFormBase {
 
       $form['social_login_providers']['provider_' . $key] = array(
         '#type' => 'checkbox',
-        '#title' => SafeMarkup::checkPlain($provider_data['name']),
+        '#title' => Html::escape($provider_data['name']),
         '#default_value' => (empty($settings['provider_' . $key]) ? 0 : 1),
         '#attributes' => array(
           'style' => array(

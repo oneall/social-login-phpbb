@@ -570,7 +570,7 @@ function social_login_check_fsockopen($protocol = 'https') {
  * Sends an API request by using the given handler.
  */
 function social_login_do_api_request($handler, $url, $options = array(), $timeout = 30) {
-  $user_agent_string = 'SocialLogin/1.2 Drupal/8.x (+http://www.oneall.com/)';
+  $user_agent_string = 'SocialLogin/1.5 Drupal/8.x (+http://www.oneall.com/)';
 
   $http_code = 'n/a';
   $http_data = NULL;
@@ -861,7 +861,7 @@ function social_login_get_user_for_user_token($user_token) {
     return FALSE;
   }
 
-  $user = Drupal::entityManager()->getStorage('user')->load($uid);
+  $user = Drupal::entityTypeManager()->getStorage('user')->load($uid);
   return (empty($user) ? FALSE : $user);
 }
 
@@ -889,7 +889,7 @@ function social_login_get_user_token_for_uid($uid) {
  * Get the uid for a name.
  */
 function social_login_get_uid_for_name($name) {
-  $users = Drupal::entityManager()->getStorage('user')->loadByProperties(array(
+  $users = Drupal::entityTypeManager()->getStorage('user')->loadByProperties(array(
     'name' => $name
   ));
   return (empty($users) ? FALSE : $users);
@@ -899,7 +899,7 @@ function social_login_get_uid_for_name($name) {
  * Get the user(s) for an email address.
  */
 function social_login_get_uid_for_email($mail) {
-  $users = Drupal::entityManager()->getStorage('user')->loadByProperties(array(
+  $users = Drupal::entityTypeManager()->getStorage('user')->loadByProperties(array(
     'mail' => $mail
   ));
   return (empty($users) ? FALSE : $users);
