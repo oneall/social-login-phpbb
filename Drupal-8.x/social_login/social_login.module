@@ -599,7 +599,7 @@ function social_login_do_api_request($handler, $url, $options = array(), $timeou
     catch (ConnectException $e) {
       if ($e->hasResponse()) {
         $response = $e->getResponse();
-        $http_code = $response > getStatusCode();
+        $http_code = $response->getStatusCode();
       }
       else {
         $http_data = $e->getMessage();
@@ -608,7 +608,7 @@ function social_login_do_api_request($handler, $url, $options = array(), $timeou
     catch (RequestException $e) {
       if ($e->hasResponse()) {
         $response = $e->getResponse();
-        $http_code = $response > getStatusCode();
+        $http_code = $response->getStatusCode();
       }
       else {
         $http_data = $e->getMessage();
