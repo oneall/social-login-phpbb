@@ -2,7 +2,7 @@
 /**
  * @package   	OneAll Social Login
  * @copyright 	Copyright 2011-2017 http://www.oneall.com
- * @license   	GNU/GPL 2 or later
+ * @license   	GNU/GPL 2
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,11 +25,10 @@
 namespace oneall\sociallogin\migrations\v10x;
 
 /**
- * Migration stage 4: adds special OneAll group to GROUPS_TABLE
+ * Migration stage 3: add OneAll group to GROUPS_TABLE
  */
-class m4_group_data extends \phpbb\db\migration\migration
+class m3_group_data extends \phpbb\db\migration\migration
 {
-
 	public function update_data ()
 	{
 		return array(
@@ -38,10 +37,10 @@ class m4_group_data extends \phpbb\db\migration\migration
 				array(
 					array(
 						$this,
-						'add_group_register_oneall' 
-					) 
-				) 
-			) 
+						'add_group_register_oneall'
+					)
+				)
+			)
 		);
 	}
 
@@ -50,7 +49,7 @@ class m4_group_data extends \phpbb\db\migration\migration
 		$group_data = array(
 			'group_type' => GROUP_SPECIAL,
 			'group_name' => 'OA_SOCIAL_LOGIN_REGISTER',
-			'group_desc' => 'Members registered via OneAll social login' 
+			'group_desc' => 'Members registered via OneAll social login'
 		);
 		$sql = 'INSERT INTO ' . GROUPS_TABLE . ' ' . $this->db->sql_build_array ('INSERT', $group_data);
 		$this->db->sql_query ($sql);
@@ -64,10 +63,10 @@ class m4_group_data extends \phpbb\db\migration\migration
 				array(
 					array(
 						$this,
-						'del_group_register_oneall' 
-					) 
-				) 
-			) 
+						'del_group_register_oneall'
+					)
+				)
+			)
 		);
 	}
 

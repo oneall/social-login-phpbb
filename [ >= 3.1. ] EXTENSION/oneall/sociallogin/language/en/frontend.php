@@ -2,7 +2,7 @@
 /**
  * @package   	OneAll Social Login
  * @copyright 	Copyright 2011-2017 http://www.oneall.com
- * @license   	GNU/GPL 2 or later
+ * @license   	GNU/GPL 2
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,18 +22,18 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *
  */
-if (! defined ('IN_PHPBB'))
+if (!defined ('IN_PHPBB'))
 {
 	exit ();
 }
 
-if (empty ($lang) || ! is_array ($lang))
+if (empty ($lang) || !is_array ($lang))
 {
-	$lang = array ();
+	$lang = array();
 }
 
 // Social Login Frontend.
-$lang = array_merge ($lang, array (
+$lang = array_merge ($lang, array(
 	'OA_SOCIAL_LOGIN_LINK_UCP' => 'Link social network accounts',
 	'OA_SOCIAL_LOGIN_LINK' => 'Link social network accounts',
 	'OA_SOCIAL_LOGIN_LINK_NETWORKS' => 'Social Networks',
@@ -45,5 +45,5 @@ $lang = array_merge ($lang, array (
 	'OA_SOCIAL_LOGIN_SOCIAL_LINK' => 'Social Link Service',
 	'OA_SOCIAL_LOGIN_ACCOUNT_ALREADY_LINKED' => 'This social network account is already linked to another forum user.',
 	'OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_OTHER' => 'The account has been created. However, the forum settings require account activation.<br />An activation key has been sent to your email address.',
-	'OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_ADMIN' => 'The account has been created. However, the forum settings require account activation by an administrator.<br />An email has been sent to the administrators and you will be informed by email once your account has been activated.',
+	'OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_ADMIN' => 'The account has been created. However, the forum settings require account activation by an administrator.<br />An email has been sent to the administrators and you will be informed by email once your account has been activated.'
 ));

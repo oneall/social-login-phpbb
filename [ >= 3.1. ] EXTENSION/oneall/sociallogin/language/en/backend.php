@@ -2,7 +2,7 @@
 /**
  * @package   	OneAll Social Login
  * @copyright 	Copyright 2011-2017 http://www.oneall.com
- * @license   	GNU/GPL 2 or later
+ * @license   	GNU/GPL 2
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,18 +22,18 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *
  */
-if (! defined ('IN_PHPBB'))
+if (!defined ('IN_PHPBB'))
 {
 	exit ();
 }
 
-if (empty ($lang) || ! is_array ($lang))
+if (empty ($lang) || !is_array ($lang))
 {
-	$lang = array ();
+	$lang = array();
 }
 
 // Social Login Backend.
-$lang = array_merge ($lang, array (
+$lang = array_merge ($lang, array(
 	'OA_SOCIAL_LOGIN_ACP' => 'OneAll Social Login',
 	'OA_SOCIAL_LOGIN_ACP_SETTINGS' => 'Settings',
 	'OA_SOCIAL_LOGIN_API_AUTODETECT' => 'Autodetect API Connection',
@@ -148,5 +148,5 @@ $lang = array_merge ($lang, array (
 	'OA_SOCIAL_LOGIN_VALIDATION_SESSION_ERROR' => 'Missing session information.',
 	'OA_SOCIAL_LOGIN_VIEW_CREDENTIALS' => '<a href="https://app.oneall.com/applications/" class="button1 external">Create and view my API Credentials</a>',
 	'OA_SOCIAL_LOGIN_WIDGET_TITLE' => 'Login with a social network',
-	'G_OA_SOCIAL_LOGIN_REGISTER' => 'Registered OneAll users',
+	'G_OA_SOCIAL_LOGIN_REGISTER' => 'Registered OneAll users'
 ));

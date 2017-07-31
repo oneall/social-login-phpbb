@@ -39,7 +39,7 @@
 
 #oneall_sociallogin .working_message {
 	color: blue;
-	background: url("../img/status_loading.gif") no-repeat scroll 0 50% transparent;
+	background: url("img/status_loading.gif") no-repeat scroll 0 50% transparent;
 	padding-left: 25px;
 	margin-left: 10px;
 	font-weight: bold;
@@ -47,7 +47,7 @@
 
 #oneall_sociallogin .error_message {
 	color: red;
-	background: url("../img/status_error.png") no-repeat scroll 0 50% transparent;
+	background: url("img/status_error.png") no-repeat scroll 0 50% transparent;
 	padding-left: 25px;
 	margin-left: 10px;
 	font-weight: bold;
@@ -64,7 +64,7 @@
 
 #oneall_sociallogin .success_message {
 	color: green;
-	background: url("../img/status_ok.png") no-repeat scroll 0 50% transparent;
+	background: url("img/status_ok.png") no-repeat scroll 0 50% transparent;
 	padding-left: 25px;
 	margin-left: 10px;
 	font-weight: bold;
@@ -101,7 +101,7 @@
 }
 
 .oa_social_login_provider {
-	background-image: url("../img/sprite_35_35.png");
+	background-image: url("img/sprite_35_35.png");
 	text-indent: -9999px;
 	height: 35px;
 	width: 35px;
@@ -234,4 +234,16 @@
 
 .oa_social_login_provider_dribbble {
 	background-position: -1260px -1px;
+}
+
+.oa_social_login_provider_line {
+    background-position: -1445px -1px;
+}
+
+.oa_social_login_provider_soundcloud {
+    background-position: -1482px -1px;
+}
+
+.oa_social_login_provider_meetup {
+    background-position: -1408px -1px;
 }

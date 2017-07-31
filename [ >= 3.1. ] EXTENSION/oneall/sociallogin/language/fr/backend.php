@@ -2,7 +2,7 @@
 /**
  * @package   	OneAll Social Login
  * @copyright 	Copyright 2011-2017 http://www.oneall.com
- * @license   	GNU/GPL 2 or later
+ * @license   	GNU/GPL 2
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,43 +24,25 @@
  */
 
 /**
-*
-* French translations by Galixte
-* http://www.galixte.com
-*
-*/
+ * French translations by Galixte
+ * http://www.galixte.com
+ */
 
 /**
-* DO NOT CHANGE
-*/
-if (!defined('IN_PHPBB'))
+ * DO NOT CHANGE
+ */
+if (!defined ('IN_PHPBB'))
 {
-	exit;
+	exit ();
 }
 
-if (empty($lang) || !is_array($lang))
+if (empty ($lang) || !is_array ($lang))
 {
 	$lang = array();
 }
 
-// DEVELOPERS PLEASE NOTE
-//
-// All language files should use UTF-8 as their encoding and the files must not contain a BOM.
-//
-// Placeholders can now contain order information, e.g. instead of
-// 'Page %s of %s' you can (and should) write 'Page %1$s of %2$s', this allows
-// translators to re-order the output of data while ensuring it remains correct
-//
-// You do not need this where single placeholders are used, e.g. 'Message %d' is fine
-// equally where a string contains only two placeholders which are used to wrap text
-// in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
-//
-// Some characters you may want to copy&paste:
-// ’ « » “ ” …
-//
-
 // Social Login Backend.
-$lang = array_merge($lang, array(
+$lang = array_merge ($lang, array(
 	'OA_SOCIAL_LOGIN_ACP' => 'Passerelle de connexion OneAll',
 	'OA_SOCIAL_LOGIN_ACP_SETTINGS' => 'Paramètres',
 	'OA_SOCIAL_LOGIN_API_AUTODETECT' => 'Détection automatique de la connexion à l’API',
@@ -136,6 +118,13 @@ $lang = array_merge($lang, array(
 	'OA_SOCIAL_LOGIN_LOGIN_PAGE_ENABLE_DESC' => 'Si activé, la passerelle de connexion OneAll sera affichée sur la page de connexion du forum.',
 	'OA_SOCIAL_LOGIN_LOGIN_PAGE_NO' => 'Désactiver',
 	'OA_SOCIAL_LOGIN_LOGIN_PAGE_YES' => 'Activer',
+	'OA_SOCIAL_LOGIN_INLINE_PAGE' => 'Page de login du forum (affichage intégré)',
+	'OA_SOCIAL_LOGIN_INLINE_PAGE_CAPTION' => 'Légende',
+	'OA_SOCIAL_LOGIN_INLINE_PAGE_CAPTION_DESC' => 'Ce titre sera affiché au-dessus des icônes de la passerelle de connexion OneAll sur la page de login du forum.',
+	'OA_SOCIAL_LOGIN_INLINE_PAGE_ENABLE' => 'Intégrer la passerelle de connexion OneAll sur la page de login du forum ?',
+	'OA_SOCIAL_LOGIN_INLINE_PAGE_ENABLE_DESC' => 'Si activé, la passerelle de connexion OneAll sera intégrée à la page de login. Pour ceci il faut utiliser OneAll comme moyen d’authentification dans la config sous GENERAL \ COMMUNICATION \ AUTHENTIFICATION.',
+	'OA_SOCIAL_LOGIN_INLINE_PAGE_NO' => 'Désactiver',
+	'OA_SOCIAL_LOGIN_INLINE_PAGE_YES' => 'Activer',
 	'OA_SOCIAL_LOGIN_OTHER_PAGE' => 'Toutes les autres pages du forum',
 	'OA_SOCIAL_LOGIN_OTHER_PAGE_CAPTION' => 'Légende',
 	'OA_SOCIAL_LOGIN_OTHER_PAGE_CAPTION_DESC' => 'Ce titre sera affiché au-dessus des icônes de la passerelle de connexion OneAll sur les autres pages du forum.',
@@ -168,5 +157,5 @@ $lang = array_merge($lang, array(
 	'OA_SOCIAL_LOGIN_VALIDATION_SESSION_ERROR' => 'Des informations de la session courante sont manquantes.',
 	'OA_SOCIAL_LOGIN_VIEW_CREDENTIALS' => '<a href="https://app.oneall.com/applications/" class="button1 external">Créer et voir mes certificats d’API</a>',
 	'OA_SOCIAL_LOGIN_WIDGET_TITLE' => 'Connexion avec un réseau social',
-	'G_OA_SOCIAL_LOGIN_REGISTER' => 'Utilisateurs inscrits via OneAll',
+	'G_OA_SOCIAL_LOGIN_REGISTER' => 'Utilisateurs inscrits via OneAll'
 ));

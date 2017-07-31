@@ -2,7 +2,7 @@
 /**
  * @package   	OneAll Social Login
  * @copyright 	Copyright 2011-2017 http://www.oneall.com
- * @license   	GNU/GPL 2 or later
+ * @license   	GNU/GPL 2
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -59,7 +59,7 @@ class sociallogin_acp_module
      */
     protected function display_settings()
     {
-        global $user, $template, $config, $phpbb_admin_path, $phpEx, $request, $phpbb_container;
+        global $user, $template, $config, $phpbb_admin_path, $phpEx, $request;
 
         // Add the language file.
         $user->add_lang_ext('oneall/sociallogin', 'backend');
@@ -69,7 +69,7 @@ class sociallogin_acp_module
         $this->page_title = $user->lang['OA_SOCIAL_LOGIN_ACP'];
 
         // Available Social Networks
-        $oa_social_login_all_providers = $phpbb_container->get('oneall.sociallogin.helper')->get_providers();
+        $oa_social_login_all_providers = $this->get_providers();
 
         // Enable Social Login?
         $oa_social_login_disable = ((isset($config['oa_social_login_disable']) && $config['oa_social_login_disable'] == '1') ? '1' : '0');
@@ -160,11 +160,11 @@ class sociallogin_acp_module
 
             // Social Networks.
             $oa_social_login_providers = array();
-            foreach ($oa_social_login_all_providers as $provider_key => $provider_data)
+            foreach ($oa_social_login_all_providers as $key => $name)
             {
-                if ($request->variable('oa_social_login_provider_' . $provider_key, 0) == 1)
+                if ($request->variable('oa_social_login_provider_' . $key, 0) == 1)
                 {
-                    $oa_social_login_providers[] = $provider_key;
+                    $oa_social_login_providers[] = $key;
                 }
             }
 
@@ -233,12 +233,13 @@ class sociallogin_acp_module
         }
 
         // Setup Social Network Vars
-        foreach ($oa_social_login_all_providers as $key => $data)
+        foreach ($oa_social_login_all_providers as $key => $name)
         {
             $template->assign_block_vars('provider', array(
                 'KEY' => $key,
-                'NAME' => $data['name'],
-                'ENABLE' => in_array($key, $oa_social_login_providers)));
+                'NAME' => $name,
+                'ENABLE' => in_array($key, $oa_social_login_providers)
+            ));
         }
 
         // Setup Vars
@@ -349,7 +350,7 @@ class sociallogin_acp_module
     {
         global $user, $request, $phpbb_container, $config;
 
-        // Add language file.
+        // Add the language file.
         $user->add_lang_ext('oneall/sociallogin', 'backend');
 
         // Read arguments.
@@ -514,5 +515,58 @@ class sociallogin_acp_module
             }
         }
         return false;
+    }
+
+    /**
+     * Returns the list of available social networks.
+     */
+    public function get_providers()
+    {
+    	global $user;
+
+    	// Add the language file.
+    	$user->add_lang_ext('oneall/sociallogin', 'providers');
+
+    	// Providers
+    	$providers = array (
+    		'amazon' => $user->lang['OA_SOCIAL_LOGIN_P_AMAZON'],
+    		'battlenet' => $user->lang['OA_SOCIAL_LOGIN_P_BATTLENET'],
+    		'blogger' => $user->lang['OA_SOCIAL_LOGIN_P_BLOGGER'],
+    		'storage' => $user->lang['OA_SOCIAL_LOGIN_P_STORAGE'],
+    		'disqus' => $user->lang['OA_SOCIAL_LOGIN_P_DISQUS'],
+    		'draugiem' => $user->lang['OA_SOCIAL_LOGIN_P_DRAUGIEM'],
+    		'dribbble' => $user->lang['OA_SOCIAL_LOGIN_P_DRIBBBLE'],
+    		'facebook' => $user->lang['OA_SOCIAL_LOGIN_P_FACEBOOK'],
+    		'foursquare' => $user->lang['OA_SOCIAL_LOGIN_P_FOURSQUARE'],
+    		'github' => $user->lang['OA_SOCIAL_LOGIN_P_GITHUBCOM'],
+    		'google' => $user->lang['OA_SOCIAL_LOGIN_P_GOOGLE'],
+    		'instagram' => $user->lang['OA_SOCIAL_LOGIN_P_INSTAGRAM'],
+    		'line' => $user->lang['OA_SOCIAL_LOGIN_P_LINE'],
+    		'linkedin' => $user->lang['OA_SOCIAL_LOGIN_P_LINKEDIN'],
+    		'livejournal' => $user->lang['OA_SOCIAL_LOGIN_P_LIVEJOURNAL'],
+    		'mailru' => $user->lang['OA_SOCIAL_LOGIN_P_MAILRU'],
+    		'meetup' => $user->lang['OA_SOCIAL_LOGIN_P_MEETUP'],
+    		'odnoklassniki' =>  $user->lang['OA_SOCIAL_LOGIN_P_ODNOKLASSNIKI'],
+    		'openid' =>  $user->lang['OA_SOCIAL_LOGIN_P_OPENID'],
+    		'paypal' =>  $user->lang['OA_SOCIAL_LOGIN_P_PAYPAL'],
+    		'pinterest' =>  $user->lang['OA_SOCIAL_LOGIN_P_PINTEREST'],
+    		'pixelpin' => $user->lang['OA_SOCIAL_LOGIN_P_PIXELPIN'],
+    		'reddit' =>  $user->lang['OA_SOCIAL_LOGIN_P_REDDIT'],
+    		'skyrock' =>  $user->lang['OA_SOCIAL_LOGIN_P_SKYROCKCOM'],
+    		'soundcloud' =>  $user->lang['OA_SOCIAL_LOGIN_P_SOUNDCLOUD'],
+    		'stackexchange' => $user->lang['OA_SOCIAL_LOGIN_P_STACKEXCHANGE'],
+    		'steam' =>  $user->lang['OA_SOCIAL_LOGIN_P_STEAM'],
+    		'twitch' =>  $user->lang['OA_SOCIAL_LOGIN_P_TWITCHTV'],
+    		'twitter' =>  $user->lang['OA_SOCIAL_LOGIN_P_TWITTER'],
+    		'vimeo' =>  $user->lang['OA_SOCIAL_LOGIN_P_VIMEO'],
+    		'vkontakte' =>  $user->lang['OA_SOCIAL_LOGIN_P_VKONTAKTE'],
+    		'windowslive' =>  $user->lang['OA_SOCIAL_LOGIN_P_WINDOWSLIVE'],
+    		'wordpress' =>  $user->lang['OA_SOCIAL_LOGIN_P_WORDPRESSCOM'],
+    		'xing' =>  $user->lang['OA_SOCIAL_LOGIN_P_XING'],
+    		'yahoo' =>  $user->lang['OA_SOCIAL_LOGIN_P_YAHOO'],
+    		'youtube' =>  $user->lang['OA_SOCIAL_LOGIN_P_YOUTUBE']
+    	);
+
+    	return $providers;
     }
 }

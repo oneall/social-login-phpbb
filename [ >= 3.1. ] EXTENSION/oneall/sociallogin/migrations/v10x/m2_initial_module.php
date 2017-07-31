@@ -2,7 +2,7 @@
 /**
  * @package   	OneAll Social Login
  * @copyright 	Copyright 2011-2017 http://www.oneall.com
- * @license   	GNU/GPL 2 or later
+ * @license   	GNU/GPL 2
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,9 +25,9 @@
 namespace oneall\sociallogin\migrations\v10x;
 
 /**
- * Migration stage 3: Initial module
+ * Migration stage 2: Initial module
  */
-class m3_initial_module extends \phpbb\db\migration\migration
+class m2_initial_module extends \phpbb\db\migration\migration
 {
 	public function update_data ()
 	{

@@ -2,7 +2,7 @@
 /**
  * @package   	OneAll Social Login
  * @copyright 	Copyright 2011-2017 http://www.oneall.com
- * @license   	GNU/GPL 2 or later
+ * @license   	GNU/GPL 2
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -87,8 +87,7 @@ class listener implements EventSubscriberInterface
 			'core.page_header_after' => 'setup',
 			'core.user_setup' => 'add_language',
 			'core.ucp_profile_reg_details_data' => 'set_oa_user',
-			'core.ucp_profile_reg_details_validate' => 'skip_cur_password_check',
-			'oneall_sociallogin.user_add_modify_data' => 'modify_data',
+			'core.ucp_profile_reg_details_validate' => 'skip_cur_password_check'
 		);
 	}
 
@@ -166,10 +165,12 @@ class listener implements EventSubscriberInterface
 			$this->check_callback ();
 
 			// Setup template placeholders
-			$this->template->assign_var ('OA_SOCIAL_LOGIN_EMBED_LIBRARY', 1);
-			$this->template->assign_var ('OA_SOCIAL_LOGIN_API_SUBDOMAIN', addslashes ($this->config ['oa_social_login_api_subdomain']));
-			$this->template->assign_var ('OA_SOCIAL_LOGIN_CALLBACK_URI', addslashes ($this->helper->get_current_url ()));
-			$this->template->assign_var ('OA_SOCIAL_LOGIN_PROVIDERS', implode ("','", explode (",", $this->config ['oa_social_login_providers'])));
+			$this->template->assign_vars (array (
+				'OA_SOCIAL_LOGIN_EMBED_LIBRARY' => 1,
+				'OA_SOCIAL_LOGIN_API_SUBDOMAIN' => addslashes ($this->config ['oa_social_login_api_subdomain']),
+				'OA_SOCIAL_LOGIN_CALLBACK_URI' => addslashes ($this->helper->get_current_url ()),
+				'OA_SOCIAL_LOGIN_PROVIDERS' => implode ("','", explode (",", $this->config ['oa_social_login_providers']))
+			));
 
 			// User must not be logged in
 			if ( empty ($this->user->data['user_id']) || $this->user->data['user_id'] == ANONYMOUS)
@@ -180,14 +181,10 @@ class listener implements EventSubscriberInterface
 					// Can be changed in the social login settings.
 					if (empty ($this->config ['oa_social_login_index_page_disable']))
 					{
-						// Trigger icons.
-						$this->template->assign_var ('OA_SOCIAL_LOGIN_EMBED_SOCIAL_LOGIN', 1);
-
-						// Set caption
-						if (! empty ($this->config ['oa_social_login_index_page_caption']))
-						{
-							$this->template->assign_var ('OA_SOCIAL_LOGIN_PAGE_CAPTION', $this->config ['oa_social_login_index_page_caption']);
-						}
+						$this->template->assign_vars (array (
+							'OA_SOCIAL_LOGIN_EMBED_SOCIAL_LOGIN' => 1,
+							'OA_SOCIAL_LOGIN_PAGE_CAPTION' => $this->config ['oa_social_login_index_page_caption']
+						));
 					}
 				}
 				// Embed on the login page ?
@@ -196,25 +193,17 @@ class listener implements EventSubscriberInterface
 					// Can be changed in the social login settings.
 					if (empty ($this->config ['oa_social_login_login_page_disable']))
 					{
-						// Trigger icons.
-						$this->template->assign_var ('OA_SOCIAL_LOGIN_EMBED_SOCIAL_LOGIN', 1);
-
-						// Set caption
-						if (! empty ($this->config ['oa_social_login_login_page_caption']))
-						{
-							$this->template->assign_var ('OA_SOCIAL_LOGIN_PAGE_CAPTION', $this->config ['oa_social_login_login_page_caption']);
-						}
+						$this->template->assign_vars (array (
+							'OA_SOCIAL_LOGIN_EMBED_SOCIAL_LOGIN' => 1,
+							'OA_SOCIAL_LOGIN_PAGE_CAPTION' => $this->config ['oa_social_login_login_page_caption']
+						));
 					}
 					if (empty ($this->config ['oa_social_login_inline_page_disable']))
 					{
-						// Trigger icons.
-						$this->template->assign_var ('OA_SOCIAL_LOGIN_EMBED_SOCIAL_LOGIN_INLINE', 1);
-
-						// Set caption
-						if (! empty ($this->config ['oa_social_login_inline_page_caption']))
-						{
-							$this->template->assign_var ('OA_SOCIAL_LOGIN_INLINE_PAGE_CAPTION', $this->config ['oa_social_login_inline_page_caption']);
-						}
+						$this->template->assign_vars (array (
+							'OA_SOCIAL_LOGIN_EMBED_SOCIAL_LOGIN_INLINE' => 1,
+							'OA_SOCIAL_LOGIN_INLINE_PAGE_CAPTION' => $this->config ['oa_social_login_inline_page_caption']
+						));
 					}
 				}
 				// Embed on the registration page ?
@@ -226,14 +215,10 @@ class listener implements EventSubscriberInterface
 						// Only if the user has agreed to the terms
 						if ($this->request->variable ('agreed', '') != '')
 						{
-							// Trigger icons.
-							$this->template->assign_var ('OA_SOCIAL_LOGIN_EMBED_SOCIAL_LOGIN', 1);
-
-							// Set Social Loin caption.
-							if (! empty ($this->config ['oa_social_login_registration_page_caption']))
-							{
-								$this->template->assign_var ('OA_SOCIAL_LOGIN_PAGE_CAPTION', $this->config ['oa_social_login_registration_page_caption']);
-							}
+							$this->template->assign_vars (array (
+								'OA_SOCIAL_LOGIN_EMBED_SOCIAL_LOGIN' => 1,
+								'OA_SOCIAL_LOGIN_PAGE_CAPTION' => $this->config ['oa_social_login_registration_page_caption']
+							));
 						}
 					}
 				}
@@ -244,14 +229,10 @@ class listener implements EventSubscriberInterface
 					// Can be changed in the social login settings.
 					if (empty ($this->config ['oa_social_login_other_page_disable']))
 					{
-						// Trigger icons.
-						$this->template->assign_var ('OA_SOCIAL_LOGIN_EMBED_SOCIAL_LOGIN', 1);
-
-						// Set caption
-						if (! empty ($this->config ['oa_social_login_other_page_caption']))
-						{
-							$this->template->assign_var ('OA_SOCIAL_LOGIN_PAGE_CAPTION', $this->config ['oa_social_login_other_page_caption']);
-						}
+						$this->template->assign_vars (array (
+								'OA_SOCIAL_LOGIN_EMBED_SOCIAL_LOGIN' => 1,
+								'OA_SOCIAL_LOGIN_PAGE_CAPTION' => $this->config ['oa_social_login_other_page_caption']
+						));
 					}
 				}
 			}
@@ -387,31 +368,5 @@ class listener implements EventSubscriberInterface
 			// Display.
 			return $this->controller_helper->render ('sociallogin_validation_body.html', 'validation');
 		}
-	}
-
-
-	/**
-	 * Event handler for custom fields and user row modifications.
-	 */
-	public function modify_data ($event)
-	{
-		global $phpbb_log, $user;
-
-		// The data retrieved from the social network profile.
-		$social = $event['social_profile'];
-
-		// The following code serves as example for custom changes.
-
-		/*
-
-		$event['cp_data'] = array (
-				// For example: a custom field named 'tastes':
-				'pf_tastes' => $social['user_languages_simple'][0],  // Risk of E_NOTICE and NULL.
-			);
-
-		*/
-
-		// Uncomment following line if you need logs.
-		$phpbb_log->add ('admin', $user->data['user_id'], $user->ip, 'LOG_PROFILE_FIELD_EDIT', time(), $event['cp_data']);
 	}
 }
