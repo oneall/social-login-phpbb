@@ -2,7 +2,7 @@
 /**
  * @package   	OneAll Social Login
  * @copyright 	Copyright 2011-2017 http://www.oneall.com
- * @license   	GNU/GPL 2 or later
+ * @license   	GNU/GPL 2
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,7 +35,7 @@ class sociallogin_ucp_info
 			'modes' => array (
 				'settings' => array (
 					'title' => 'OA_SOCIAL_LOGIN_LINK_UCP',
-				    'auth' => '',
+				    'auth' => 'ext_oneall/sociallogin',
 					'cat' => array ('UCP_PROFILE')
 				)
 			)

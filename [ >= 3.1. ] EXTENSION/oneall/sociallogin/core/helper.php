@@ -2,7 +2,7 @@
 /**
  * @package   	OneAll Social Login
  * @copyright 	Copyright 2011-2017 http://www.oneall.com
- * @license   	GNU/GPL 2 or later
+ * @license   	GNU/GPL 2
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,7 +30,7 @@ namespace oneall\sociallogin\core;
 class helper
 {
     // Version
-    const USER_AGENT = 'SocialLogin/3.3 phpBB/3.1.x (+http://www.oneall.com/)';
+    const USER_AGENT = 'SocialLogin/3.4 phpBB/3.1.x (+http://www.oneall.com/)';
 
     // @var \phpbb\config\config
     protected $config;
@@ -205,7 +205,7 @@ class helper
     public function create_login_token_for_user_id($user_id)
     {
         // Remove old or existing login token.
-        $sql = "DELETE FROM " . $this->table_prefix . 'oasl_login_token' . " WHERE (user_id = " . (int) $user_id . " OR date_creation < " . (time() - 60 * 5) . ")";
+        $sql = "DELETE FROM " . $this->table_prefix . "oasl_login_token WHERE (user_id = " . (int) $user_id . " OR date_creation < " . (time() - 60 * 5) . ")";
         $this->db->sql_query($sql);
 
         // Create a new and unique token.
@@ -221,7 +221,7 @@ class helper
             'user_id' => $user_id,
             'date_creation' => time());
 
-        $sql = "INSERT INTO " . $this->table_prefix . 'oasl_login_token' . " " . $this->db->sql_build_array('INSERT', $sql_arr);
+        $sql = "INSERT INTO " . $this->table_prefix . "oasl_login_token " . $this->db->sql_build_array('INSERT', $sql_arr);
         $this->db->sql_query($sql);
 
         // Done
@@ -234,7 +234,7 @@ class helper
     public function get_user_token_for_user_id($user_id)
     {
         // Read the user_id for this user_token.
-        $sql = "SELECT user_token FROM " . $this->table_prefix . 'oasl_user' . " WHERE user_id = " . (int) $user_id;
+        $sql = "SELECT user_token FROM " . $this->table_prefix . "oasl_user WHERE user_id = " . (int) $user_id;
         $query = $this->db->sql_query_limit($sql, 1);
         $result = $this->db->sql_fetchrow($query);
         $this->db->sql_freeresult($query);
@@ -808,19 +808,18 @@ class helper
         }
 
         // Read the user_id for this user_token.
-        $sql = "SELECT oasl_user_id, user_id FROM " . $this->table_prefix . 'oasl_user' . " WHERE user_token = '" . $this->db->sql_escape($user_token) . "'";
+        $sql = "SELECT oasl_user_id, user_id FROM " . $this->table_prefix . "oasl_user
+        		WHERE user_token = '" . $this->db->sql_escape($user_token) . "'";
         $query = $this->db->sql_query($sql);
         $result = $this->db->sql_fetchrow($query);
         $this->db->sql_freeresult($query);
 
         // The user_token exists
-        if (is_array($result) && !empty($result['oasl_user_id']))
+        if (is_array($result) && !empty($result['user_id']) && !empty($result['oasl_user_id']))
         {
-            $user_id = intval($result['user_id']);
-            $oasl_user_id = intval($result['oasl_user_id']);
-
             // Check if the user account exists.
-            $sql = "SELECT user_id FROM " . USERS_TABLE . " WHERE user_id = " . (int) $user_id;
+            $sql = "SELECT user_id FROM " . USERS_TABLE . "
+            		WHERE user_id = " . (int) $result['user_id'];
             $query = $this->db->sql_query_limit($sql, 1);
             $result = $this->db->sql_fetchrow($query);
             $this->db->sql_freeresult($query);
@@ -832,11 +831,13 @@ class helper
             }
 
             // Delete the wrongly linked user_token.
-            $sql = "DELETE FROM " . $this->table_prefix . 'oasl_user' . " WHERE user_token = '" . $this->db->sql_escape($user_token) . "'";
+            $sql = "DELETE FROM " . $this->table_prefix . "oasl_user
+            		WHERE user_token = '" . $this->db->sql_escape($user_token) . "'";
             $this->db->sql_query($sql);
 
             // Delete the wrongly linked identity_token.
-            $sql = "DELETE FROM " . $this->table_prefix . 'oasl_identity' . " WHERE oasl_user_id = " . (int) $oasl_user_id;
+            $sql = "DELETE FROM " . $this->table_prefix . "oasl_identity
+            		WHERE oasl_user_id = " . (int) $result['oasl_user_id'];
             $this->db->sql_query($sql);
         }
 
@@ -850,7 +851,8 @@ class helper
     protected function get_user_id_by_username($user_login)
     {
         // Read the user_id for this login
-        $sql = "SELECT user_id FROM " . USERS_TABLE . " WHERE username_clean = '" . $this->db->sql_escape(utf8_clean_string($user_login)) . "'";
+        $sql = "SELECT user_id FROM " . USERS_TABLE . "
+        		WHERE username_clean = '" . $this->db->sql_escape(utf8_clean_string($user_login)) . "'";
         $query = $this->db->sql_query_limit($sql, 1);
         $result = $this->db->sql_fetchrow($query);
         $this->db->sql_freeresult($query);
@@ -871,7 +873,8 @@ class helper
     protected function get_user_id_for_login_token($login_token)
     {
         // Read the user_id for this login_token
-        $sql = "SELECT user_id FROM " . $this->table_prefix . 'oasl_login_token' . " WHERE login_token = '" . $this->db->sql_escape($login_token) . "'";
+        $sql = "SELECT user_id FROM " . $this->table_prefix . "oasl_login_token
+        		WHERE login_token = '" . $this->db->sql_escape($login_token) . "'";
         $query = $this->db->sql_query_limit($sql, 1);
         $result = $this->db->sql_fetchrow($query);
         $this->db->sql_freeresult($query);
@@ -892,7 +895,8 @@ class helper
     protected function get_user_id_by_email($email)
     {
         // Read the user_id for this email address.
-        $sql = "SELECT user_id FROM " . USERS_TABLE . " WHERE user_email  = '" . $this->db->sql_escape($email) . "'";
+        $sql = "SELECT user_id FROM " . USERS_TABLE . "
+        		WHERE user_email  = '" . $this->db->sql_escape($email) . "'";
         $query = $this->db->sql_query_limit($sql, 1);
         $result = $this->db->sql_fetchrow($query);
         $this->db->sql_freeresult($query);
@@ -913,7 +917,8 @@ class helper
     function get_user_data_by_user_id($user_id)
     {
         // Read the user data.
-        $sql = "SELECT * FROM " . USERS_TABLE . " WHERE user_id = " . (int) $user_id;
+        $sql = "SELECT * FROM " . USERS_TABLE . "
+        		WHERE user_id = " . (int) $user_id;
         $query = $this->db->sql_query_limit($sql, 1);
         $result = $this->db->sql_fetchrow($query);
         $this->db->sql_freeresult($query);
@@ -942,7 +947,8 @@ class helper
     public function link_tokens_to_user_id($user_id, $user_token, $identity_token, $identity_provider)
     {
         // Make sure that that the user exists.
-        $sql = "SELECT user_id FROM " . USERS_TABLE . " WHERE user_id  = " . intval($user_id);
+        $sql = "SELECT user_id FROM " . USERS_TABLE . "
+        		WHERE user_id  = " . (int) $user_id;
         $query = $this->db->sql_query_limit($sql, 1);
         $result = $this->db->sql_fetchrow($query);
         $this->db->sql_freeresult($query);
@@ -956,27 +962,26 @@ class helper
             $oasl_identity_id = null;
 
             // Delete superfluous user_token.
-            $sql = "SELECT oasl_user_id FROM " . $this->table_prefix . 'oasl_user' . "
-							WHERE user_id = " . (int) $user_id . " AND user_token <> '" . $this->db->sql_escape($user_token) . "'";
+            $sql = "SELECT oasl_user_id FROM " . $this->table_prefix . "oasl_user
+            		WHERE user_id = " . (int) $user_id . " AND user_token <> '" . $this->db->sql_escape($user_token) . "'";
             $query = $this->db->sql_query($sql);
             while ($row = $this->db->sql_fetchrow($query))
             {
                 // Delete the wrongly linked user_token.
-                $sql = "DELETE FROM " . $this->table_prefix . 'oasl_user' . "
-								WHERE oasl_user_id = " . (int) $row['oasl_user_id'];
+                $sql = "DELETE FROM " . $this->table_prefix . "oasl_user
+                		WHERE oasl_user_id = " . (int) $row['oasl_user_id'];
                 $this->db->sql_query($sql);
 
                 // Delete the wrongly linked identity_token.
-                $sql = "DELETE FROM " . $this->table_prefix . 'oasl_identity' . "
-								WHERE oasl_user_id = " . (int) $row['oasl_user_id'];
+                $sql = "DELETE FROM " . $this->table_prefix . "oasl_identity
+                		WHERE oasl_user_id = " . (int) $row['oasl_user_id'];
                 $this->db->sql_query($sql);
             }
             $this->db->sql_freeresult($query);
 
             // Read the entry for the given user_token.
-            $sql = "SELECT oasl_user_id, user_id
-							FROM " . $this->table_prefix . 'oasl_user' . "
-							WHERE user_token = '" . $this->db->sql_escape($user_token) . "'";
+            $sql = "SELECT oasl_user_id, user_id FROM " . $this->table_prefix . "oasl_user
+            		WHERE user_token = '" . $this->db->sql_escape($user_token) . "'";
             $query = $this->db->sql_query($sql);
             $result = $this->db->sql_fetchrow($query);
             $this->db->sql_freeresult($query);
@@ -995,7 +1000,7 @@ class helper
                     'user_id' => intval($user_id),
                     'user_token' => $user_token,
                     'date_added' => time());
-                $sql = "INSERT INTO " . $this->table_prefix . 'oasl_user' . " " . $this->db->sql_build_array('INSERT', $sql_arr);
+                $sql = "INSERT INTO " . $this->table_prefix . "oasl_user " . $this->db->sql_build_array('INSERT', $sql_arr);
                 $this->db->sql_query($sql);
 
                 // Identifier of the newly created user_token entry.
@@ -1003,9 +1008,8 @@ class helper
             }
 
             // Read the entry for the given identity_token.
-            $sql = "SELECT oasl_identity_id, oasl_user_id, identity_token
-							FROM " . $this->table_prefix . 'oasl_identity' . "
-							WHERE identity_token = '" . $this->db->sql_escape($identity_token) . "'";
+            $sql = "SELECT oasl_identity_id, oasl_user_id, identity_token FROM " . $this->table_prefix . "oasl_identity
+            		WHERE identity_token = '" . $this->db->sql_escape($identity_token) . "'";
             $query = $this->db->sql_query($sql);
             $result = $this->db->sql_fetchrow($query);
             $this->db->sql_freeresult($query);
@@ -1020,7 +1024,7 @@ class helper
                 {
                     // Delete the wrongly linked identity_token.
                     $sql = "DELETE FROM " . $this->table_prefix . "oasl_identity
-                                WHERE oasl_identity_id = " . (int) $oasl_identity_id;
+                    		WHERE oasl_identity_id = " . (int) $oasl_identity_id;
                     $this->db->sql_query_limit($sql, 1);
 
                     // Reset the identifier
@@ -1039,11 +1043,8 @@ class helper
                     'num_logins' => 1,
                     'date_added' => time(),
                     'date_updated' => time());
-                $sql = "INSERT INTO " . $this->table_prefix . 'oasl_identity' . " " . $this->db->sql_build_array('INSERT', $sql_arr);
+                $sql = "INSERT INTO " . $this->table_prefix . "oasl_identity " . $this->db->sql_build_array('INSERT', $sql_arr);
                 $this->db->sql_query($sql);
-
-                // Identifier of the newly created identity_token entry.
-                $oasl_identity_id = $this->db->sql_nextid();
             }
 
             // Done.
@@ -1150,8 +1151,8 @@ class helper
                     $do_validation = true;
                 }
 
-                // Email must be unique
-                if (empty($user_data['user_email']) || $this->get_user_id_by_email($user_data['user_email']) !== false)
+                // Check if we have a valid email address.
+                if (empty($user_data['user_email']) || ($this->get_user_id_by_email($user_data['user_email']) !== false && !$this->config['allow_emailreuse']))
                 {
                     // Create a random email
                     $user_data['user_email'] = $this->generate_random_email();
@@ -1411,7 +1412,7 @@ class helper
                                 $sql_arr['user_avatar_height'] = $height;
 
                                 // Update user
-                                $sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_arr) . ' WHERE user_id = ' . $user_id;
+                                $sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_arr) . ' WHERE user_id = ' . (int) $user_id;
                                 $this->db->sql_query($sql);
 
                                 // Done
@@ -1541,7 +1542,7 @@ class helper
         else
         {
             // Add user to special group of OneAll registered users OA_SOCIAL_LOGIN_REGISTER.
-            $sql = 'SELECT group_id FROM ' . GROUPS_TABLE . "
+            $sql = "SELECT group_id FROM " . GROUPS_TABLE . "
                     WHERE group_name = 'OA_SOCIAL_LOGIN_REGISTER'
                     AND group_type = " . GROUP_SPECIAL;
             $result = $this->db->sql_query($sql);
@@ -1607,7 +1608,8 @@ class helper
                     if ($this->config['require_activation'] == USER_ACTIVATION_ADMIN)
                     {
                         // Read founders.
-                        $sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type FROM ' . USERS_TABLE . ' WHERE user_type = ' . USER_FOUNDER;
+                        $sql = "SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type FROM " . USERS_TABLE . "
+                        		WHERE user_type = " . USER_FOUNDER;
 
                         // Grab an array of user_id's with a_user permissions ... these users can activate a user.
                         $acl_admins = $this->auth->acl_get_list(false, 'a_user', false);
@@ -1616,7 +1618,7 @@ class helper
                         // Include admins
                         if (is_array($acl_admins) && count($acl_admins) > 0)
                         {
-                            $sql .= ' OR ' . $this->db->sql_in_set('user_id', $acl_admins);
+                            $sql .= " OR " . $this->db->sql_in_set('user_id', $acl_admins);
                         }
 
                         // Retrieve founders/admins
@@ -1673,8 +1675,9 @@ class helper
     public function count_login_identity_token($identity_token)
     {
         // Update the counter for the given identity_token.
-        $sql = "UPDATE " . $this->table_prefix . "oasl_identity SET num_logins=num_logins+1, date_updated='" . time() . "'
-                    WHERE identity_token = '" . $this->db->sql_escape($identity_token) . "'";
+        $sql = "UPDATE " . $this->table_prefix . "oasl_identity
+        		SET num_logins=num_logins+1, date_updated= " . time() . "
+        		WHERE identity_token = '" . $this->db->sql_escape($identity_token) . "'";
         $this->db->sql_query($sql);
     }
 
@@ -1685,8 +1688,8 @@ class helper
     public function unlink_identity_token($identity_token)
     {
         // Retrieve the oasl_user_id from the identity_token, using the oasl_identity table.
-        $sql = "SELECT oasl_user_id FROM " . $this->table_prefix . 'oasl_identity' . "
-                    WHERE identity_token = '" . $this->db->sql_escape($identity_token) . "'";
+        $sql = "SELECT oasl_user_id FROM " . $this->table_prefix . "oasl_identity
+        		WHERE identity_token = '" . $this->db->sql_escape($identity_token) . "'";
         $query = $this->db->sql_query($sql);
         $result = $this->db->sql_fetchrow($query);
         $this->db->sql_freeresult($query);
@@ -1700,13 +1703,13 @@ class helper
         $user_id = $result['oasl_user_id'];
 
         // Delete the identity_token.
-        $sql = "DELETE FROM " . $this->table_prefix . 'oasl_identity' . "
-                    WHERE  identity_token = '" . $this->db->sql_escape($identity_token) . "'";
+        $sql = "DELETE FROM " . $this->table_prefix . "oasl_identity
+        		WHERE identity_token = '" . $this->db->sql_escape($identity_token) . "'";
         $this->db->sql_query($sql);
 
         // Check if there are any other identities linked to the user_id.
-        $sql = "SELECT oasl_user_id FROM " . $this->table_prefix . 'oasl_identity' . "
-                    WHERE oasl_user_id = " . (int) $user_id;
+        $sql = "SELECT oasl_user_id FROM " . $this->table_prefix . "oasl_identity
+        		WHERE oasl_user_id = " . (int) $user_id;
         $query = $this->db->sql_query($sql);
         $result = $this->db->sql_fetchrow($query);
         $this->db->sql_freeresult($query);
@@ -1714,8 +1717,8 @@ class helper
         // If no identity linked to the oasl_user_id: delete oasl_user_id row from oasl_user table.
         if (!is_array($result))
         {
-            $sql = "DELETE FROM " . $this->table_prefix . 'oasl_user' . "
-                        WHERE  oasl_user_id = " . (int) $user_id;
+            $sql = "DELETE FROM " . $this->table_prefix . "oasl_user
+            		WHERE  oasl_user_id = " . (int) $user_id;
             $this->db->sql_query($sql);
         }
 
@@ -1732,7 +1735,7 @@ class helper
             'session_id' => $session_id,
             'user_data' => $validation,
             'date_creation' => time());
-        $sql = "INSERT INTO " . $this->table_prefix . 'oasl_session' . " " . $this->db->sql_build_array('INSERT', $sql_arr);
+        $sql = "INSERT INTO " . $this->table_prefix . "oasl_session " . $this->db->sql_build_array('INSERT', $sql_arr);
         $this->db->sql_query($sql);
     }
 
@@ -1744,9 +1747,8 @@ class helper
         $data = null;
 
         // Retrieve data
-        $sql = "SELECT user_data FROM " . $this->table_prefix . 'oasl_session' . "
-                    WHERE session_id = '" . $this->db->sql_escape($session_id) . "'";
-
+        $sql = "SELECT user_data FROM " . $this->table_prefix . "oasl_session
+        		WHERE session_id = '" . $this->db->sql_escape($session_id) . "'";
         $query = $this->db->sql_query($sql);
         $result = $this->db->sql_fetchrow($query);
         $this->db->sql_freeresult($query);
@@ -1769,9 +1771,9 @@ class helper
      */
     public function delete_session_validation_data($session_id, $max_age = 7200)
     {
-        $sql = "DELETE FROM " . $this->table_prefix . "oasl_session" . "
-                    WHERE session_id = '" . $this->db->sql_escape($session_id) . "'
-                    OR date_creation < ". (time() - $max_age);
+        $sql = "DELETE FROM " . $this->table_prefix . "oasl_session
+        		WHERE session_id = '" . $this->db->sql_escape($session_id) . "'
+        		OR date_creation < ". (time() - $max_age);
         $this->db->sql_query($sql);
     }
 
@@ -1801,65 +1803,49 @@ class helper
      */
     public function get_providers()
     {
-        $providers = array(
-            'amazon' => array(
-                'name' => 'Amazon'),
-            'blogger' => array(
-                'name' => 'Blogger'),
-            'disqus' => array(
-                'name' => 'Disqus'),
-            'draugiem' => array(
-                'name' => 'Draugiem'),
-            'dribbble' => array(
-                'name' => 'Dribbble'),
-            'facebook' => array(
-                'name' => 'Facebook'),
-            'foursquare' => array(
-                'name' => 'Foursquare'),
-            'github' => array(
-                'name' => 'Github.com'),
-            'google' => array(
-                'name' => 'Google'),
-            'instagram' => array(
-                'name' => 'Instagram'),
-            'linkedin' => array(
-                'name' => 'LinkedIn'),
-            'livejournal' => array(
-                'name' => 'LiveJournal'),
-            'mailru' => array(
-                'name' => 'Mail.ru'),
-            'odnoklassniki' => array(
-                'name' => 'Odnoklassniki'),
-            'openid' => array(
-                'name' => 'OpenID'),
-            'paypal' => array(
-                'name' => 'PayPal'),
-            'reddit' => array(
-                'name' => 'Reddit'),
-            'skyrock' => array(
-                'name' => 'Skyrock.com'),
-            'stackexchange' => array(
-                'name' => 'StackExchange'),
-            'steam' => array(
-                'name' => 'Steam'),
-            'twitch' => array(
-                'name' => 'Twitch.tv'),
-            'twitter' => array(
-                'name' => 'Twitter'),
-            'vimeo' => array(
-                'name' => 'Vimeo'),
-            'vkontakte' => array(
-                'name' => 'VKontakte'),
-            'windowslive' => array(
-                'name' => 'Windows Live'),
-            'wordpress' => array(
-                'name' => 'WordPress.com'),
-            'yahoo' => array(
-                'name' => 'Yahoo'),
-            'youtube' => array(
-                'name' => 'YouTube'),
-            'battlenet' => array(
-                'name' => 'BattleNet'));
+    	// Add the language file.
+    	$user->add_lang_ext('oneall/sociallogin', 'backend');
+
+    	// Providers
+		$providers = array (
+			'amazon' => $this->user->lang['OA_SOCIAL_LOGIN_P_AMAZON'],
+			'battlenet' => $this->user->lang['OA_SOCIAL_LOGIN_P_BATTLENET'],
+			'blogger' => $this->user->lang['OA_SOCIAL_LOGIN_P_BLOGGER'],
+			'storage' => $this->user->lang['OA_SOCIAL_LOGIN_P_STORAGE'],
+			'disqus' => $this->user->lang['OA_SOCIAL_LOGIN_P_DISQUS'],
+			'draugiem' => $this->user->lang['OA_SOCIAL_LOGIN_P_DRAUGIEM'],
+			'dribbble' => $this->user->lang['OA_SOCIAL_LOGIN_P_DRIBBBLE'],
+			'facebook' => $this->user->lang['OA_SOCIAL_LOGIN_P_FACEBOOK'],
+			'foursquare' => $this->user->lang['OA_SOCIAL_LOGIN_P_FOURSQUARE'],
+			'github' => $this->user->lang['OA_SOCIAL_LOGIN_P_GITHUBCOM'],
+			'google' => $this->user->lang['OA_SOCIAL_LOGIN_P_GOOGLE'],
+			'instagram' => $this->user->lang['OA_SOCIAL_LOGIN_P_INSTAGRAM'],
+			'line' => $this->user->lang['OA_SOCIAL_LOGIN_P_LINE'],
+			'linkedin' => $this->user->lang['OA_SOCIAL_LOGIN_P_LINKEDIN'],
+			'livejournal' => $this->user->lang['OA_SOCIAL_LOGIN_P_LIVEJOURNAL'],
+			'mailru' => $this->user->lang['OA_SOCIAL_LOGIN_P_MAILRU'],
+			'meetup' => $this->user->lang['OA_SOCIAL_LOGIN_P_MEETUP'],
+			'odnoklassniki' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_ODNOKLASSNIKI'],
+			'openid' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_OPENID'],
+			'paypal' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_PAYPAL'],
+			'pinterest' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_PINTEREST'],
+			'pixelpin' => $this->user->lang['OA_SOCIAL_LOGIN_P_PIXELPIN'],
+			'reddit' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_REDDIT'],
+			'skyrock' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_SKYROCKCOM'],
+			'soundcloud' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_SOUNDCLOUD'],
+			'stackexchange' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_STACKEXCHANGE'],
+			'steam' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_STEAM'],
+			'twitch' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_TWITCHTV'],
+			'twitter' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_TWITTER'],
+			'vimeo' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_VIMEO'],
+			'vkontakte' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_VKONTAKTE'],
+			'windowslive' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_WINDOWSLIVE'],
+			'wordpress' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_WORDPRESSCOM'],
+			'xing' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_XING'],
+			'yahoo' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_YAHOO'],
+			'youtube' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_YOUTUBE']
+		);
+
         return $providers;
     }
 

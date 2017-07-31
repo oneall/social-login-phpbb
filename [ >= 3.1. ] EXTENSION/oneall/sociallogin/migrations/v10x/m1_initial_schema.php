@@ -2,7 +2,7 @@
 /**
  * @package   	OneAll Social Login
  * @copyright 	Copyright 2011-2017 http://www.oneall.com
- * @license   	GNU/GPL 2 or later
+ * @license   	GNU/GPL 2
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,10 +29,6 @@ namespace oneall\sociallogin\migrations\v10x;
  */
 class m1_initial_schema extends \phpbb\db\migration\migration
 {
-
-	/**
-	 * Create the Social Login tables.
-	 */
 	public function update_schema ()
 	{
 		return array (
@@ -165,9 +161,6 @@ class m1_initial_schema extends \phpbb\db\migration\migration
 		);
 	}
 
-	/**
-	 * Drop the Social Login tables.
-	 */
 	public function revert_schema ()
 	{
 		return array (

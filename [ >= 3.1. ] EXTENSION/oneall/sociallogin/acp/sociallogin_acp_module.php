@@ -2,7 +2,7 @@
 /**
  * @package   	OneAll Social Login
  * @copyright 	Copyright 2011-2017 http://www.oneall.com
- * @license   	GNU/GPL 2 or later
+ * @license   	GNU/GPL 2
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -160,11 +160,11 @@ class sociallogin_acp_module
 
             // Social Networks.
             $oa_social_login_providers = array();
-            foreach ($oa_social_login_all_providers as $provider_key => $provider_data)
+            foreach ($oa_social_login_all_providers as $key => $name)
             {
-                if ($request->variable('oa_social_login_provider_' . $provider_key, 0) == 1)
+                if ($request->variable('oa_social_login_provider_' . $key, 0) == 1)
                 {
-                    $oa_social_login_providers[] = $provider_key;
+                    $oa_social_login_providers[] = $key;
                 }
             }
 
@@ -233,12 +233,13 @@ class sociallogin_acp_module
         }
 
         // Setup Social Network Vars
-        foreach ($oa_social_login_all_providers as $key => $data)
+        foreach ($oa_social_login_all_providers as $key => $name)
         {
             $template->assign_block_vars('provider', array(
                 'KEY' => $key,
-                'NAME' => $data['name'],
-                'ENABLE' => in_array($key, $oa_social_login_providers)));
+                'NAME' => $name,
+                'ENABLE' => in_array($key, $oa_social_login_providers)
+            ));
         }
 
         // Setup Vars
