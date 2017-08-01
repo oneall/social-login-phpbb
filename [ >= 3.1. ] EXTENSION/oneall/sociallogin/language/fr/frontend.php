@@ -50,6 +50,8 @@ $lang = array_merge ($lang, array(
 	'OA_SOCIAL_LOGIN_ENTER_CREDENTIALS' => 'Configurer ses certificats d’API.',
 	'OA_SOCIAL_LOGIN_SOCIAL_LINK' => 'Service de liens sociaux (Social Link)',
 	'OA_SOCIAL_LOGIN_ACCOUNT_ALREADY_LINKED' => 'Ce compte de réseau social est déjà lié avec un compte utilisateur du forum.',
+	'OA_SOCIAL_LOGIN_ACCOUNT_LINKED' => 'Le compte de réseau social a été lié.',
+	'OA_SOCIAL_LOGIN_ACCOUNT_UNLINKED' => 'Le compte de réseau social a été délié.',
 	'OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_OTHER' => 'Le compte a été crée. Cependant, les paramètres du forum nécessitent l’activation du compte.<br />Une clé d’activation a été envoyée à votre adresse e-mail.',
 	'OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_ADMIN' => 'Le compte a été crée. Cependant, les paramètres du forum nécessitent l’activation du compte par un administrateur.<br />Un e-mail a été envoyé aux administrateurs et vous serez informé par e-mail une fois que votre compte aura été activé.'
 ));

@@ -35,7 +35,7 @@ class sociallogin_ucp_module
 	// Add Social Link to UCP \ Profile \ Social link.
 	public function main ($id, $mode)
 	{
-		global $user, $template, $phpbb_container;
+		global $user, $template, $phpbb_container, $request;
 
 		// User must be logged in and not a bot
 		if (is_object ($user) && empty ($user->data ['isbot']) && (! empty ($user->data ['user_id']) && $user->data ['user_id'] != ANONYMOUS))
@@ -59,6 +59,22 @@ class sociallogin_ucp_module
 
 				// Assign callback uri.
 				$template->assign_var ('OA_SOCIAL_LINK_CALLBACK_URI', addslashes ($callback_uri));
+
+				// Status.
+				switch ($request->variable('social_link_status', ''))
+				{
+					case 'error_linked_to_another_user':
+						$template->assign_var('OA_SOCIAL_LINK_ERROR', $user->lang['OA_SOCIAL_LOGIN_ACCOUNT_ALREADY_LINKED']);
+					break;
+
+					case 'success_linked':
+						$template->assign_var('OA_SOCIAL_LINK_SUCCESS', $user->lang['OA_SOCIAL_LOGIN_ACCOUNT_LINKED']);
+					break;
+
+					case 'success_unlinked':
+						$template->assign_var('OA_SOCIAL_LINK_SUCCESS', $user->lang['OA_SOCIAL_LOGIN_ACCOUNT_UNLINKED']);
+					break;
+				}
 			}
 		}
 

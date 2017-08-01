@@ -275,7 +275,7 @@ class helper
     /**
      * Returns the current url
      */
-    function get_current_url($remove_vars = array ('oa_social_login_login_token', 'sid'))
+    function get_current_url($add_vars = array(), $remove_vars = array(), $remove_extra_vars = true)
     {
         // Extract Uri
         if (strlen(trim($this->request->server('REQUEST_URI'))) > 0)
@@ -331,28 +331,49 @@ class helper
         // Build url
         $current_url = $request_protocol . '://' . $request_host . (!empty($request_port) ? (':' . $request_port) : '') . $request_uri;
 
-        // Remove query arguments.
-        if (is_array($remove_vars) && count($remove_vars) > 0)
+        // Remove arguments.
+        if ( ! is_array ($remove_vars))
         {
-            // Break up url
-            list ($url_part, $query_part) = array_pad(explode('?', $current_url), 2, '');
-            parse_str($query_part, $query_vars);
-
-            // Remove argument.
-            if (is_array($query_vars))
-            {
-                foreach ($remove_vars as $var)
-                {
-                    if (isset($query_vars[$var]))
-                    {
-                        unset($query_vars[$var]);
-                    }
-                }
-
-                // Build new url
-                $current_url = $url_part . ((is_array($query_vars) && count($query_vars) > 0) ? ('?' . http_build_query($query_vars)) : '');
-            }
+        	$remove_vars = array();
         }
+
+        // Remove extra arguments.
+       	if ($remove_extra_vars)
+       	{
+       		$remove_vars[] = 'oa_social_login_login_token';
+       		$remove_vars[] = 'sid';
+       	}
+
+	    // Break up url
+	    list ($url_part, $query_part) = array_pad(explode('?', $current_url), 2, '');
+	    parse_str($query_part, $query_vars);
+
+	    // Remove argument.
+	    if (is_array($query_vars))
+	    {
+	    	foreach ($remove_vars as $var)
+	    	{
+	    		if (isset($query_vars[$var]))
+	    		{
+	    			unset($query_vars[$var]);
+	    		}
+	    	}
+	    }
+	    else
+	    {
+	    	$query_vars = array ();
+	    }
+
+	    if (is_array ($add_vars))
+	    {
+	    	foreach ($add_vars as $key => $value)
+	    	{
+	    		$query_vars[$key] = $value;
+	    	}
+	    }
+
+	    // Build new url
+	    $current_url = $url_part . ((is_array($query_vars) && count($query_vars) > 0) ? ('?' . http_build_query($query_vars)) : '');
 
         // Done
         return $current_url;
@@ -712,7 +733,8 @@ class helper
                             // Add to list.
                             $data['user_languages'][] = array(
                                 'value' => $language->value,
-                                'type' => $language->type);
+                                'type' => (isset ($language->type) ? $language->type : null)
+                            );
                         }
                     }
 
@@ -732,7 +754,8 @@ class helper
                             // Add to list.
                             $data['user_educations'][] = array(
                                 'value' => $education->value,
-                                'type' => $education->type);
+                                'type' => (isset ($education->type) ? $education->type : null)
+                            );
                         }
                     }
 
@@ -1237,6 +1260,9 @@ class helper
                                     // We have a user for this login token
                                     if (is_numeric($user_id_login_token))
                                     {
+                                    	// Display status to user.
+                                    	$status = null;
+
                                         // Update the tokens?
                                         $update_tokens = true;
 
@@ -1249,8 +1275,8 @@ class helper
                                             // The existing user_id does not match the logged in user
                                             if ($user_id_user_token != $user_id_login_token)
                                             {
-                                                // Show an error to the user.
-                                                $this->template->assign_var('OA_SOCIAL_LINK_ERROR', $this->user->lang['OA_SOCIAL_LOGIN_ACCOUNT_ALREADY_LINKED']);
+                                                // Display status to user.
+                                                $status = 'error_linked_to_another_user';
 
                                                 // Do not updated the tokens.
                                                 $update_tokens = false;
@@ -1262,11 +1288,19 @@ class helper
                                         {
                                             if (!empty($user_data['plugin_action']) && $user_data['plugin_action'] == 'link_identity')
                                             {
+                                            	// Link the tokens to the current user.
                                                 $this->link_tokens_to_user_id($user_id_login_token, $user_data['user_token'], $user_data['identity_token'], $user_data['identity_provider']);
+
+                                                // Display status to user.
+                                                $status = 'success_linked';
                                             }
                                             else
                                             {
+                                            	// Unlink the tokens from the current user.
                                                 $this->unlink_identity_token($user_data['identity_token']);
+
+                                                // Display status to user.
+                                                $status = 'success_unlinked';
                                             }
                                         }
 
@@ -1274,7 +1308,7 @@ class helper
                                         $this->do_login($user_id_login_token);
 
                                         // Redirect to the same page
-                                        $this->http_redirect($this->get_current_url());
+                                        $this->http_redirect($this->get_current_url(array ('social_link_status' => $status)));
                                     }
                                 }
                             }
