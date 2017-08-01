@@ -138,7 +138,7 @@ $lang = array_merge ($lang, array(
 	'OA_SOCIAL_LOGIN_PORT_80_DESC' => 'L’utilisation du port 80 est un peu plus rapide, ne nécessite pas OpenSSL mais est moins sécurisé.',
 	'OA_SOCIAL_LOGIN_PROFILE_DESC' => 'Lier votre compte à un réseau social',
 	'OA_SOCIAL_LOGIN_PROFILE_TITLE' => 'Passerelle de connexion OneAll',
-	'OA_SOCIAL_LOGIN_READ_DOCS' => '<a href="http://docs.oneall.com/plugins/" class="external">Lire</a> la documentation en ligne pour en savoir d’avantage sur ce plugin.',
+	'OA_SOCIAL_LOGIN_READ_DOCS' => '<a href="http://docs.oneall.com/plugins/guide/social-login-phpbb/3.1/" class="external">Lire</a> la documentation en ligne pour en savoir d’avantage sur ce plugin.',
 	'OA_SOCIAL_LOGIN_REGISTRATION_PAGE' => 'Page d’inscription du forum',
 	'OA_SOCIAL_LOGIN_REGISTRATION_PAGE_CAPTION' => 'Légende',
 	'OA_SOCIAL_LOGIN_REGISTRATION_PAGE_CAPTION_DESC' => 'Ce titre sera affiché au-dessus des icônes de la passerelle de connexion OneAll sur la page d’inscription du forum.',

@@ -2080,21 +2080,21 @@ class helper
             $header_found = false;
 
             // Loop through headers.
-            while (!$header_found && (list (, $header) = each($result->get_headers())))
+            $headers = $result->get_headers();
+            while (!$header_found && (list (, $header) = each($headers)))
             {
                 // Check for location header
                 if (preg_match("/(Location:|URI:)[^(\n)]*/", $header, $matches))
                 {
-                    // Found
-                    $header_found = true;
-
-                    // Clean url
+                    // Sanitize redirection url.
                     $url_tmp = trim(str_replace($matches[1], "", $matches[0]));
                     $url_parsed = parse_url($url_tmp);
-
-                    // Found
                     if (!empty($url_parsed))
                     {
+                    	// Header found!
+                    	$header_found = true;
+
+                    	// Follow redirection url.
                         $result = $this->fsockopen_request($url_tmp, $options, $timeout, $num_redirects + 1);
                     }
                 }
