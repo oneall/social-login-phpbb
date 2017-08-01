@@ -169,11 +169,7 @@ class listener implements EventSubscriberInterface
 				'OA_SOCIAL_LOGIN_EMBED_LIBRARY' => 1,
 				'OA_SOCIAL_LOGIN_API_SUBDOMAIN' => addslashes ($this->config ['oa_social_login_api_subdomain']),
 				'OA_SOCIAL_LOGIN_CALLBACK_URI' => addslashes ($this->helper->get_current_url ()),
-<<<<<<< HEAD
 				'OA_SOCIAL_LOGIN_PROVIDERS' => implode ("','", explode (",", $this->config ['oa_social_login_providers']))
-=======
-				'OA_SOCIAL_LOGIN_PROVIDERS', implode ("','", explode (",", $this->config ['oa_social_login_providers']))
->>>>>>> branch 'master' of git@github.com:oneall/social-login-phpbb.git
 			));
 
 			// User must not be logged in

@@ -1796,60 +1796,6 @@ class helper
 
         // Done
         return $email;
-<<<<<<< HEAD
-=======
-    }
-
-    /**
-     * Returns the list of available social networks.
-     */
-    public function get_providers()
-    {
-    	// Add the language file.
-    	$user->add_lang_ext('oneall/sociallogin', 'backend');
-
-    	// Providers
-		$providers = array (
-			'amazon' => $this->user->lang['OA_SOCIAL_LOGIN_P_AMAZON'],
-			'battlenet' => $this->user->lang['OA_SOCIAL_LOGIN_P_BATTLENET'],
-			'blogger' => $this->user->lang['OA_SOCIAL_LOGIN_P_BLOGGER'],
-			'storage' => $this->user->lang['OA_SOCIAL_LOGIN_P_STORAGE'],
-			'disqus' => $this->user->lang['OA_SOCIAL_LOGIN_P_DISQUS'],
-			'draugiem' => $this->user->lang['OA_SOCIAL_LOGIN_P_DRAUGIEM'],
-			'dribbble' => $this->user->lang['OA_SOCIAL_LOGIN_P_DRIBBBLE'],
-			'facebook' => $this->user->lang['OA_SOCIAL_LOGIN_P_FACEBOOK'],
-			'foursquare' => $this->user->lang['OA_SOCIAL_LOGIN_P_FOURSQUARE'],
-			'github' => $this->user->lang['OA_SOCIAL_LOGIN_P_GITHUBCOM'],
-			'google' => $this->user->lang['OA_SOCIAL_LOGIN_P_GOOGLE'],
-			'instagram' => $this->user->lang['OA_SOCIAL_LOGIN_P_INSTAGRAM'],
-			'line' => $this->user->lang['OA_SOCIAL_LOGIN_P_LINE'],
-			'linkedin' => $this->user->lang['OA_SOCIAL_LOGIN_P_LINKEDIN'],
-			'livejournal' => $this->user->lang['OA_SOCIAL_LOGIN_P_LIVEJOURNAL'],
-			'mailru' => $this->user->lang['OA_SOCIAL_LOGIN_P_MAILRU'],
-			'meetup' => $this->user->lang['OA_SOCIAL_LOGIN_P_MEETUP'],
-			'odnoklassniki' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_ODNOKLASSNIKI'],
-			'openid' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_OPENID'],
-			'paypal' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_PAYPAL'],
-			'pinterest' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_PINTEREST'],
-			'pixelpin' => $this->user->lang['OA_SOCIAL_LOGIN_P_PIXELPIN'],
-			'reddit' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_REDDIT'],
-			'skyrock' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_SKYROCKCOM'],
-			'soundcloud' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_SOUNDCLOUD'],
-			'stackexchange' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_STACKEXCHANGE'],
-			'steam' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_STEAM'],
-			'twitch' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_TWITCHTV'],
-			'twitter' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_TWITTER'],
-			'vimeo' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_VIMEO'],
-			'vkontakte' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_VKONTAKTE'],
-			'windowslive' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_WINDOWSLIVE'],
-			'wordpress' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_WORDPRESSCOM'],
-			'xing' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_XING'],
-			'yahoo' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_YAHOO'],
-			'youtube' =>  $this->user->lang['OA_SOCIAL_LOGIN_P_YOUTUBE']
-		);
-
-        return $providers;
->>>>>>> branch 'master' of git@github.com:oneall/social-login-phpbb.git
     }
 
     /**
