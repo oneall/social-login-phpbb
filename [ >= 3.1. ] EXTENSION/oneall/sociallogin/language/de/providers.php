@@ -24,8 +24,8 @@
  */
 
 /**
- * French translations by Galixte
- * http://www.galixte.com
+ * German translations by GeorgH93
+ * http://pcgamingfreaks.at
  */
 if (!defined ('IN_PHPBB'))
 {

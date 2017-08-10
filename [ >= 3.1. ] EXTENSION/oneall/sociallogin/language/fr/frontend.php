@@ -27,7 +27,6 @@
  * French translations by Galixte
  * http://www.galixte.com
  */
-
 if (!defined ('IN_PHPBB'))
 {
 	exit ();
@@ -48,7 +47,6 @@ $lang = array_merge ($lang, array(
 	'OA_SOCIAL_LOGIN_LINK_ACTION' => 'Cliquer sur l’icône du réseau social à lier / délier.',
 	'OA_SOCIAL_LOGIN_ENABLE_SOCIAL_NETWORK' => 'Au moins un compte de réseau social doit être lié.',
 	'OA_SOCIAL_LOGIN_ENTER_CREDENTIALS' => 'Configurer ses certificats d’API.',
-	'OA_SOCIAL_LOGIN_SOCIAL_LINK' => 'Service de liens sociaux (Social Link)',
 	'OA_SOCIAL_LOGIN_ACCOUNT_ALREADY_LINKED' => 'Ce compte de réseau social est déjà lié avec un compte utilisateur du forum.',
 	'OA_SOCIAL_LOGIN_ACCOUNT_LINKED' => 'Le compte de réseau social a été lié.',
 	'OA_SOCIAL_LOGIN_ACCOUNT_UNLINKED' => 'Le compte de réseau social a été délié.',

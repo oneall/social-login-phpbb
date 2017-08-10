@@ -24,20 +24,20 @@
  */
 
 /**
- * French translations by Galixte
- * http://www.galixte.com
+ * German translations by GeorgH93
+ * http://pcgamingfreaks.at
  */
-if (!defined ('IN_PHPBB'))
+if (!defined('IN_PHPBB'))
 {
-	exit ();
+	exit;
 }
 
-if (empty ($lang) || !is_array ($lang))
+if (empty($lang) || !is_array($lang))
 {
 	$lang = array();
 }
 
-$lang = array_merge ($lang, array(
-	'OA_SOCIAL_LOGIN_ACP_AUTH_SETTTING_INFO' => 'Offre authentification avec nom d’utilisateur/mot de passe ainsi que la connexion avec le compte d’un résau social. Les réseaux sociaux sont configurables sous EXTENSIONS \ ONEALL SOCIAL LOGIN.'
+$lang = array_merge($lang, array(
+    'OA_SOCIAL_LOGIN_ACP_AUTH_SETTTING_INFO' => 'Erlaubt die Authentifizierung mit einem Benutzernamen und einem Passwort (Datenbank-Authentifizierung) sowie die Anmeldung über Accounts von sozialen Netzwerken. Die Authentifizierung über soziale Netzwerke kann unter EXTENSIONS \ ONEALL SOCIAL LOGIN eingerichtet werden.',
 ));
 

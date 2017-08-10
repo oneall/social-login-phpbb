@@ -42,7 +42,6 @@ $lang = array_merge ($lang, array(
 	'OA_SOCIAL_LOGIN_LINK_ACTION' => 'Click on the icon of social network to link/unlink.',
 	'OA_SOCIAL_LOGIN_ENABLE_SOCIAL_NETWORK' => 'You have to enable at least one social network',
 	'OA_SOCIAL_LOGIN_ENTER_CREDENTIALS' => 'You have to setup your API credentials',
-	'OA_SOCIAL_LOGIN_SOCIAL_LINK' => 'Social Link Service',
 	'OA_SOCIAL_LOGIN_ACCOUNT_ALREADY_LINKED' => 'This social network account is already linked to another forum user.',
 	'OA_SOCIAL_LOGIN_ACCOUNT_LINKED' => 'The social network account has been linked to your account.',
 	'OA_SOCIAL_LOGIN_ACCOUNT_UNLINKED' => 'This social network account has been unlinked from your account.',

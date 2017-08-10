@@ -22,17 +22,17 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *
  */
-if (!defined('IN_PHPBB'))
+if (!defined ('IN_PHPBB'))
 {
-	exit;
+	exit ();
 }
 
-if (empty($lang) || !is_array($lang))
+if (empty ($lang) || !is_array ($lang))
 {
 	$lang = array();
 }
 
-$lang = array_merge($lang, array(
-    'OA_SOCIAL_LOGIN_ACP_AUTH_SETTTING_INFO' => 'Provides the authentication with a username/password (Db Authentication) as well as the login with a social network account. The social network authentication can be setup in EXTENSIONS \ ONEALL SOCIAL LOGIN.',
+$lang = array_merge ($lang, array(
+	'OA_SOCIAL_LOGIN_ACP_AUTH_SETTTING_INFO' => 'Provides the authentication with a username/password (Db Authentication) as well as the login with a social network account. The social network authentication can be setup in EXTENSIONS \ ONEALL SOCIAL LOGIN.'
 ));
 
