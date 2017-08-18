@@ -38,6 +38,6 @@ if (empty ($lang) || !is_array ($lang))
 }
 
 $lang = array_merge ($lang, array(
-	'OA_SOCIAL_LOGIN_ACP_AUTH_SETTTING_INFO' => 'Offre authentification avec nom d’utilisateur/mot de passe ainsi que la connexion avec le compte d’un résau social. Les réseaux sociaux sont configurables sous EXTENSIONS \ ONEALL SOCIAL LOGIN.'
+	'OA_SOCIAL_LOGIN_ACP_AUTH_SETTTING_INFO' => 'Permet de lier l’authentification sur le forum avec les comptes des résaux sociaux. Les réseaux sociaux sont configurables depuis la page EXTENSIONS \ ONEALL SOCIAL LOGIN \ PARAMÈTRES.'
 ));
 
