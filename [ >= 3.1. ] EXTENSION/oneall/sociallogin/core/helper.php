@@ -1,8 +1,8 @@
 <?php
 /**
- * @package   	OneAll Social Login
- * @copyright 	Copyright 2011-2017 http://www.oneall.com
- * @license   	GPL-2.0
+ * @package       OneAll Social Login
+ * @copyright     Copyright 2011-2017 http://www.oneall.com
+ * @license       GPL-2.0
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -135,10 +135,12 @@ class helper
             $this->auth->acl($this->user->data);
 
             // Done.
+
             return true;
         }
 
         // An error has occurred.
+
         return false;
     }
 
@@ -150,7 +152,7 @@ class helper
         // Display an error message
         if (isset($error_message))
         {
-            $error_message = $error_message . '<br /><br />' . sprintf($this->user->lang['RETURN_INDEX'], '<a href="' . append_sid ($this->phpbb_root_path . 'index.' . $this->php_ext) . '">', '</a>');
+            $error_message = $error_message . '<br /><br />' . sprintf($this->user->lang['RETURN_INDEX'], '<a href="' . append_sid($this->phpbb_root_path . 'index.' . $this->php_ext) . '">', '</a>');
             trigger_error($error_message);
         }
         // Process
@@ -193,7 +195,7 @@ class helper
     {
         if ($append_sid)
         {
-            $url = append_sid ($url);
+            $url = append_sid($url);
         }
 
         redirect($url, false, true);
@@ -212,8 +214,7 @@ class helper
         do
         {
             $login_token = $this->get_uuid_v4();
-        }
-        while ($this->get_user_id_for_login_token($login_token) !== false);
+        } while ($this->get_user_id_for_login_token($login_token) !== false);
 
         // Add the new token.
         $sql_arr = array(
@@ -225,6 +226,7 @@ class helper
         $this->db->sql_query($sql);
 
         // Done
+
         return $login_token;
     }
 
@@ -246,6 +248,7 @@ class helper
         }
 
         // Not found
+
         return false;
     }
 
@@ -275,7 +278,7 @@ class helper
     /**
      * Returns the current url
      */
-    function get_current_url($add_vars = array(), $remove_vars = array(), $remove_extra_vars = true)
+    public function get_current_url($add_vars = array(), $remove_vars = array(), $remove_extra_vars = true)
     {
         // Extract Uri
         if (strlen(trim($this->request->server('REQUEST_URI'))) > 0)
@@ -332,50 +335,51 @@ class helper
         $current_url = $request_protocol . '://' . $request_host . (!empty($request_port) ? (':' . $request_port) : '') . $request_uri;
 
         // Remove arguments.
-        if ( ! is_array ($remove_vars))
+        if (!is_array($remove_vars))
         {
-        	$remove_vars = array();
+            $remove_vars = array();
         }
 
         // Remove extra arguments.
-       	if ($remove_extra_vars)
-       	{
-       		$remove_vars[] = 'oa_social_login_login_token';
-       		$remove_vars[] = 'sid';
-       	}
+        if ($remove_extra_vars)
+        {
+            $remove_vars[] = 'oa_social_login_login_token';
+            $remove_vars[] = 'sid';
+        }
 
-	    // Break up url
-	    list ($url_part, $query_part) = array_pad(explode('?', $current_url), 2, '');
-	    parse_str($query_part, $query_vars);
+        // Break up url
+        list($url_part, $query_part) = array_pad(explode('?', $current_url), 2, '');
+        parse_str($query_part, $query_vars);
 
-	    // Remove argument.
-	    if (is_array($query_vars))
-	    {
-	    	foreach ($remove_vars as $var)
-	    	{
-	    		if (isset($query_vars[$var]))
-	    		{
-	    			unset($query_vars[$var]);
-	    		}
-	    	}
-	    }
-	    else
-	    {
-	    	$query_vars = array ();
-	    }
+        // Remove argument.
+        if (is_array($query_vars))
+        {
+            foreach ($remove_vars as $var)
+            {
+                if (isset($query_vars[$var]))
+                {
+                    unset($query_vars[$var]);
+                }
+            }
+        }
+        else
+        {
+            $query_vars = array();
+        }
 
-	    if (is_array ($add_vars))
-	    {
-	    	foreach ($add_vars as $key => $value)
-	    	{
-	    		$query_vars[$key] = $value;
-	    	}
-	    }
+        if (is_array($add_vars))
+        {
+            foreach ($add_vars as $key => $value)
+            {
+                $query_vars[$key] = $value;
+            }
+        }
 
-	    // Build new url
-	    $current_url = $url_part . ((is_array($query_vars) && count($query_vars) > 0) ? ('?' . http_build_query($query_vars)) : '');
+        // Build new url
+        $current_url = $url_part . ((is_array($query_vars) && count($query_vars) > 0) ? ('?' . http_build_query($query_vars)) : '');
 
         // Done
+
         return $current_url;
     }
 
@@ -394,6 +398,7 @@ class helper
             if (!empty($social_data->response->result->status->flag) && $social_data->response->result->status->code >= 400)
             {
                 error_log($social_data->response->result->status->info . ' (' . $social_data->response->result->status->code . ')');
+
                 return false;
             }
 
@@ -733,7 +738,7 @@ class helper
                             // Add to list.
                             $data['user_languages'][] = array(
                                 'value' => $language->value,
-                                'type' => (isset ($language->type) ? $language->type : null)
+                                'type' => (isset($language->type) ? $language->type : null)
                             );
                         }
                     }
@@ -754,7 +759,7 @@ class helper
                             // Add to list.
                             $data['user_educations'][] = array(
                                 'value' => $education->value,
-                                'type' => (isset ($education->type) ? $education->type : null)
+                                'type' => (isset($education->type) ? $education->type : null)
                             );
                         }
                     }
@@ -791,6 +796,7 @@ class helper
                     }
                 }
             }
+
             return $data;
         }
 
@@ -800,7 +806,7 @@ class helper
     /**
      * Get the default group_id for new users
      */
-    function get_default_group_id()
+    public function get_default_group_id()
     {
         // Read the default group.
         $sql = "SELECT group_id FROM " . GROUPS_TABLE . " WHERE group_name = 'REGISTERED' AND group_type = " . GROUP_SPECIAL;
@@ -815,6 +821,7 @@ class helper
         }
 
         // Not found
+
         return false;
     }
 
@@ -865,6 +872,7 @@ class helper
         }
 
         // No entry found.
+
         return false;
     }
 
@@ -887,6 +895,7 @@ class helper
         }
 
         // Not found.
+
         return false;
     }
 
@@ -909,6 +918,7 @@ class helper
         }
 
         // Not found
+
         return false;
     }
 
@@ -931,13 +941,14 @@ class helper
         }
 
         // Not found.
+
         return false;
     }
 
     /**
      * Get the user data for a user_id
      */
-    function get_user_data_by_user_id($user_id)
+    public function get_user_data_by_user_id($user_id)
     {
         // Read the user data.
         $sql = "SELECT * FROM " . USERS_TABLE . "
@@ -953,13 +964,14 @@ class helper
         }
 
         // Not found.
+
         return array();
     }
 
     /**
      * Generates a v4 UUID.
      */
-    function get_uuid_v4()
+    public function get_uuid_v4()
     {
         return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0x0fff) | 0x4000, mt_rand(0, 0x3fff) | 0x8000, mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
     }
@@ -1071,10 +1083,12 @@ class helper
             }
 
             // Done.
+
             return true;
         }
 
         // An error occured.
+
         return false;
     }
 
@@ -1141,7 +1155,7 @@ class helper
                 // User functions
                 if (!function_exists('user_add'))
                 {
-                    require ($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
+                    require $this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext;
                 }
 
                 // Will validation be required ('1' means always).
@@ -1193,10 +1207,11 @@ class helper
                 if ($do_validation === true)
                 {
                     $user_data['user_email'] = $user_random_email ? '' : $user_data['user_email'];
+
                     return $user_data;
                 }
 
-                list ($error_message, $user_id) = $this->social_login_user_add($user_random_email, $user_data);
+                list($error_message, $user_id) = $this->social_login_user_add($user_random_email, $user_data);
             }
         }
         $this->social_login_redirect($error_message, $user_id, $user_data);
@@ -1260,8 +1275,8 @@ class helper
                                     // We have a user for this login token
                                     if (is_numeric($user_id_login_token))
                                     {
-                                    	// Display status to user.
-                                    	$status = null;
+                                        // Display status to user.
+                                        $status = null;
 
                                         // Update the tokens?
                                         $update_tokens = true;
@@ -1288,7 +1303,7 @@ class helper
                                         {
                                             if (!empty($user_data['plugin_action']) && $user_data['plugin_action'] == 'link_identity')
                                             {
-                                            	// Link the tokens to the current user.
+                                                // Link the tokens to the current user.
                                                 $this->link_tokens_to_user_id($user_id_login_token, $user_data['user_token'], $user_data['identity_token'], $user_data['identity_provider']);
 
                                                 // Display status to user.
@@ -1296,7 +1311,7 @@ class helper
                                             }
                                             else
                                             {
-                                            	// Unlink the tokens from the current user.
+                                                // Unlink the tokens from the current user.
                                                 $this->unlink_identity_token($user_data['identity_token']);
 
                                                 // Display status to user.
@@ -1308,7 +1323,7 @@ class helper
                                         $this->do_login($user_id_login_token);
 
                                         // Redirect to the same page
-                                        $this->http_redirect($this->get_current_url(array ('social_link_status' => $status)));
+                                        $this->http_redirect($this->get_current_url(array('social_link_status' => $status)));
                                     }
                                 }
                             }
@@ -1367,7 +1382,7 @@ class helper
                         $file_exts[IMAGETYPE_PNG] = 'png';
 
                         // Get image data
-                        list ($width, $height, $type, $attr) = @getimagesize($file_tmp_name);
+                        list($width, $height, $type, $attr) = @getimagesize($file_tmp_name);
 
                         // Check image size and type
                         if ($width > $this->config['avatar_min_width'] && $height > $this->config['avatar_min_height'] && isset($file_exts[$type]))
@@ -1450,12 +1465,14 @@ class helper
                                 $this->db->sql_query($sql);
 
                                 // Done
+
                                 return true;
                             }
                         }
 
                         // Error
                         @unlink($file_tmp_name);
+
                         return false;
                     }
                 }
@@ -1463,6 +1480,7 @@ class helper
         }
 
         // Error
+
         return false;
     }
 
@@ -1477,13 +1495,13 @@ class helper
         // User functions
         if (!function_exists('user_add'))
         {
-            require ($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
+            require $this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext;
         }
 
         // String functions
         if (!function_exists('gen_rand_string'))
         {
-            require ($this->phpbb_root_path . 'includes/functions.' . $this->php_ext);
+            require $this->phpbb_root_path . 'includes/functions.' . $this->php_ext;
         }
 
         // Detect the default language of the forum.
@@ -1553,9 +1571,9 @@ class helper
          * Inspired by the core event: core.user_add_modify_data (which does not get our profile data)
          *
          * @event oneall.sociallogin.user_add_modify_data
-         * @var array	user_row		Array of user details submited to user_add
-         * @var array	cp_data			Array of Custom profile fields submited to user_add
-         * @var array	social_profile	Array of social network profile, as read only
+         * @var array    user_row        Array of user details submited to user_add
+         * @var array    cp_data            Array of Custom profile fields submited to user_add
+         * @var array    social_profile    Array of social network profile, as read only
          * @since 3.1
          */
 
@@ -1603,7 +1621,7 @@ class helper
                 if ($this->config['email_enable'] && !$user_random_email)
                 {
                     // Do we have to include messenger?
-                    require ($this->phpbb_root_path . "includes/functions_messenger." . $this->php_ext);
+                    require_once $this->phpbb_root_path . "includes/functions_messenger." . $this->php_ext;
 
                     // Activation Type.
                     if ($this->config['require_activation'] == USER_ACTIVATION_SELF)
@@ -1612,15 +1630,15 @@ class helper
                         $email_template = 'user_welcome_inactive';
                     }
                     else
-                        if ($this->config['require_activation'] == USER_ACTIVATION_ADMIN)
-                        {
-                            $error_message = $this->user->lang['OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_ADMIN'];
-                            $email_template = 'admin_welcome_inactive';
-                        }
-                        else
-                        {
-                            $email_template = 'user_welcome';
-                        }
+                    if ($this->config['require_activation'] == USER_ACTIVATION_ADMIN)
+                    {
+                        $error_message = $this->user->lang['OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_ADMIN'];
+                        $email_template = 'admin_welcome_inactive';
+                    }
+                    else
+                    {
+                        $email_template = 'user_welcome';
+                    }
 
                     // Url for activation.
                     $server_url = generate_board_url();
@@ -1675,6 +1693,7 @@ class helper
                     }
                 }
             }
+
             return array(
                 $error_message,
                 $user_id);
@@ -1787,13 +1806,13 @@ class helper
         $result = $this->db->sql_fetchrow($query);
         $this->db->sql_freeresult($query);
 
-        if (is_array ($result) && ! empty ($result['user_data']))
+        if (is_array($result) && !empty($result['user_data']))
         {
             // JSON Encoded.
             $data = $result['user_data'];
             if ($decode)
             {
-                $data = json_decode ($data, true);
+                $data = json_decode($data, true);
             }
         }
 
@@ -1807,7 +1826,7 @@ class helper
     {
         $sql = "DELETE FROM " . $this->table_prefix . "oasl_session
         		WHERE session_id = '" . $this->db->sql_escape($session_id) . "'
-        		OR date_creation < ". (time() - $max_age);
+        		OR date_creation < " . (time() - $max_age);
         $this->db->sql_query($sql);
     }
 
@@ -1819,16 +1838,16 @@ class helper
         // User functions
         if (!function_exists('gen_rand_string'))
         {
-            require ($this->phpbb_root_path . 'includes/functions.' . $this->php_ext);
+            require $this->phpbb_root_path . 'includes/functions.' . $this->php_ext;
         }
 
         do
         {
             $email = gen_rand_string(10) . "@example.com";
-        }
-        while ($this->get_user_id_by_email($email) !== false);
+        } while ($this->get_user_id_by_email($email) !== false);
 
         // Done
+
         return $email;
     }
 
@@ -1914,7 +1933,7 @@ class helper
             }
             else
             {
-                $content = trim (strval ($options['data']));
+                $content = trim(strval($options['data']));
             }
 
             // Setup POST Data
@@ -1945,7 +1964,7 @@ class helper
 
                 // Loop through headers.
                 $headers = $result->get_headers();
-                while (!$header_found && (list (, $header) = each($headers)))
+                while (!$header_found && (list(, $header) = each($headers)))
                 {
                     // Try to parse a redirection header.
                     if (preg_match("/(Location:|URI:)[^(\n)]*/", $header, $matches))
@@ -1972,6 +1991,7 @@ class helper
         }
 
         // Done
+
         return $result;
     }
 
@@ -1987,6 +2007,7 @@ class helper
         if (($uri = parse_url($url)) == false)
         {
             $result->set_status_error('invalid_uri');
+
             return $result;
         }
 
@@ -2007,6 +2028,7 @@ class helper
 
             default:
                 $result->set_status_error('invalid_schema');
+
                 return $result;
                 break;
         }
@@ -2015,6 +2037,7 @@ class helper
         if (!$fp)
         {
             $result->set_status_error($errstr);
+
             return $result;
         }
 
@@ -2029,9 +2052,9 @@ class helper
         $request = array();
 
         // Custom Request
-        if ( !empty($options['method']))
+        if (!empty($options['method']))
         {
-            $request[] = strtoupper(trim ($options['method'])) . " " . $path . " HTTP/1.1";
+            $request[] = strtoupper(trim($options['method'])) . " " . $path . " HTTP/1.1";
         }
         // Default GET Request
         else
@@ -2064,21 +2087,20 @@ class helper
             }
             else
             {
-                $content = trim (strval ($options['data']));
+                $content = trim(strval($options['data']));
             }
 
             // Setup POST Data
-            $request [] = "Content-Type: application/json";
-            $request [] = "Content-Length: " . strlen($content);
-            $request [] = "Connection: Close";
+            $request[] = "Content-Type: application/json";
+            $request[] = "Content-Length: " . strlen($content);
+            $request[] = "Connection: Close";
         }
 
-
         // Send Headers
-        fwrite ($fp, (implode ("\r\n", $request))."\r\n\r\n");
+        fwrite($fp, (implode("\r\n", $request)) . "\r\n\r\n");
 
         // Send Content
-        if ( ! empty ($content))
+        if (!empty($content))
         {
             fwrite($fp, $content);
         }
@@ -2094,11 +2116,11 @@ class helper
         fclose($fp);
 
         // Parse response
-        list ($response_header, $response_body) = explode("\r\n\r\n", $response, 2);
+        list($response_header, $response_body) = explode("\r\n\r\n", $response, 2);
 
         // Parse header
         $response_headers = preg_split("/\r\n|\n|\r/", $response_header);
-        list ($header_protocol, $header_code, $header_status_message) = explode(' ', trim(array_shift($response_headers)), 3);
+        list($header_protocol, $header_code, $header_status_message) = explode(' ', trim(array_shift($response_headers)), 3);
 
         // Save result
         $result->set_result(array(
@@ -2115,7 +2137,7 @@ class helper
 
             // Loop through headers.
             $headers = $result->get_headers();
-            while (!$header_found && (list (, $header) = each($headers)))
+            while (!$header_found && (list(, $header) = each($headers)))
             {
                 // Check for location header
                 if (preg_match("/(Location:|URI:)[^(\n)]*/", $header, $matches))
@@ -2125,10 +2147,10 @@ class helper
                     $url_parsed = parse_url($url_tmp);
                     if (!empty($url_parsed))
                     {
-                    	// Header found!
-                    	$header_found = true;
+                        // Header found!
+                        $header_found = true;
 
-                    	// Follow redirection url.
+                        // Follow redirection url.
                         $result = $this->fsockopen_request($url_tmp, $options, $timeout, $num_redirects + 1);
                     }
                 }
@@ -2136,6 +2158,7 @@ class helper
         }
 
         // Done
+
         return $result;
     }
 }
