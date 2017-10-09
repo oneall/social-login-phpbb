@@ -27,28 +27,36 @@ https://www.phpbb.com/customise/db/mod/oa_social_login/
 * Blogger
 * Draugiem
 * Dribbble
+* Discord
 * Disqus
 * Facebook
 * Foursquare
 * Github.com
 * Google
 * Instagram
+* Line
 * LinkedIn'
 * LiveJournal
 * Mail.ru
+* Meetup
 * Odnoklassniki
 * OpenID
 * PayPal
+* Pinterest
+* PixelPin
 * Reddit
 * Skyrock.com		
+* SoundCloud
 * StackExchange
 * Steam
 * Twitch.tv
 * Twitter
 * Vimeo
 * VKontakte
+* Weibo
 * Windows Live
 * WordPress.com
+* Xing
 * Yahoo
 * YouTube
 

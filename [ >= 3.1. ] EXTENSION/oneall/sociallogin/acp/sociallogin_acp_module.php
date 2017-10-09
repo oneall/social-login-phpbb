@@ -1,8 +1,8 @@
 <?php
 /**
- * @package   	OneAll Social Login
- * @copyright 	Copyright 2011-2017 http://www.oneall.com
- * @license   	GPL-2.0
+ * @package       OneAll Social Login
+ * @copyright     Copyright 2011-2017 http://www.oneall.com
+ * @license       GPL-2.0
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,7 +26,6 @@ namespace oneall\sociallogin\acp;
 
 class sociallogin_acp_module
 {
-
     /**
      * Main Function
      */
@@ -281,6 +280,7 @@ class sociallogin_acp_module
             'OA_SOCIAL_LOGIN_OTHER_PAGE_CAPTION' => $oa_social_login_other_page_caption));
 
         // Done
+
         return true;
     }
 
@@ -413,7 +413,7 @@ class sociallogin_acp_module
                     $api_resource_url = ($api_connection_use_https ? 'https' : 'http') . '://' . $api_domain . '/site/allowed-domains.json';
 
                     // Domain
-                    $phpbb_domain = ($config['server_name'] ?  : $request->server('SERVER_NAME', 'phpbb.generated'));
+                    $phpbb_domain = ($config['server_name'] ?: $request->server('SERVER_NAME', 'phpbb.generated'));
 
                     // API Credentialls.
                     $api_options = array();
@@ -478,6 +478,7 @@ class sociallogin_acp_module
             $disabled_functions = explode(',', $disabled_functions);
             $disabled_functions = array_map('trim', $disabled_functions);
         }
+
         return $disabled_functions;
     }
 
@@ -496,6 +497,7 @@ class sociallogin_acp_module
                 return true;
             }
         }
+
         return false;
     }
 
@@ -514,6 +516,7 @@ class sociallogin_acp_module
                 return true;
             }
         }
+
         return false;
     }
 
@@ -522,51 +525,53 @@ class sociallogin_acp_module
      */
     public function get_providers()
     {
-    	global $user;
+        global $user;
 
-    	// Add the language file.
-    	$user->add_lang_ext('oneall/sociallogin', 'providers');
+        // Add the language file.
+        $user->add_lang_ext('oneall/sociallogin', 'providers');
 
-    	// Providers
-    	$providers = array (
-    		'amazon' => $user->lang['OA_SOCIAL_LOGIN_P_AMAZON'],
-    		'battlenet' => $user->lang['OA_SOCIAL_LOGIN_P_BATTLENET'],
-    		'blogger' => $user->lang['OA_SOCIAL_LOGIN_P_BLOGGER'],
-    		'storage' => $user->lang['OA_SOCIAL_LOGIN_P_STORAGE'],
-    		'disqus' => $user->lang['OA_SOCIAL_LOGIN_P_DISQUS'],
-    		'draugiem' => $user->lang['OA_SOCIAL_LOGIN_P_DRAUGIEM'],
-    		'dribbble' => $user->lang['OA_SOCIAL_LOGIN_P_DRIBBBLE'],
-    		'facebook' => $user->lang['OA_SOCIAL_LOGIN_P_FACEBOOK'],
-    		'foursquare' => $user->lang['OA_SOCIAL_LOGIN_P_FOURSQUARE'],
-    		'github' => $user->lang['OA_SOCIAL_LOGIN_P_GITHUBCOM'],
-    		'google' => $user->lang['OA_SOCIAL_LOGIN_P_GOOGLE'],
-    		'instagram' => $user->lang['OA_SOCIAL_LOGIN_P_INSTAGRAM'],
-    		'line' => $user->lang['OA_SOCIAL_LOGIN_P_LINE'],
-    		'linkedin' => $user->lang['OA_SOCIAL_LOGIN_P_LINKEDIN'],
-    		'livejournal' => $user->lang['OA_SOCIAL_LOGIN_P_LIVEJOURNAL'],
-    		'mailru' => $user->lang['OA_SOCIAL_LOGIN_P_MAILRU'],
-    		'meetup' => $user->lang['OA_SOCIAL_LOGIN_P_MEETUP'],
-    		'odnoklassniki' =>  $user->lang['OA_SOCIAL_LOGIN_P_ODNOKLASSNIKI'],
-    		'openid' =>  $user->lang['OA_SOCIAL_LOGIN_P_OPENID'],
-    		'paypal' =>  $user->lang['OA_SOCIAL_LOGIN_P_PAYPAL'],
-    		'pinterest' =>  $user->lang['OA_SOCIAL_LOGIN_P_PINTEREST'],
-    		'pixelpin' => $user->lang['OA_SOCIAL_LOGIN_P_PIXELPIN'],
-    		'reddit' =>  $user->lang['OA_SOCIAL_LOGIN_P_REDDIT'],
-    		'skyrock' =>  $user->lang['OA_SOCIAL_LOGIN_P_SKYROCKCOM'],
-    		'soundcloud' =>  $user->lang['OA_SOCIAL_LOGIN_P_SOUNDCLOUD'],
-    		'stackexchange' => $user->lang['OA_SOCIAL_LOGIN_P_STACKEXCHANGE'],
-    		'steam' =>  $user->lang['OA_SOCIAL_LOGIN_P_STEAM'],
-    		'twitch' =>  $user->lang['OA_SOCIAL_LOGIN_P_TWITCHTV'],
-    		'twitter' =>  $user->lang['OA_SOCIAL_LOGIN_P_TWITTER'],
-    		'vimeo' =>  $user->lang['OA_SOCIAL_LOGIN_P_VIMEO'],
-    		'vkontakte' =>  $user->lang['OA_SOCIAL_LOGIN_P_VKONTAKTE'],
-    		'windowslive' =>  $user->lang['OA_SOCIAL_LOGIN_P_WINDOWSLIVE'],
-    		'wordpress' =>  $user->lang['OA_SOCIAL_LOGIN_P_WORDPRESSCOM'],
-    		'xing' =>  $user->lang['OA_SOCIAL_LOGIN_P_XING'],
-    		'yahoo' =>  $user->lang['OA_SOCIAL_LOGIN_P_YAHOO'],
-    		'youtube' =>  $user->lang['OA_SOCIAL_LOGIN_P_YOUTUBE']
-    	);
+        // Providers
+        $providers = array(
+            'amazon' => $user->lang['OA_SOCIAL_LOGIN_P_AMAZON'],
+            'battlenet' => $user->lang['OA_SOCIAL_LOGIN_P_BATTLENET'],
+            'blogger' => $user->lang['OA_SOCIAL_LOGIN_P_BLOGGER'],
+            'storage' => $user->lang['OA_SOCIAL_LOGIN_P_STORAGE'],
+            'discord' => $user->lang['OA_SOCIAL_LOGIN_P_DISCORD'],
+            'disqus' => $user->lang['OA_SOCIAL_LOGIN_P_DISQUS'],
+            'draugiem' => $user->lang['OA_SOCIAL_LOGIN_P_DRAUGIEM'],
+            'dribbble' => $user->lang['OA_SOCIAL_LOGIN_P_DRIBBBLE'],
+            'facebook' => $user->lang['OA_SOCIAL_LOGIN_P_FACEBOOK'],
+            'foursquare' => $user->lang['OA_SOCIAL_LOGIN_P_FOURSQUARE'],
+            'github' => $user->lang['OA_SOCIAL_LOGIN_P_GITHUBCOM'],
+            'google' => $user->lang['OA_SOCIAL_LOGIN_P_GOOGLE'],
+            'instagram' => $user->lang['OA_SOCIAL_LOGIN_P_INSTAGRAM'],
+            'line' => $user->lang['OA_SOCIAL_LOGIN_P_LINE'],
+            'linkedin' => $user->lang['OA_SOCIAL_LOGIN_P_LINKEDIN'],
+            'livejournal' => $user->lang['OA_SOCIAL_LOGIN_P_LIVEJOURNAL'],
+            'mailru' => $user->lang['OA_SOCIAL_LOGIN_P_MAILRU'],
+            'meetup' => $user->lang['OA_SOCIAL_LOGIN_P_MEETUP'],
+            'odnoklassniki' => $user->lang['OA_SOCIAL_LOGIN_P_ODNOKLASSNIKI'],
+            'openid' => $user->lang['OA_SOCIAL_LOGIN_P_OPENID'],
+            'paypal' => $user->lang['OA_SOCIAL_LOGIN_P_PAYPAL'],
+            'pinterest' => $user->lang['OA_SOCIAL_LOGIN_P_PINTEREST'],
+            'pixelpin' => $user->lang['OA_SOCIAL_LOGIN_P_PIXELPIN'],
+            'reddit' => $user->lang['OA_SOCIAL_LOGIN_P_REDDIT'],
+            'skyrock' => $user->lang['OA_SOCIAL_LOGIN_P_SKYROCKCOM'],
+            'soundcloud' => $user->lang['OA_SOCIAL_LOGIN_P_SOUNDCLOUD'],
+            'stackexchange' => $user->lang['OA_SOCIAL_LOGIN_P_STACKEXCHANGE'],
+            'steam' => $user->lang['OA_SOCIAL_LOGIN_P_STEAM'],
+            'twitch' => $user->lang['OA_SOCIAL_LOGIN_P_TWITCHTV'],
+            'twitter' => $user->lang['OA_SOCIAL_LOGIN_P_TWITTER'],
+            'vimeo' => $user->lang['OA_SOCIAL_LOGIN_P_VIMEO'],
+            'vkontakte' => $user->lang['OA_SOCIAL_LOGIN_P_VKONTAKTE'],
+            'weibo' => $user->lang['OA_SOCIAL_LOGIN_P_WEIBO'],
+            'windowslive' => $user->lang['OA_SOCIAL_LOGIN_P_WINDOWSLIVE'],
+            'wordpress' => $user->lang['OA_SOCIAL_LOGIN_P_WORDPRESSCOM'],
+            'xing' => $user->lang['OA_SOCIAL_LOGIN_P_XING'],
+            'yahoo' => $user->lang['OA_SOCIAL_LOGIN_P_YAHOO'],
+            'youtube' => $user->lang['OA_SOCIAL_LOGIN_P_YOUTUBE']
+        );
 
-    	return $providers;
+        return $providers;
     }
 }
