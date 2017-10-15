@@ -39,8 +39,8 @@ if (empty ($lang) || !is_array ($lang))
 
 // Social Login Frontend.
 $lang = array_merge ($lang, array(
-	'OA_SOCIAL_LOGIN_LINK_UCP' => 'Lier son compte avec les réseaux sociaux',
-	'OA_SOCIAL_LOGIN_LINK' => 'Lier son compte avec réseaux sociaux',
+	'OA_SOCIAL_LOGIN_LINK_UCP' => 'Réseaux sociaux liés',
+	'OA_SOCIAL_LOGIN_LINK' => 'Lier son compte avec les réseaux sociaux',
 	'OA_SOCIAL_LOGIN_LINK_NETWORKS' => 'Réseaux sociaux ',
 	'OA_SOCIAL_LOGIN_LINK_DESC1' => 'Sur cette page il est possible de lier ses comptes des réseaux sociaux avec son compte existant sur le forum.',
 	'OA_SOCIAL_LOGIN_LINK_DESC2' => 'Après avoir lié un compte de réseau social il est possible d’utiliser ce compte pour se connecter au forum.',
