@@ -560,6 +560,7 @@ class sociallogin_acp_module
             'soundcloud' => $user->lang['OA_SOCIAL_LOGIN_P_SOUNDCLOUD'],
             'stackexchange' => $user->lang['OA_SOCIAL_LOGIN_P_STACKEXCHANGE'],
             'steam' => $user->lang['OA_SOCIAL_LOGIN_P_STEAM'],
+            'tumblr' => $user->lang['OA_SOCIAL_LOGIN_P_TUMBLR'],
             'twitch' => $user->lang['OA_SOCIAL_LOGIN_P_TWITCHTV'],
             'twitter' => $user->lang['OA_SOCIAL_LOGIN_P_TWITTER'],
             'vimeo' => $user->lang['OA_SOCIAL_LOGIN_P_VIMEO'],

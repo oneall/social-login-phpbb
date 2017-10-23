@@ -67,6 +67,7 @@ $lang = array_merge($lang, array(
     'OA_SOCIAL_LOGIN_P_SOUNDCLOUD' => 'SoundCloud',
     'OA_SOCIAL_LOGIN_P_STACKEXCHANGE' => 'StackExchange',
     'OA_SOCIAL_LOGIN_P_STEAM' => 'Steam',
+    'OA_SOCIAL_LOGIN_P_TUMBLR' => 'Tumblr',
     'OA_SOCIAL_LOGIN_P_TWITCHTV' => 'Twitch.tv',
     'OA_SOCIAL_LOGIN_P_TWITTER' => 'Twitter',
     'OA_SOCIAL_LOGIN_P_VIMEO' => 'Vimeo',

@@ -3,7 +3,7 @@
 * **Social Login for phpBB 3.1+**
 
 
-# Social Login 4.3.41 for phpBB 3.1+
+# Social Login 4.4.0 for phpBB 3.1+
 
 Social Login for phpBB allows your users to login and register with 30+ social networks. 
 It increases your phpBB user registration rate by simplifying the registration process for 
@@ -54,6 +54,7 @@ https://www.phpbb.com/customise/db/mod/oa_social_login/
 * SoundCloud
 * StackExchange
 * Steam
+* Tumblr
 * Twitch.tv
 * Twitter
 * Vimeo
