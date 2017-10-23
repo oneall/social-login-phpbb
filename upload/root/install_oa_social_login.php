@@ -1,8 +1,8 @@
 <?php
 /**
- * @package   	OneAll Social Login Mod
- * @copyright 	Copyright 2014 http://www.oneall.com - All rights reserved.
- * @license   	GNU/GPL 2 or later
+ * @package       OneAll Social Login Mod
+ * @copyright     Copyright 2014 http://www.oneall.com - All rights reserved.
+ * @license       GNU/GPL 2 or later
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,14 +29,14 @@ define('IN_PHPBB', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-include($phpbb_root_path . 'common.' . $phpEx);
+include $phpbb_root_path . 'common.' . $phpEx;
 $user->session_begin();
 $auth->acl($user->data);
 $user->setup('info_acp_oa_social_login');
 
 if (!file_exists($phpbb_root_path . 'umil/umil_auto.' . $phpEx))
 {
-	trigger_error('Please download the latest UMIL (Unified MOD Install Library) from: <a href="http://www.phpbb.com/mods/umil/">phpBB.com/mods/umil</a>', E_USER_ERROR);
+    trigger_error('Please download the latest UMIL (Unified MOD Install Library) from: <a href="http://www.phpbb.com/mods/umil/">phpBB.com/mods/umil</a>', E_USER_ERROR);
 }
 
 // The name of the mod to be displayed during installation.
@@ -56,203 +56,206 @@ $language_file = 'info_acp_oa_social_login';
  * The version numbering must otherwise be compatible with the version_compare function - http://php.net/manual/en/function.version-compare.php
  */
 $versions = array(
-	'1.0.0' => array(
-		'module_add' => array(
-			array(
-				'acp',
-				'ACP_CLIENT_COMMUNICATION',
-				array(
-					'module_basename' => 'oa_social_login',
-					'module_langname' => 'ACP_OA_SOCIAL_LOGIN',
-					'module_mode' => 'index',
-					'module_auth' => 'acl_a_server',
-				),
-			),
-		),
-		'table_add' => array(
-			array(
-				$table_prefix . 'oasl_user',
-				array(
-					'COLUMNS' => array(
-						'oasl_user_id' => array(
-							'UINT:10',
-							null,
-							'auto_increment'
-						),
-						'user_id' => array(
-							'UINT:10',
-							0
-						),
-						'user_token' => array(
-							'VCHAR',
-							''
-						),
-						'date_added' => array(
-							'UINT:10',
-							'0'
-						),
-					),
-					'PRIMARY_KEY' => array(
-						'oasl_user_id'
-					),
-					'KEYS' => array(
-						'user_id' => array(
-							'INDEX',
-							array(
-								'user_id'
-							)
-						),
-						'user_token' => array(
-							'INDEX',
-							array(
-								'user_token'
-							)
-						),
-					),
-				),
-			),
-			array(
-				$table_prefix . 'oasl_identity',
-				array(
-					'COLUMNS' => array(
-						'oasl_identity_id' => array(
-							'UINT:10',
-							null,
-							'auto_increment'
-						),
-						'oasl_user_id' => array(
-							'UINT:10',
-							0
-						),
-						'identity_token' => array(
-							'VCHAR',
-							''
-						),
-						'identity_provider' => array(
-							'VCHAR',
-							''
-						),
-						'num_logins' => array(
-							'UINT:10',
-							'0'
-						),
-						'date_added' => array(
-							'UINT:10',
-							'0'
-						),
-						'date_updated' => array(
-							'UINT:10',
-							'0'
-						),
-					),
-					'PRIMARY_KEY' => array(
-						'oasl_identity_id'
-					),
-					'KEYS' => array(
-						'oasl_user_id' => array(
-							'INDEX',
-							array(
-								'oasl_user_id'
-							)
-						),
-						'identity_token' => array(
-							'INDEX',
-							array(
-								'identity_token'
-							)
-						),
-					),
-				),
-			),
-			array(
-				$table_prefix . 'oasl_login_token',
-				array(
-					'COLUMNS' => array(
-						'oasl_login_token_id' => array(
-							'UINT:10',
-							null,
-							'auto_increment'
-						),
-						'login_token' => array(
-							'VCHAR',
-							''
-						),
-						'user_id' => array(
-							'UINT:10',
-							'0'
-						),
-						'date_creation' => array(
-							'UINT:10',
-							'0'
-						),
-					),
-					'PRIMARY_KEY' => array(
-						'oasl_login_token_id'
-					),
-					'KEYS' => array(
-						'user_id' => array(
-							'INDEX',
-							array(
-								'user_id'
-							)
-						),
-						'login_token' => array(
-							'INDEX',
-							array(
-								'login_token'
-							)
-						),
-					),
-				),
-			),
-		),
-	),
-	'1.5.0' => array(
-	// No database changes.
-	),
-	'2.5.0' => array(
-	// No database changes.
-	),
-	'2.6.0' => array(
-	// No database changes.
-	),
-	'2.7.0' => array(
-	// No database changes.
-	),
-	'2.8.0' => array(
-	// No database changes.
-	),
-	'2.9.0' => array(
-	// No database changes.
-	),
-	'3.0.0' => array(
-	// No database changes.
-	),
-	'3.1.0' => array(
-	// No database changes.
-	),
-	'3.2.0' => array(
-	// No database changes.
-	),
-	'3.3.0' => array(
-	// No database changes.
-	),
-	'3.4.0' => array(
-	// No database changes.
-	),
-	'3.5.0' => array(
-		// No database changes.
-	),
-	'3.6.0' => array(
-		// No database changes.
-	),
-	'3.6.1' => array(
-		// No database changes.
-	),
-	'3.6.2' => array(
-		// No database changes.
-	),
+    '1.0.0' => array(
+        'module_add' => array(
+            array(
+                'acp',
+                'ACP_CLIENT_COMMUNICATION',
+                array(
+                    'module_basename' => 'oa_social_login',
+                    'module_langname' => 'ACP_OA_SOCIAL_LOGIN',
+                    'module_mode' => 'index',
+                    'module_auth' => 'acl_a_server'
+                )
+            )
+        ),
+        'table_add' => array(
+            array(
+                $table_prefix . 'oasl_user',
+                array(
+                    'COLUMNS' => array(
+                        'oasl_user_id' => array(
+                            'UINT:10',
+                            null,
+                            'auto_increment'
+                        ),
+                        'user_id' => array(
+                            'UINT:10',
+                            0
+                        ),
+                        'user_token' => array(
+                            'VCHAR',
+                            ''
+                        ),
+                        'date_added' => array(
+                            'UINT:10',
+                            '0'
+                        )
+                    ),
+                    'PRIMARY_KEY' => array(
+                        'oasl_user_id'
+                    ),
+                    'KEYS' => array(
+                        'user_id' => array(
+                            'INDEX',
+                            array(
+                                'user_id'
+                            )
+                        ),
+                        'user_token' => array(
+                            'INDEX',
+                            array(
+                                'user_token'
+                            )
+                        )
+                    )
+                )
+            ),
+            array(
+                $table_prefix . 'oasl_identity',
+                array(
+                    'COLUMNS' => array(
+                        'oasl_identity_id' => array(
+                            'UINT:10',
+                            null,
+                            'auto_increment'
+                        ),
+                        'oasl_user_id' => array(
+                            'UINT:10',
+                            0
+                        ),
+                        'identity_token' => array(
+                            'VCHAR',
+                            ''
+                        ),
+                        'identity_provider' => array(
+                            'VCHAR',
+                            ''
+                        ),
+                        'num_logins' => array(
+                            'UINT:10',
+                            '0'
+                        ),
+                        'date_added' => array(
+                            'UINT:10',
+                            '0'
+                        ),
+                        'date_updated' => array(
+                            'UINT:10',
+                            '0'
+                        )
+                    ),
+                    'PRIMARY_KEY' => array(
+                        'oasl_identity_id'
+                    ),
+                    'KEYS' => array(
+                        'oasl_user_id' => array(
+                            'INDEX',
+                            array(
+                                'oasl_user_id'
+                            )
+                        ),
+                        'identity_token' => array(
+                            'INDEX',
+                            array(
+                                'identity_token'
+                            )
+                        )
+                    )
+                )
+            ),
+            array(
+                $table_prefix . 'oasl_login_token',
+                array(
+                    'COLUMNS' => array(
+                        'oasl_login_token_id' => array(
+                            'UINT:10',
+                            null,
+                            'auto_increment'
+                        ),
+                        'login_token' => array(
+                            'VCHAR',
+                            ''
+                        ),
+                        'user_id' => array(
+                            'UINT:10',
+                            '0'
+                        ),
+                        'date_creation' => array(
+                            'UINT:10',
+                            '0'
+                        )
+                    ),
+                    'PRIMARY_KEY' => array(
+                        'oasl_login_token_id'
+                    ),
+                    'KEYS' => array(
+                        'user_id' => array(
+                            'INDEX',
+                            array(
+                                'user_id'
+                            )
+                        ),
+                        'login_token' => array(
+                            'INDEX',
+                            array(
+                                'login_token'
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    ),
+    '1.5.0' => array(
+        // No database changes.
+    ),
+    '2.5.0' => array(
+        // No database changes.
+    ),
+    '2.6.0' => array(
+        // No database changes.
+    ),
+    '2.7.0' => array(
+        // No database changes.
+    ),
+    '2.8.0' => array(
+        // No database changes.
+    ),
+    '2.9.0' => array(
+        // No database changes.
+    ),
+    '3.0.0' => array(
+        // No database changes.
+    ),
+    '3.1.0' => array(
+        // No database changes.
+    ),
+    '3.2.0' => array(
+        // No database changes.
+    ),
+    '3.3.0' => array(
+        // No database changes.
+    ),
+    '3.4.0' => array(
+        // No database changes.
+    ),
+    '3.5.0' => array(
+        // No database changes.
+    ),
+    '3.6.0' => array(
+        // No database changes.
+    ),
+    '3.6.1' => array(
+        // No database changes.
+    ),
+    '3.6.2' => array(
+        // No database changes.
+    ),
+    '3.7.0' => array(
+        // No database changes.
+    )
 );
 
 // Include the UMIL Auto file, it handles the rest
-include($phpbb_root_path . 'umil/umil_auto.' . $phpEx);
+include $phpbb_root_path . 'umil/umil_auto.' . $phpEx;
