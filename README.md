@@ -24,7 +24,7 @@ http://docs.oneall.com/plugins/guide/social-login-phpbb/3.1/
 
 ## Official phpBB Mod
 https://www.phpbb.com/customise/db/mod/oa_social_login/
-
+ 
 
 ## Supported Social Networks
 * Amazon
