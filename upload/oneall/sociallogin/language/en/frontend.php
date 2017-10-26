@@ -22,6 +22,11 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *
  */
+
+/**
+ * English translations by OneAll
+ * http://www.oneall.com
+ */
 if (!defined ('IN_PHPBB'))
 {
 	exit ();

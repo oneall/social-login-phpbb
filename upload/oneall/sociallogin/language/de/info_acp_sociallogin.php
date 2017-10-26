@@ -27,17 +27,16 @@
  * German translations by GeorgH93
  * http://pcgamingfreaks.at
  */
-if (!defined('IN_PHPBB'))
+if (!defined ('IN_PHPBB'))
 {
-	exit;
+	exit ();
 }
 
-if (empty($lang) || !is_array($lang))
+if (empty ($lang) || !is_array ($lang))
 {
 	$lang = array();
 }
 
-$lang = array_merge($lang, array(
-    'OA_SOCIAL_LOGIN_ACP_AUTH_SETTTING_INFO' => 'Erlaubt die Authentifizierung mit einem Benutzernamen und einem Passwort (Datenbank-Authentifizierung) sowie die Anmeldung über Accounts von sozialen Netzwerken. Die Authentifizierung über soziale Netzwerke kann unter EXTENSIONS \ ONEALL SOCIAL LOGIN eingerichtet werden.',
+$lang = array_merge ($lang, array(
+	'OA_SOCIAL_LOGIN_ACP_AUTH_SETTTING_INFO' => 'Erlaubt die Authentifizierung mit einem Benutzernamen und einem Passwort (Datenbank-Authentifizierung) sowie die Anmeldung über Accounts von sozialen Netzwerken. Die Authentifizierung über soziale Netzwerke kann unter EXTENSIONS \ ONEALL SOCIAL LOGIN eingerichtet werden.'
 ));
-

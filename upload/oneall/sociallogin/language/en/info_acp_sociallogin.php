@@ -22,6 +22,11 @@
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *
  */
+
+/**
+ * English translations by OneAll
+ * http://www.oneall.com
+ */
 if (!defined ('IN_PHPBB'))
 {
 	exit ();
@@ -35,4 +40,3 @@ if (empty ($lang) || !is_array ($lang))
 $lang = array_merge ($lang, array(
 	'OA_SOCIAL_LOGIN_ACP_AUTH_SETTTING_INFO' => 'Provides the authentication with a username/password (Db Authentication) as well as the login with a social network account. The social network authentication can be setup in EXTENSIONS \ ONEALL SOCIAL LOGIN.'
 ));
-

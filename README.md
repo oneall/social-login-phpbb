@@ -5,7 +5,7 @@
 
 # Social Login 4.4.0 for phpBB 3.1+
 
-Social Login for phpBB allows your users to login and register with 30+ social networks. 
+Social Login for phpBB allows your users to login and register with 35+ social networks. 
 It increases your phpBB user registration rate by simplifying the registration process for 
 new users and provides permission-based social data retrieved from the social network profiles.
 
@@ -17,6 +17,9 @@ Galixte (http://www.galixte.com)
 Chris Vavruska (https://github.com/vavruska)
 * OneAll Authentication Provider
 	
+Raúl Arroyo (http://www.phpbb-es.com/)
+* Spanish translations
+
 Many Thanks!
 
 ## Installation guide
