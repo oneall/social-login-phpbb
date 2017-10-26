@@ -9,3 +9,7 @@ All notable changes to this project will be documented in this file. This projec
 ## [4.4.0] - 2017-10-23
 ### Added
 - Tumblr added as new provider
+
+## [4.5.0] - 2017-10-26
+### Added
+-  Spanisch translations ThE KuKa (Raúl Arroyo)
