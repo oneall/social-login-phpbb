@@ -40,7 +40,7 @@ https://www.phpbb.com/customise/db/mod/oa_social_login/
 * Google
 * Instagram
 * Line
-* LinkedIn'
+* LinkedIn
 * LiveJournal
 * Mail.ru
 * Meetup
