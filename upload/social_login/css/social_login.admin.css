@@ -7,13 +7,14 @@ div.messages.social_login {
 }
 
 .social_login_provider {
-    background-image: url("../img/social_login.providers.png");
+    background-image: url("../img/sprite_35_35.png");
     display: inline-block;
     height: 35px;
     text-indent: -9999px;
     width: 35px;
 }
 
+/* Buttons */
 .social_login_provider.social_login_provider_vimeo {
     background-position: -2px -1px;
 }
@@ -60,10 +61,6 @@ div.messages.social_login {
 
 .social_login_provider.social_login_provider_draugiem {
     background-position: -446px -1px;
-}
-
-.social_login_provider.social_login_provider_xing {
-    background-position: -483px -1px;
 }
 
 .social_login_provider.social_login_provider_twitter {
@@ -158,10 +155,26 @@ div.messages.social_login {
     background-position: -1408px -1px;
 }
 
+.social_login_provider.social_login_provider_xing {
+    background-position: -372px -1px;
+}
+
 .social_login_provider.social_login_provider_line {
     background-position: -1445px -1px;
 }
 
 .social_login_provider.social_login_provider_soundcloud {
     background-position: -1482px -1px;
+}
+
+.social_login_provider.social_login_provider_discord {
+    background-position: -1519px -1px;
+}
+
+.social_login_provider.social_login_provider_weibo {
+    background-position: -1556px -1px;
+}
+
+.social_login_provider.social_login_provider_tumblr {
+    background-position: -1593px -1px;
 }
