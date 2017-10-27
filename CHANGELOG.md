@@ -13,3 +13,7 @@ All notable changes to this project will be documented in this file. This projec
 ## [4.5.0] - 2017-10-26
 ### Added
 -  Spanisch translations ThE KuKa (Raúl Arroyo)
+
+## [4.5.1] - 2017-10-27
+### Added
+-  Fix french translations from Galixte (Raphaël M.)

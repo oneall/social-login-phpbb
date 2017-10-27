@@ -3,7 +3,7 @@
 * **Social Login for phpBB 3.1+**
 
 
-# Social Login 4.5.0 for phpBB 3.1+
+# Social Login 4.5.1 for phpBB 3.1+
 
 Social Login for phpBB allows your users to login and register with 35+ social networks. 
 It increases your phpBB user registration rate by simplifying the registration process for 
