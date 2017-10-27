@@ -2,7 +2,7 @@
 * [Social Login for Drupal 7.0+](https://github.com/oneall/social-login-drupal/tree/drupal/7.0+)
 * **Social Login for Drupal 8.0+**
 
-# Social Login 2.6.0 for Drupal 8.0+
+# Social Login 2.7.0 for Drupal 8.0+
 Social Login for Drupal allows your users to login and register with 35+ social networks. 
 It increases your Drupal user registration rate by simplifying the registration process for 
 new users and provides permission-based social data retrieved from the social network profiles.
@@ -20,6 +20,7 @@ https://www.drupal.org/project/social_login
 * Amazon
 * Battle.net
 * Blogger
+* Discord
 * Disqus
 * Draugiem
 * Dribbble
@@ -43,12 +44,15 @@ https://www.drupal.org/project/social_login
 * SoundCloud
 * StackExchange
 * Steam
+* Tumblr
 * Twitch.tv
 * Twitter
 * Vimeo
 * VKontakte
+* Weibo
 * Windows Live
 * WordPress.com
+* Xing
 * Yahoo
 * YouTube
 
