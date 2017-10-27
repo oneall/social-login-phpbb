@@ -1194,8 +1194,8 @@ function social_login_core_get_available_providers() {
     'draugiem' => array(
       'name' => 'Draugiem',
     ),
-    'dribble' => array(
-      'name' => 'Dribble',
+    'dribbble' => array(
+      'name' => 'Dribbble',
     ),
     'facebook' => array(
       'name' => 'Facebook' 
@@ -1247,9 +1247,6 @@ function social_login_core_get_available_providers() {
     ),
     'steam' => array(
       'name' => 'Steam' 
-    ),
-    'storage' => array(
-      'name' => 'Storage',
     ),
     'twitch' => array(
       'name' => 'Twitch.tv' 
