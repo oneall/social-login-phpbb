@@ -30,7 +30,7 @@ namespace oneall\sociallogin\core;
 class helper
 {
     // Version
-    const USER_AGENT = 'SocialLogin/4.5.1 phpBB/3.1.x (+http://www.oneall.com/)';
+    const USER_AGENT = 'SocialLogin/4.5.2 phpBB/3.1.x (+http://www.oneall.com/)';
 
     // @var \phpbb\config\config
     protected $config;
@@ -202,31 +202,55 @@ class helper
     }
 
     /**
+     * Remove a login token for a user_id
+     */
+    public function remove_login_token_for_user_id($user_id)
+    {
+    	// Remove old tokens.
+    	$sql = "DELETE FROM " . $this->table_prefix . "oasl_login_token WHERE user_id = " . (int) $user_id;
+    	$this->db->sql_query($sql);
+    }
+
+    /**
      * Create a login token for a user_id
      */
     public function create_login_token_for_user_id($user_id)
     {
-        // Remove old or existing login token.
-        $sql = "DELETE FROM " . $this->table_prefix . "oasl_login_token WHERE (user_id = " . (int) $user_id . " OR date_creation < " . (time() - 60 * 5) . ")";
+        // Remove old tokens.
+        $sql = "DELETE FROM " . $this->table_prefix . "oasl_login_token WHERE date_creation < " . (time() - 60 * 5);
         $this->db->sql_query($sql);
 
-        // Create a new and unique token.
-        do
+        // Read the value of an existing token.
+        $sql = "SELECT login_token FROM " . $this->table_prefix . "oasl_login_token WHERE user_id = " . (int) $user_id;
+        $query = $this->db->sql_query_limit($sql, 1);
+        $result = $this->db->sql_fetchrow($query);
+        $this->db->sql_freeresult($query);
+
+        // We have found a useable login_token.
+        if (is_array($result) && !empty($result['login_token']))
         {
-            $login_token = $this->get_uuid_v4();
-        } while ($this->get_user_id_for_login_token($login_token) !== false);
+        	$login_token = $result['login_token'];
+        }
+        // Create a new and unique token.
+        else
+        {
+	        do
+	        {
+	            $login_token = $this->get_uuid_v4();
+	        }
+	        while ($this->get_user_id_for_login_token($login_token) !== false);
 
-        // Add the new token.
-        $sql_arr = array(
-            'login_token' => $login_token,
-            'user_id' => $user_id,
-            'date_creation' => time());
+	        // Add the new token.
+	        $sql_arr = array(
+	            'login_token' => $login_token,
+	            'user_id' => $user_id,
+	            'date_creation' => time());
 
-        $sql = "INSERT INTO " . $this->table_prefix . "oasl_login_token " . $this->db->sql_build_array('INSERT', $sql_arr);
-        $this->db->sql_query($sql);
+	        $sql = "INSERT INTO " . $this->table_prefix . "oasl_login_token " . $this->db->sql_build_array('INSERT', $sql_arr);
+	        $this->db->sql_query($sql);
+        }
 
         // Done
-
         return $login_token;
     }
 
@@ -872,7 +896,6 @@ class helper
         }
 
         // No entry found.
-
         return false;
     }
 
@@ -1083,12 +1106,10 @@ class helper
             }
 
             // Done.
-
             return true;
         }
 
         // An error occured.
-
         return false;
     }
 
@@ -1319,10 +1340,13 @@ class helper
                                             }
                                         }
 
-                                        // Log the user in
+                                        // Remove the login token.
+                                        $this->remove_login_token_for_user_id ($user_id_login_token);
+
+                                        // Log the user in.
                                         $this->do_login($user_id_login_token);
 
-                                        // Redirect to the same page
+                                        // Redirect to the same page.
                                         $this->http_redirect($this->get_current_url(array('social_link_status' => $status)));
                                     }
                                 }
@@ -1991,7 +2015,6 @@ class helper
         }
 
         // Done
-
         return $result;
     }
 
@@ -2158,7 +2181,6 @@ class helper
         }
 
         // Done
-
         return $result;
     }
 }
