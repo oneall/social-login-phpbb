@@ -152,7 +152,7 @@ function social_login_admin_settings($form, &$form_state) {
       'below' => t('Show the Social Login icons below the existing login form (Default, recommended)'),
       'disable' => t('Do not show the Social Login icons in the side panel'),
     ),
-    '#default_value' => (empty($settings['side_panel_icons']) ? 'above' : $settings['side_panel_icons']),
+    '#default_value' => (empty($settings['side_panel_icons']) ? 'below' : $settings['side_panel_icons']),
   );
 
   $form['social_login_settings_side_panel']['side_panel_caption'] = array(
