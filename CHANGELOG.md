@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.7.2] - 2018-01-18
+### Fixed
+Block crash (class unfound) fixed
+
 ## [2.7.1] - 2017-12-13
 ### Fixed
 If destination parameter present in URL we direct to this page
