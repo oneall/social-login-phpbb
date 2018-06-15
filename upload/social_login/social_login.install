@@ -11,115 +11,115 @@
 function social_login_schema() {
 
   // Used to link social network profiles to now internal authmap entries.
-  $schema['oneall_social_login_identities'] = array(
+  $schema['oneall_social_login_identities'] = [
     'description' => 'Used to link social network profiles to authmap entries.',
-    'fields' => array(
-      'oasliid' => array(
+    'fields' => [
+      'oasliid' => [
         'description' => 'The primary key of this table.',
         'type' => 'serial',
         'unsigned' => TRUE,
         'not null' => TRUE,
-      ),
-      'aid' => array(
+      ],
+      'aid' => [
         'description' => 'Foreign key to link entries of this table to entries in the authmap table.',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
-      ),
-      'identity_token' => array(
+      ],
+      'identity_token' => [
         'description' => 'Unique identity_token for a social network profile, returned by the OneAll API.',
         'type' => 'varchar',
         'length' => 48,
         'not null' => TRUE,
-      ),
-      'provider_name' => array(
+      ],
+      'provider_name' => [
         'description' => 'Social network provider (Facebook, Twitter ...) of this identity.',
         'type' => 'varchar',
         'length' => '64',
         'not null' => TRUE,
-      ),
-    ),
-    'indexes' => array(
-      'identity_token' => array(
+      ],
+    ],
+    'indexes' => [
+      'identity_token' => [
         'identity_token',
-      ),
-      'aid' => array(
+      ],
+      'aid' => [
         'aid',
-      ),
-    ),
-    'foreign keys' => array(
-      'aid' => array(
+      ],
+    ],
+    'foreign keys' => [
+      'aid' => [
         'table' => 'oneall_social_authmap',
-        'columns' => array(
+        'columns' => [
           'aid' => 'aid',
-        ),
-      ),
-    ),
-    'primary key' => array(
+        ],
+      ],
+    ],
+    'primary key' => [
       'oasliid',
-    ),
-  );
+    ],
+  ];
 
   // New authmap entries (authmap removed in D8).
-  $schema['oneall_social_login_authmap'] = array(
+  $schema['oneall_social_login_authmap'] = [
     'description' => 'D7 equivalent authmap entries.',
-    'fields' => array(
-      'aid' => array(
+    'fields' => [
+      'aid' => [
         'description' => 'The primary key of this table.',
         'type' => 'serial',
         'unsigned' => TRUE,
         'not null' => TRUE,
-      ),
-      'uid' => array(
+      ],
+      'uid' => [
         'description' => 'User id.',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
-      ),
-      'user_token' => array(
+      ],
+      'user_token' => [
         'description' => 'Unique user_token for a social network user, returned by the OneAll API.',
         'type' => 'varchar',
         'length' => 48,
         'not null' => TRUE,
-      ),
-    ),
-    'primary key' => array(
+      ],
+    ],
+    'primary key' => [
       'aid',
-    ),
-  );
+    ],
+  ];
 
   // Used to store module settings.
-  $schema['oneall_social_login_settings'] = array(
+  $schema['oneall_social_login_settings'] = [
     'description' => 'Used to store module settings.',
-    'fields' => array(
-      'oaslsid' => array(
+    'fields' => [
+      'oaslsid' => [
         'description' => 'The primary key of this table.',
         'type' => 'serial',
         'unsigned' => TRUE,
         'not null' => TRUE,
-      ),
-      'setting' => array(
+      ],
+      'setting' => [
         'description' => 'The name of the setting.',
         'type' => 'varchar',
         'length' => '64',
         'not null' => TRUE,
-      ),
-      'value' => array(
+      ],
+      'value' => [
         'description' => 'The value of the setting.',
         'type' => 'varchar',
         'length' => '64',
         'not null' => TRUE,
-      ),
-    ),
-    'indexes' => array(
-      'setting' => array(
+      ],
+    ],
+    'indexes' => [
+      'setting' => [
         'setting',
-      ),
-    ),
-    'primary key' => array(
+      ],
+    ],
+    'primary key' => [
       'oaslsid',
-    ),
-  );
+    ],
+  ];
 
   return $schema;
 }

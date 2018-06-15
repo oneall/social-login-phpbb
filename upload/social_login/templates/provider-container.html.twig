@@ -4,6 +4,7 @@
  * Container in which the social network icons are displayed.
  */
 #}
+{% if providers|length > 0 %}
 <div class="social_login" style="margin:20px 0 10px 0">
  {% if label is not empty %}<label>{{ label }}</label>{% endif %}
  <div id="{{ containerid }}"></div>
@@ -11,7 +12,7 @@
 
 <script type="text/javascript">
 	var _oneall = _oneall || [];
-	_oneall.push(["{{ plugintype }}", "set_providers", [{{ providers | raw }}]]);
+	_oneall.push(["{{ plugintype }}", "set_providers", ['{{ providers|join ('\',\'') | raw }}']]);
 	_oneall.push(["{{ plugintype }}", "set_callback_uri", "{{ callbackuri }}"]);
 	_oneall.push(["{{ plugintype }}", "set_force_re_authentication", {% if plugintype == 'social_link' %}true{% else %}false{% endif %}]);
 	{% if token is not empty %}
@@ -19,3 +20,10 @@
 	{% endif %}
 	_oneall.push(["{{ plugintype }}", "do_render_ui", "{{ containerid }}"]);
 </script>
+{% else %}
+<div class="messages messages--error">
+    <div role="alert">
+        Please enable at least one social network in the social login settings.
+    </div>
+</div>      
+{% endif %}
