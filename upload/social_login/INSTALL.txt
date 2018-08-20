@@ -13,10 +13,11 @@ Please follow these steps to install OneAll Social Login for Drupal:
 7. Enter your "API Settings", choose the Social Networks and save your settings.
 
 NOTE: 
-If you do not have your "API Settings" yet, please signup for a new account 
-here: https://app.oneall.com/signup/.
 
-You will obtain the "API Settings" after having created a new Site.
+If you do not have any "API Credentials" yet, the please use the following link
+to signup for a free account: https://app.oneall.com/signup/dp
+
+You will obtain your "API Credentials" after having created a new OneAll Site.
 
 More information is available here:
 http://docs.oneall.com/plugins/guide/social-login-drupal/

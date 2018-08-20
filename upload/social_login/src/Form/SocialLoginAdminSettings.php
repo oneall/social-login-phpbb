@@ -111,15 +111,30 @@ class SocialLoginAdminSettings extends ConfigFormBase {
       ],
     ];
 
-    // API Settings.
-    $form['social_login_api_settings'] = [
-      '#type' => 'fieldset',
-      '#title' => $this->t('API Settings'),
-      '#id' => 'social_login_api_settings',
-      '#description' => $this->t('<a href="@setup_social_login" target="_blank">Click here to create and view your API Credentials</a>', [
-        '@setup_social_login' => 'https://app.oneall.com/applications/',
-      ]),
-    ];
+    // Existing account.
+    if ( ! empty ($settings['api_subdomain']))
+    {
+        $form['social_login_api_settings'] = [
+          '#type' => 'fieldset',
+          '#title' => $this->t('API Settings'),
+          '#id' => 'social_login_api_settings',
+          '#description' => $this->t('<br /><a href="@setup_social_login" target="_blank"><strong>Access API credentials</strong></a>', [
+            '@setup_social_login' => 'https://app.oneall.com/applications/',
+          ]),
+        ];
+    }
+    // New account.
+    else
+    {
+        $form['social_login_api_settings'] = [
+            '#type' => 'fieldset',
+            '#title' => $this->t('API Settings'),
+            '#id' => 'social_login_api_settings',
+            '#description' => $this->t('<br /><a href="@setup_social_login" target="_blank" class="button button--primary"><strong>Create a free account and generate my API credentials</strong></a>', [
+                '@setup_social_login' => 'https://app.oneall.com/signup/dp',
+            ]),
+        ];
+    }
 
     // API Subdomain.
     $form['social_login_api_settings']['api_subdomain'] = [

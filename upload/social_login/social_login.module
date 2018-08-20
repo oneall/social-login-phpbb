@@ -86,14 +86,22 @@ function social_login_form_user_register_form_alter(&$form, FormStateInterface $
       $identity_id = $identity['id'];
       $provider_name = $identity['source']['name'];
 
-      // Email.
+      // Extract the user's email address.
       $user_email = '';
-      $user_email_is_verified = FALSE;
+
+      // Do we have any emails in the profile data?
       if (isset($identity['emails']) && is_array($identity['emails'])) {
-        while ( !$user_email_is_verified && (list (, $email) = each($identity['emails'])) ) {
-          $user_email = $email['value'];
-          $user_email_is_verified = (!empty($email['is_verified']));
-        }
+
+          // Extract email address.
+          foreach ($identity['emails'] AS $email) {
+
+              $user_email = $email['value'];
+
+              // Stop once we have found a verified email address.
+              if (!empty($email['is_verified'])) {
+                  break;
+              }
+          }
       }
 
       // Login.
