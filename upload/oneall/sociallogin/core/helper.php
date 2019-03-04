@@ -353,7 +353,7 @@ class helper
         }
 
         // Remove standard ports
-        $request_port = (!in_array($request_port, array(80, 443)) ? $request_port : '');
+        $request_port = (!in_array($request_port, array(80, 443, $this->config['server_port'])) ? $request_port : '');
 
         // Build url
         $current_url = $request_protocol . '://' . $request_host . (!empty($request_port) ? (':' . $request_port) : '') . $request_uri;
