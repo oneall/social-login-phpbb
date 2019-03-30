@@ -2,7 +2,6 @@
 /**
  * @package   	OneAll Social Login
  * @copyright 	Copyright 2011-2017 http://www.oneall.com
- * Nederlandse vertaling @ Solidjeuh <https://www.muziekpromo.net>
  * @license   	GPL-2.0
  *
  * This program is free software; you can redistribute it and/or
@@ -56,12 +55,12 @@ $lang = array_merge ($lang, array(
 	'OA_SOCIAL_LOGIN_ACP' => 'OneAll Sociale Login',
 	'OA_SOCIAL_LOGIN_ACP_SETTINGS' => 'Instellingen',
 
-	'OA_SOCIAL_LOGIN_API_AUTODETECT' => 'Automatische detectie API-verbinding',
+	'OA_SOCIAL_LOGIN_API_AUTODETECT' => 'Automatische detectie API verbinding',
 	'OA_SOCIAL_LOGIN_API_VERIFY' => 'Verifieer API Instellingen',
 
 	'OA_SOCIAL_LOGIN_API_CONNECTION' => 'API Verbinding',
 	'OA_SOCIAL_LOGIN_API_CONNECTION_HANDLER' => 'API Verbinding Regelaar',
-	'OA_SOCIAL_LOGIN_API_CONNECTION_HANDLER_DESC' => 'OneAll Is een verbindings beheerder bij de API van Sociale Media',
+	'OA_SOCIAL_LOGIN_API_CONNECTION_HANDLER_DESC' => 'OneAll is een verbinding beheerder bij de API van Sociale Media',
 
 	'OA_SOCIAL_LOGIN_API_CREDENTIALS_CHECK_COM' => 'Kan de API niet contacteren. Is de installatie van de API-verbinding goed ingesteld?',
 	'OA_SOCIAL_LOGIN_API_CREDENTIALS_FILL_OUT' => 'Vul alstublieft alle bovenstaande velden in.',
@@ -70,7 +69,7 @@ $lang = array_merge ($lang, array(
 	'OA_SOCIAL_LOGIN_API_CREDENTIALS_SUBDOMAIN_WRONG' => 'Het subdomein bestaat niet. Heb je het goed ingevuld?',
 	'OA_SOCIAL_LOGIN_API_CREDENTIALS_TITLE' => 'API Referenties - <a href="https://app.oneall.com/applications/" class="external">Klik hier om uw API-referenties te maken of te bekijken</a>',
 	'OA_SOCIAL_LOGIN_API_CREDENTIALS_UNKNOW_ERROR' => 'Onbekend antwoord - zorg ervoor dat u bent ingelogd!',
-	'OA_SOCIAL_LOGIN_API_CREDENTIALS_USE_AUTO' => 'De verbindings regelaar lijkt niet te werken. Gebruik de Autodetectie alstublieft.',
+	'OA_SOCIAL_LOGIN_API_CREDENTIALS_USE_AUTO' => 'De verbinding regelaar lijkt niet te werken. Gebruik de Autodetectie alstublieft.',
 
 	'OA_SOCIAL_LOGIN_API_DETECT_CURL' => 'Detecteerde CURL op poort %s - Vergeet niet om uw wijzigingen op te slaan!',
 	'OA_SOCIAL_LOGIN_API_DETECT_FSOCKOPEN' => 'Detecteerde FSOCKOPEN op Poort %s - Vergeet niet om uw wijzigingen op te slaan!',
@@ -92,7 +91,7 @@ $lang = array_merge ($lang, array(
 	'OA_SOCIAL_LOGIN_DO_AVATARS' => 'Activeer uploaden van avatars van sociale netwerken?',
 	'OA_SOCIAL_LOGIN_DO_AVATARS_DESC' => 'Sta toe om de avatar van de gebruiker op te halen van zijn/haar sociale netwerk en sla het op in je phpBB avatar map.',
 	'OA_SOCIAL_LOGIN_DO_AVATARS_ENABLE_NO' => 'Nee, gebruik geen sociale netwerk avatars',
-	'OA_SOCIAL_LOGIN_DO_AVATARS_ENABLE_YES' => 'Ja, gebruik sociale network avatars',
+	'OA_SOCIAL_LOGIN_DO_AVATARS_ENABLE_YES' => 'Ja, gebruik sociale netwerk avatars',
 
 	'OA_SOCIAL_LOGIN_DO_ENABLE' => 'Sociale Login inschakelen?',
 	'OA_SOCIAL_LOGIN_DO_ENABLE_DESC' => 'Hiermee kunt u de Sociale Login tijdelijk uitschakelen zonder het te verwijderen.',
@@ -113,7 +112,7 @@ $lang = array_merge ($lang, array(
 	'OA_SOCIAL_LOGIN_DO_VALIDATION_ALWAYS' => 'Activeer profiel validatie',
 	'OA_SOCIAL_LOGIN_DO_VALIDATION_ASK' => 'Vraag nieuwe gebruikers om gebruikersnaam en e-mail te valideren?',
 	'OA_SOCIAL_LOGIN_DO_VALIDATION_DEPENDS' => 'Profiel validatie indien nodig',
-	'OA_SOCIAL_LOGIN_DO_VALIDATION_DESC' => 'Indien ingeschakeld, worden nieuwe gebruikers gevraagd hun gebruikersnaam en e-mailadres te voltooien of te controleren.<br />De vereiste validatie gebeurt alleen als de gebruikersnaam reeds in gebruik is, het e-mailadres ontbreekt of het e-mailadres reeds in gebruik is en Sociale Link is uitgeschakeld. ',
+	'OA_SOCIAL_LOGIN_DO_VALIDATION_DESC' => 'Indien ingeschakeld, worden nieuwe gebruikers gevraagd hun gebruikersnaam en e-mailadres te voltooien of te controleren.<br>De vereiste validatie gebeurt alleen als de gebruikersnaam reeds in gebruik is, het e-mailadres ontbreekt of het e-mailadres reeds in gebruik is en Sociale Link is uitgeschakeld. ',
 	'OA_SOCIAL_LOGIN_DO_VALIDATION_NEVER' => 'Schakel profiel validatie uit',
 
 	'OA_SOCIAL_LOGIN_ENABLE_NETWORKS' => 'Kies de sociale netwerken om op je forum in te schakelen',
@@ -134,7 +133,7 @@ $lang = array_merge ($lang, array(
 
 	'OA_SOCIAL_LOGIN_LOGIN_PAGE' => 'Forum Login Pagina',
 	'OA_SOCIAL_LOGIN_LOGIN_PAGE_CAPTION' => 'Login pagina titel',
-	'OA_SOCIAL_LOGIN_LOGIN_PAGE_CAPTION_DESC' => 'Deze titel wordt weergegeven boven de Social Login iconen op de login pagina.',
+	'OA_SOCIAL_LOGIN_LOGIN_PAGE_CAPTION_DESC' => 'Deze titel wordt weergegeven boven de Sociale Login iconen op de login pagina.',
 	'OA_SOCIAL_LOGIN_LOGIN_PAGE_ENABLE' => 'Toon op de login pagina?',
 	'OA_SOCIAL_LOGIN_LOGIN_PAGE_ENABLE_DESC' => 'Indien ingeschakeld, wordt Sociale Login weergegeven op de login pagina.',
 	'OA_SOCIAL_LOGIN_LOGIN_PAGE_NO' => 'Nee',
@@ -144,17 +143,17 @@ $lang = array_merge ($lang, array(
 	'OA_SOCIAL_LOGIN_INLINE_PAGE_CAPTION' => 'Inline login formulier titel',
 	'OA_SOCIAL_LOGIN_INLINE_PAGE_CAPTION_DESC' => 'Deze titel wordt weergegeven boven de Sociale Login iconen embedded inline op de login pagina.',
 	'OA_SOCIAL_LOGIN_INLINE_PAGE_ENABLE' => 'Weergeven als inline formulier op de login pagina?',
-	'OA_SOCIAL_LOGIN_INLINE_PAGE_ENABLE_DESC' => 'Indien ingeschakeld, wordt Sociale Login ge&iuml;ntegreerd als inline formulier op de login pagina. Om de inline-weergave in te schakelen, moet u OneAll selecteren als verificatie methode in de ALGEMENE \ CLIENT COMMUNICATIONS \ AUTHENTICATION instelling.',
+	'OA_SOCIAL_LOGIN_INLINE_PAGE_ENABLE_DESC' => 'Indien ingeschakeld, wordt Sociale Login geïntegreerd als inline formulier op de login pagina. Om de inline-weergave in te schakelen, moet u OneAll selecteren als verificatie methode in de ALGEMENE \ CLIENT COMMUNICATIONS \ AUTHENTICATION instelling.',
 	'OA_SOCIAL_LOGIN_INLINE_PAGE_NO' => 'Nee',
 	'OA_SOCIAL_LOGIN_INLINE_PAGE_YES' => 'Ja, toon inline op de login pagina',
 
-	'OA_SOCIAL_LOGIN_OTHER_PAGE' => 'Alle andere pagina&rsquo;s',
-	'OA_SOCIAL_LOGIN_OTHER_PAGE_CAPTION' => 'Titel op andere pagina&rsquo;s',
-	'OA_SOCIAL_LOGIN_OTHER_PAGE_CAPTION_DESC' => 'Deze titel wordt boven de Social Login-iconen op de andere pagina&rsquo;s weergegeven.',
-	'OA_SOCIAL_LOGIN_OTHER_PAGE_ENABLE' => 'Toon op andere pagina&rsquo;s?',
+	'OA_SOCIAL_LOGIN_OTHER_PAGE' => 'Alle andere pagina’s',
+	'OA_SOCIAL_LOGIN_OTHER_PAGE_CAPTION' => 'Titel op andere pagina’s',
+	'OA_SOCIAL_LOGIN_OTHER_PAGE_CAPTION_DESC' => 'Deze titel wordt boven de Sociale Login-iconen op de andere pagina’s weergegeven.',
+	'OA_SOCIAL_LOGIN_OTHER_PAGE_ENABLE' => 'Toon op andere pagina’s?',
 	'OA_SOCIAL_LOGIN_OTHER_PAGE_ENABLE_DESC' => 'Indien ingeschakeld zal Sociale Login ook worden weergegeven op elke andere pagina van het forum.',
 	'OA_SOCIAL_LOGIN_OTHER_PAGE_NO' => 'Nee',
-	'OA_SOCIAL_LOGIN_OTHER_PAGE_YES' => 'Ja, toon op andere pagina&rsquo;s',
+	'OA_SOCIAL_LOGIN_OTHER_PAGE_YES' => 'Ja, toon op andere pagina’s',
 
 	'OA_SOCIAL_LOGIN_PORT_443' => 'Communicatie via HTTPS op poort 443',
 	'OA_SOCIAL_LOGIN_PORT_443_DESC' => 'Poort 443 gebruiken wordt aanbevolen, maar u moet waarschijnlijk OpenSSL op uw server installeren.',
@@ -166,7 +165,7 @@ $lang = array_merge ($lang, array(
 
 	'OA_SOCIAL_LOGIN_REGISTRATION_PAGE' => 'Forum Registratie Pagina',
 	'OA_SOCIAL_LOGIN_REGISTRATION_PAGE_CAPTION' => 'Registratie pagina titel',
-	'OA_SOCIAL_LOGIN_REGISTRATION_PAGE_CAPTION_DESC' => 'Deze titel wordt boven de Social Login-iconen op de registratie pagina weergegeven.',
+	'OA_SOCIAL_LOGIN_REGISTRATION_PAGE_CAPTION_DESC' => 'Deze titel wordt boven de Sociale Login iconen op de registratie pagina weergegeven.',
 	'OA_SOCIAL_LOGIN_REGISTRATION_PAGE_ENABLE' => 'Toon op de registratie pagina?',
 	'OA_SOCIAL_LOGIN_REGISTRATION_PAGE_ENABLE_DESC' => 'Indien ingeschakeld wordt Sociale Login op de registratie pagina weergegeven.',
 	'OA_SOCIAL_LOGIN_REGISTRATION_PAGE_NO' => 'Nee',
@@ -177,10 +176,9 @@ $lang = array_merge ($lang, array(
 	'OA_SOCIAL_LOGIN_SETUP_FREE_ACCOUNT' => '<a href="https://app.oneall.com/signup/" class="button1 external">Stel mijn gratis account in</a>',
 
 	'OA_SOCIAL_LOGIN_TITLE' => 'OneAll Sociale Login',
-	'OA_SOCIAL_LOGIN_TITLE_HELP' => 'Help, Updates &amp; Documentatie',
+	'OA_SOCIAL_LOGIN_TITLE_HELP' => 'Help, Updates & Documentatie',
 
 	'OA_SOCIAL_LOGIN_VALIDATION_FORM_DESC' => 'De beheerder vereist dat u uw gebruikersnaam en e-mailadres controleert of voltooit.',
 	'OA_SOCIAL_LOGIN_VALIDATION_FORM_HEADER' => 'Valideer uw gebruikersnaam en e-mailadres',
 	'OA_SOCIAL_LOGIN_VALIDATION_SESSION_ERROR' => 'Ontbrekende sessie informatie.'
-
 ));
