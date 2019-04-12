@@ -1170,6 +1170,9 @@ function social_login_get_available_providers() {
     'meetup' => [
       'name' => 'Meetup'
     ],
+    'mixer' => [
+      'name' => 'Mixer'
+    ],
     'odnoklassniki' => [
       'name' => 'Odnoklassniki'
     ],

@@ -3,7 +3,7 @@
 * **Social Login for Drupal 8.0+**
 
 # Social Login 2.8.3 for Drupal 8.0+
-Social Login for Drupal allows your users to login and register with 35+ social networks. 
+Social Login for Drupal allows your users to login and register with 40+ social networks. 
 It increases your Drupal user registration rate by simplifying the registration process for 
 new users and provides permission-based social data retrieved from the social network profiles.
 
@@ -34,6 +34,7 @@ https://www.drupal.org/project/social_login
 * LiveJournal
 * Mail.ru
 * Meetup
+* Mixer
 * Odnoklassniki
 * OpenID
 * PayPal
