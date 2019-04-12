@@ -460,11 +460,22 @@ function social_login_core_callback_handler() {
                 $user_email_is_verified = NULL;
                 $user_email_is_random = NULL;
                 
-                if (isset($identity['emails']) && is_array($identity['emails'])) {
-                  while ( !$user_email_is_verified && (list (, $email) = each($identity['emails'])) ) {
-                    $user_email = $email['value'];
-                    $user_email_is_verified = (!empty($email['is_verified']));
-                  }
+                 // Do we have any emails in the profile data?
+                if (isset($identity['emails']) && is_array($identity['emails']))
+                {
+                    // Extract email address.
+                    foreach ($identity['emails'] AS $email)
+                    {
+                       $user_email = $email['value'];
+                       $user_email_is_verified = (!empty($email['is_verified']));
+                       $user_email_is_random = false;
+
+                       // Stop once we have found a verified email address.
+                       if ($user_email_is_verified)
+                       {
+                           break;
+                       }
+                    }
                 }
                 
                 // The admin has opted for the automatic registration.
@@ -1003,11 +1014,22 @@ function social_login_core_form_user_register_form_alter(&$form, &$form_state) {
       // Email.
       $user_email = '';
       $user_email_is_verified = FALSE;
-      if (isset($identity['emails']) && is_array($identity['emails'])) {
-        while ( !$user_email_is_verified && (list (, $email) = each($identity['emails'])) ) {
-          $user_email = $email['value'];
-          $user_email_is_verified = (!empty($email['is_verified']));
-        }
+      
+      // Do we have any emails in the profile data?
+      if (isset($identity['emails']) && is_array($identity['emails']))
+      {
+          // Extract email address.
+          foreach ($identity['emails'] AS $email)
+          {
+             $user_email = $email['value'];
+             $user_email_is_verified = (!empty($email['is_verified']));
+
+             // Stop once we have found a verified email address.
+             if ($user_email_is_verified)
+             {
+                 break;
+             }
+          }
       }
       
       // Login.
