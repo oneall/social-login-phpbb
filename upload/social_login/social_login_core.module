@@ -1246,6 +1246,12 @@ function social_login_core_get_available_providers() {
     'mailru' => array(
       'name' => 'Mail.ru' 
     ),
+    'meetup' => array(
+      'name' => 'Meetup' 
+    ),
+    'mixer' => array(
+      'name' => 'Mixer' 
+    ),
     'odnoklassniki' => array(
       'name' => 'Odnoklassniki' 
     ),

@@ -179,5 +179,14 @@ div.messages.social_login {
   background-position: -1593px -1px;
 }
 
+.social_login_provider.social_login_provider_mixer {
+  background-position: -1667px -1px;
+}
+
+.social_login_provider.social_login_provider_google {
+  background-position: -1704px -1px;
+}
+
+
 
 
