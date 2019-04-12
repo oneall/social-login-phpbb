@@ -605,7 +605,7 @@ function social_login_check_fsockopen($protocol = 'https') {
  * Sends an API request by using the given handler.
  */
 function social_login_do_api_request($handler, $url, $options = [], $timeout = 30) {
-  $user_agent_string = 'SocialLogin/2.7.2 Drupal/8.x (+http://www.oneall.com/)';
+  $user_agent_string = 'SocialLogin/2.8.4 Drupal/8.x (+http://www.oneall.com/)';
 
   $http_code = 'n/a';
   $http_data = NULL;
