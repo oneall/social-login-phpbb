@@ -61,12 +61,12 @@ https://www.drupal.org/project/social_login
 
 
 ## About Us
-Social Login is maintained by [OneAll](http://www.oneall.com/). OneAll, a technology company offering a set of 
+Social Login is maintained by [OneAll](https://www.oneall.com/). OneAll, a technology company offering a set of 
 web-delivered tools and services for establishing and optimizing a site's connection with social networks.
 
 
 ## License
-The **GNU General Public License** (GPL) is available at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+The **GNU General Public License** (GPL) is available at https://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 
 
 **Fork us on Github!**
