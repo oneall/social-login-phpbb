@@ -20,6 +20,9 @@ Chris Vavruska (https://github.com/vavruska)
 Raúl Arroyo (http://www.phpbb-es.com/)
 * Spanish translations
 
+Solidjeuh (https://www.muziekpromo.net)
+* Dutch translations
+
 ROZWADOWSKI Marek 
 * Bug fix
 
