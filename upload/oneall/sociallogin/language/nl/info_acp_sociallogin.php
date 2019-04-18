@@ -2,7 +2,6 @@
 /**
  * @package   	OneAll Social Login
  * @copyright 	Copyright 2011-2017 http://www.oneall.com
- * Nederlandse vertaling @ Solidjeuh <https://www.muziekpromo.net>
  * @license   	GPL-2.0
  *
  * This program is free software; you can redistribute it and/or
@@ -41,4 +40,3 @@ if (empty ($lang) || !is_array ($lang))
 $lang = array_merge ($lang, array(
     'OA_SOCIAL_LOGIN_ACP_AUTH_SETTTING_INFO' => 'biedt de authenticatie met een gebruikersnaam/wachtwoord (Db Authenticatie) aan, evenals de login met een sociaal netwerk account. De verificatie van sociale netwerken kan worden ingesteld in EXTENSIES \ ONEALL SOCIAL LOGIN.',
 ));
-

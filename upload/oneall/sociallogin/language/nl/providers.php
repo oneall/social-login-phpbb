@@ -2,7 +2,6 @@
 /**
  * @package       OneAll Social Login
  * @copyright     Copyright 2011-2017 http://www.oneall.com
- * Nederlandse vertaling @ Solidjeuh <https://www.muziekpromo.net>
  * @license       GPL-2.0
  *
  * This program is free software; you can redistribute it and/or
@@ -68,7 +67,7 @@ $lang = array_merge ($lang, array(
 	'OA_SOCIAL_LOGIN_P_SOUNDCLOUD' => 'SoundCloud',
 	'OA_SOCIAL_LOGIN_P_STACKEXCHANGE' => 'StackExchange',
 	'OA_SOCIAL_LOGIN_P_STEAM' => 'Steam',
-	'OA_SOCIAL_LOGIN_P_TUMBLR' => 'Tumblr',	
+	'OA_SOCIAL_LOGIN_P_TUMBLR' => 'Tumblr',
 	'OA_SOCIAL_LOGIN_P_TWITCHTV' => 'Twitch.tv',
 	'OA_SOCIAL_LOGIN_P_TWITTER' => 'Twitter',
 	'OA_SOCIAL_LOGIN_P_VIMEO' => 'Vimeo',
