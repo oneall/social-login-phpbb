@@ -13,21 +13,54 @@ function social_login_widget_get_js_library($subdomain, $https_enabled = FALSE) 
 }
 
 /**
+ * Checks if the current connection is being made over https.
+ */
+function social_login_widget_is_https_on () {
+
+    if (isset ($_SERVER) && is_array ($_SERVER)) {
+
+        if (! empty ($_SERVER ['SERVER_PORT'])) {
+            if (trim ($_SERVER ['SERVER_PORT']) == '443') {
+                return true;
+            }
+        }
+
+        if (! empty ($_SERVER ['HTTP_X_FORWARDED_PROTO'])) {
+            if (strtolower (trim ($_SERVER ['HTTP_X_FORWARDED_PROTO'])) == 'https') {
+                return true;
+            }
+        }
+
+        if (! empty ($_SERVER ['HTTPS'])) {
+            if (stristr($_SERVER['HTTPS'], 'off') === false) {
+                return true;
+            }
+        }
+
+    }
+
+    return false;
+}
+
+/**
  * Builds the code for the social network buttons and returns it as string.
  */
 function social_login_widget_get_js_plugin($plugin_type, $subdomain, $providers, $containerid, $user_token = '') {
-  global $is_https, $base_url;
+  global $base_url;
+
+  // Use https?
+  $use_https = social_login_widget_is_https_on ();
 
   // Check required settings.
   if (!empty($containerid) AND !empty($subdomain)) {
 
-  	// We cannot redirect to a page build using Ajax. 
+  	// We cannot redirect to a page build using Ajax.
   	if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
   		$origin = $base_url;
   	} else {
-  		$origin = social_login_get_current_url($is_https);
+  		$origin = social_login_get_current_url($use_https);
   	}
-  	
+
     // Build the callback uri.
     $callback_uri = url('social_login/callback', array('absolute' => TRUE, 'query' => array ('origin' => $origin)));
 
@@ -35,16 +68,16 @@ function social_login_widget_get_js_plugin($plugin_type, $subdomain, $providers,
     $js = array();
     $js[] = "var _oneall = _oneall || [];";
     $js[] = "_oneall.push(['". $plugin_type ."', 'set_providers', ['". implode("','", $providers) . "']]);";
-    $js[] = "_oneall.push(['". $plugin_type ."', 'set_callback_uri', '". $callback_uri ."']);";  
-    
+    $js[] = "_oneall.push(['". $plugin_type ."', 'set_callback_uri', '". $callback_uri ."']);";
+
     if ($plugin_type == 'social_link') {
       $js[] = "_oneall.push(['". $plugin_type ."', 'set_force_re_authentication', true]);";
-      
+
       if ( ! empty ($user_token)) {
         $js[] = "_oneall.push(['". $plugin_type ."', 'set_user_token', '". $user_token ."']);";
       }
     }
-    
+
     $js[] = "_oneall.push(['". $plugin_type ."', 'do_render_ui', '". $containerid ."']);";
     $js[] = "<!-- OneAll.com / Social Login for Drupal -->";
     $js = implode("\n", $js);
@@ -112,9 +145,11 @@ function social_login_widget_block_info() {
  * Implements hook_block_view().
  */
 function social_login_widget_block_view($delta = '') {
-  global $is_https, $user;
+  global $user;
 
   $block = array();
+
+  // is this our widget?
   if ($delta == 'social_login_widget') {
 
     // Read Settings.
@@ -122,12 +157,16 @@ function social_login_widget_block_view($delta = '') {
 
     // Hide the block for logged in users.
     if (empty($user->uid) OR $settings['block_icons_loggedin'] <> 'hide') {
+
       // Container to add the buttons to.
       $containerid = 'social_login_providers_' . rand(99999, 9999999);
 
+      // Use https?
+      $use_https = social_login_widget_is_https_on ();
+
       //Get Javscript Library
-      $js_library = social_login_widget_get_js_library($settings['api_subdomain'], $is_https);
-      
+      $js_library = social_login_widget_get_js_library($settings['api_subdomain'], $use_https);
+
       //Get inline Javascript.
       $js_inline = social_login_widget_get_js_plugin('social_login', $settings['api_subdomain'], $settings['enabled_providers'], $containerid);
 
@@ -184,8 +223,6 @@ function social_login_widget_form_user_login_block_alter(&$form, &$form_state) {
  * Generic function called to display the social providers.
  */
 function social_login_widget_show_providers(&$form, &$form_state, $target) {
-
-  global $is_https;
 
   // Read Settings.
   $settings = social_login_widget_get_settings();
@@ -294,7 +331,7 @@ function social_login_widget_show_providers(&$form, &$form_state, $target) {
 
   // Enabled.
   if ($widget_enabled === TRUE) {
-  	
+
     // Container to add the buttons to.
     $containerid = 'social_login_providers_' . rand(99999, 9999999);
 
@@ -307,24 +344,24 @@ function social_login_widget_show_providers(&$form, &$form_state, $target) {
     	'#attributes' => array(
     		'type' => 'text/javascript',
     	)
-     )));    
-    
+     )));
+
     // Show in fieldset.
     if ($widget_in_fieldset) {
-    	
+
       $form['social_login_' . $containerid] = array(
         '#type' => 'fieldset',
         '#title' => $title,
         '#weight' => $position,
       );
-      
+
       $form['social_login_' . $containerid]['inner_block'] = array(
         '#prefix' => theme('social_login_widget_provider_container', array('containerid' => $containerid, 'label' => '')),
       	'#suffix' => $social_login_block,
       );
     }
     else {
-    	
+
       $form['social_login_' . $containerid] = array(
         '#prefix' => theme('social_login_widget_provider_container', array('containerid' => $containerid, 'label' => $title)),
       	'#suffix' => $social_login_block,
@@ -332,9 +369,12 @@ function social_login_widget_show_providers(&$form, &$form_state, $target) {
       );
     }
 
+    // Use https?
+    $use_https = social_login_widget_is_https_on ();
+
     //Get Javscript Library
-    $js_library = social_login_widget_get_js_library($settings['api_subdomain'], $is_https);
-    
+    $js_library = social_login_widget_get_js_library($settings['api_subdomain'], $use_https);
+
     // Add javascript to the form
     $form['content']['#attached']['js'] = array(
         $js_library => array('type' => 'external')
@@ -393,6 +433,7 @@ function social_login_widget_get_settings() {
   $settings['registration_retrieve_avatars'] = 'enable';
   $settings['registration_approval'] = 'inherit';
   $settings['registration_method'] = 'manual';
+  $settings['registration_auto_link'] = 'enable';
 
   $settings['login_page_icons'] = 'above';
   $settings['login_page_caption'] = '';

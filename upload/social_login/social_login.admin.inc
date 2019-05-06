@@ -291,6 +291,17 @@ function social_login_admin_settings($form, &$form_state) {
     '#default_value' => (empty($settings['registration_retrieve_avatars']) ? 'enable' : $settings['registration_retrieve_avatars']),
   );
 
+  $form['social_login_settings_account_creation']['registration_auto_link'] = array(
+      '#type' => 'select',
+      '#title' => t('Automatically link social network accounts to existing accounts having the same email address?'),
+      '#description' => t('If the email address of the social network profile matches an email address of an existing user, both are linked together. Only works for verified email addresses.'),
+      '#options' => array(
+          'enable' => t('Yes, try to automatically link social network profiles to existing accounts (Default)'),
+          'disable' => t('No, do not automatically link social network profiles to existing accounts')
+      ),
+      '#default_value' => (empty($settings['registration_auto_link']) ? 'enable' : $settings['registration_auto_link']),
+  );
+
   $form['social_login_settings_account_creation']['registration_method'] = array(
     '#type' => 'select',
     '#title' => t('Automatically create a new user account when a user registers with Social Login?'),
