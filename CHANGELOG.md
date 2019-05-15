@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.6.0] - 2019-05-15
+### Added
+- Mixer added as new provider
+
 ## [4.5.2] - 2017-11-02
 ### Added
 - Fix Social Link in UCP

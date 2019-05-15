@@ -549,6 +549,7 @@ class sociallogin_acp_module
             'linkedin' => $user->lang['OA_SOCIAL_LOGIN_P_LINKEDIN'],
             'livejournal' => $user->lang['OA_SOCIAL_LOGIN_P_LIVEJOURNAL'],
             'mailru' => $user->lang['OA_SOCIAL_LOGIN_P_MAILRU'],
+            'mixer' => $user->lang['OA_SOCIAL_LOGIN_P_MIXER'],
             'meetup' => $user->lang['OA_SOCIAL_LOGIN_P_MEETUP'],
             'odnoklassniki' => $user->lang['OA_SOCIAL_LOGIN_P_ODNOKLASSNIKI'],
             'openid' => $user->lang['OA_SOCIAL_LOGIN_P_OPENID'],

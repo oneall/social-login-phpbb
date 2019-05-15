@@ -56,6 +56,7 @@ $lang = array_merge($lang, array(
     'OA_SOCIAL_LOGIN_P_LINKEDIN' => 'LinkedIn',
     'OA_SOCIAL_LOGIN_P_LIVEJOURNAL' => 'LiveJournal',
     'OA_SOCIAL_LOGIN_P_MAILRU' => 'Mail.ru',
+    'OA_SOCIAL_LOGIN_P_MIXER' => 'Mixer',
     'OA_SOCIAL_LOGIN_P_MEETUP' => 'Meetup',
     'OA_SOCIAL_LOGIN_P_ODNOKLASSNIKI' => 'Odnoklassniki',
     'OA_SOCIAL_LOGIN_P_OPENID' => 'OpenID',

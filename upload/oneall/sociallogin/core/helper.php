@@ -30,7 +30,7 @@ namespace oneall\sociallogin\core;
 class helper
 {
     // Version
-    const USER_AGENT = 'SocialLogin/4.5.2 phpBB/3.1.x (+http://www.oneall.com/)';
+    const USER_AGENT = 'SocialLogin/4.6.0 phpBB/3.1.x (+http://www.oneall.com/)';
 
     // @var \phpbb\config\config
     protected $config;
@@ -206,9 +206,9 @@ class helper
      */
     public function remove_login_token_for_user_id($user_id)
     {
-    	// Remove old tokens.
-    	$sql = "DELETE FROM " . $this->table_prefix . "oasl_login_token WHERE user_id = " . (int) $user_id;
-    	$this->db->sql_query($sql);
+        // Remove old tokens.
+        $sql = "DELETE FROM " . $this->table_prefix . "oasl_login_token WHERE user_id = " . (int) $user_id;
+        $this->db->sql_query($sql);
     }
 
     /**
@@ -229,28 +229,28 @@ class helper
         // We have found a useable login_token.
         if (is_array($result) && !empty($result['login_token']))
         {
-        	$login_token = $result['login_token'];
+            $login_token = $result['login_token'];
         }
         // Create a new and unique token.
         else
         {
-	        do
-	        {
-	            $login_token = $this->get_uuid_v4();
-	        }
-	        while ($this->get_user_id_for_login_token($login_token) !== false);
+            do
+            {
+                $login_token = $this->get_uuid_v4();
+            } while ($this->get_user_id_for_login_token($login_token) !== false);
 
-	        // Add the new token.
-	        $sql_arr = array(
-	            'login_token' => $login_token,
-	            'user_id' => $user_id,
-	            'date_creation' => time());
+            // Add the new token.
+            $sql_arr = array(
+                'login_token' => $login_token,
+                'user_id' => $user_id,
+                'date_creation' => time());
 
-	        $sql = "INSERT INTO " . $this->table_prefix . "oasl_login_token " . $this->db->sql_build_array('INSERT', $sql_arr);
-	        $this->db->sql_query($sql);
+            $sql = "INSERT INTO " . $this->table_prefix . "oasl_login_token " . $this->db->sql_build_array('INSERT', $sql_arr);
+            $this->db->sql_query($sql);
         }
 
         // Done
+
         return $login_token;
     }
 
@@ -896,6 +896,7 @@ class helper
         }
 
         // No entry found.
+
         return false;
     }
 
@@ -1106,10 +1107,12 @@ class helper
             }
 
             // Done.
+
             return true;
         }
 
         // An error occured.
+
         return false;
     }
 
@@ -1341,7 +1344,7 @@ class helper
                                         }
 
                                         // Remove the login token.
-                                        $this->remove_login_token_for_user_id ($user_id_login_token);
+                                        $this->remove_login_token_for_user_id($user_id_login_token);
 
                                         // Log the user in.
                                         $this->do_login($user_id_login_token);
@@ -2015,6 +2018,7 @@ class helper
         }
 
         // Done
+
         return $result;
     }
 
@@ -2181,6 +2185,7 @@ class helper
         }
 
         // Done
+
         return $result;
     }
 }

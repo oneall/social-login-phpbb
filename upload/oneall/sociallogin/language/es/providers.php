@@ -1,8 +1,8 @@
 <?php
 /**
- * @package   	OneAll Social Login
- * @copyright 	Copyright 2011-2017 http://www.oneall.com
- * @license   	GPL-2.0
+ * @package       OneAll Social Login
+ * @copyright     Copyright 2011-2017 http://www.oneall.com
+ * @license       GPL-2.0
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,55 +27,56 @@
  * Spanisch translations ThE KuKa (Raúl Arroyo)
  * http://www.phpbb-es.com
  */
-if (!defined ('IN_PHPBB'))
+if (!defined('IN_PHPBB'))
 {
-	exit ();
+    exit();
 }
 
-if (empty ($lang) || !is_array ($lang))
+if (empty($lang) || !is_array($lang))
 {
-	$lang = array();
+    $lang = array();
 }
 
 // Social Login Providers.
-$lang = array_merge ($lang, array(
-	'OA_SOCIAL_LOGIN_P_AMAZON' => 'Amazon',
-	'OA_SOCIAL_LOGIN_P_BATTLENET' => 'Battle.net',
-	'OA_SOCIAL_LOGIN_P_BLOGGER' => 'Blogger',
-	'OA_SOCIAL_LOGIN_P_STORAGE' => 'Cloud Storage',
-	'OA_SOCIAL_LOGIN_P_DISCORD' => 'Discord',
-	'OA_SOCIAL_LOGIN_P_DISQUS' => 'Disqus',
-	'OA_SOCIAL_LOGIN_P_DRAUGIEM' => 'Draugiem',
-	'OA_SOCIAL_LOGIN_P_DRIBBBLE' => 'Dribbble',
-	'OA_SOCIAL_LOGIN_P_FACEBOOK' => 'Facebook',
-	'OA_SOCIAL_LOGIN_P_FOURSQUARE' => 'Foursquare',
-	'OA_SOCIAL_LOGIN_P_GITHUBCOM' => 'Github.com',
-	'OA_SOCIAL_LOGIN_P_GOOGLE' => 'Google',
-	'OA_SOCIAL_LOGIN_P_INSTAGRAM' => 'Instagram',
-	'OA_SOCIAL_LOGIN_P_LINE' => 'Line',
-	'OA_SOCIAL_LOGIN_P_LINKEDIN' => 'LinkedIn',
-	'OA_SOCIAL_LOGIN_P_LIVEJOURNAL' => 'LiveJournal',
-	'OA_SOCIAL_LOGIN_P_MAILRU' => 'Mail.ru',
-	'OA_SOCIAL_LOGIN_P_MEETUP' => 'Meetup',
-	'OA_SOCIAL_LOGIN_P_ODNOKLASSNIKI' => 'Odnoklassniki',
-	'OA_SOCIAL_LOGIN_P_OPENID' => 'OpenID',
-	'OA_SOCIAL_LOGIN_P_PAYPAL' => 'PayPal',
-	'OA_SOCIAL_LOGIN_P_PINTEREST' => 'Pinterest',
-	'OA_SOCIAL_LOGIN_P_PIXELPIN' => 'PixelPin',
-	'OA_SOCIAL_LOGIN_P_REDDIT' => 'Reddit',
-	'OA_SOCIAL_LOGIN_P_SKYROCKCOM' => 'Skyrock.com',
-	'OA_SOCIAL_LOGIN_P_SOUNDCLOUD' => 'SoundCloud',
-	'OA_SOCIAL_LOGIN_P_STACKEXCHANGE' => 'StackExchange',
-	'OA_SOCIAL_LOGIN_P_STEAM' => 'Steam',
-	'OA_SOCIAL_LOGIN_P_TUMBLR' => 'Tumblr',
-	'OA_SOCIAL_LOGIN_P_TWITCHTV' => 'Twitch.tv',
-	'OA_SOCIAL_LOGIN_P_TWITTER' => 'Twitter',
-	'OA_SOCIAL_LOGIN_P_VIMEO' => 'Vimeo',
-	'OA_SOCIAL_LOGIN_P_VKONTAKTE' => 'VKontakte',
-	'OA_SOCIAL_LOGIN_P_WEIBO' => 'Weibo',
-	'OA_SOCIAL_LOGIN_P_WINDOWSLIVE' => 'Windows Live',
-	'OA_SOCIAL_LOGIN_P_WORDPRESSCOM' => 'WordPress.com',
-	'OA_SOCIAL_LOGIN_P_XING' => 'XING',
-	'OA_SOCIAL_LOGIN_P_YAHOO' => 'Yahoo',
-	'OA_SOCIAL_LOGIN_P_YOUTUBE' => 'YouTube'
+$lang = array_merge($lang, array(
+    'OA_SOCIAL_LOGIN_P_AMAZON' => 'Amazon',
+    'OA_SOCIAL_LOGIN_P_BATTLENET' => 'Battle.net',
+    'OA_SOCIAL_LOGIN_P_BLOGGER' => 'Blogger',
+    'OA_SOCIAL_LOGIN_P_STORAGE' => 'Cloud Storage',
+    'OA_SOCIAL_LOGIN_P_DISCORD' => 'Discord',
+    'OA_SOCIAL_LOGIN_P_DISQUS' => 'Disqus',
+    'OA_SOCIAL_LOGIN_P_DRAUGIEM' => 'Draugiem',
+    'OA_SOCIAL_LOGIN_P_DRIBBBLE' => 'Dribbble',
+    'OA_SOCIAL_LOGIN_P_FACEBOOK' => 'Facebook',
+    'OA_SOCIAL_LOGIN_P_FOURSQUARE' => 'Foursquare',
+    'OA_SOCIAL_LOGIN_P_GITHUBCOM' => 'Github.com',
+    'OA_SOCIAL_LOGIN_P_GOOGLE' => 'Google',
+    'OA_SOCIAL_LOGIN_P_INSTAGRAM' => 'Instagram',
+    'OA_SOCIAL_LOGIN_P_LINE' => 'Line',
+    'OA_SOCIAL_LOGIN_P_LINKEDIN' => 'LinkedIn',
+    'OA_SOCIAL_LOGIN_P_LIVEJOURNAL' => 'LiveJournal',
+    'OA_SOCIAL_LOGIN_P_MAILRU' => 'Mail.ru',
+    'OA_SOCIAL_LOGIN_P_MIXER' => 'Mixer',
+    'OA_SOCIAL_LOGIN_P_MEETUP' => 'Meetup',
+    'OA_SOCIAL_LOGIN_P_ODNOKLASSNIKI' => 'Odnoklassniki',
+    'OA_SOCIAL_LOGIN_P_OPENID' => 'OpenID',
+    'OA_SOCIAL_LOGIN_P_PAYPAL' => 'PayPal',
+    'OA_SOCIAL_LOGIN_P_PINTEREST' => 'Pinterest',
+    'OA_SOCIAL_LOGIN_P_PIXELPIN' => 'PixelPin',
+    'OA_SOCIAL_LOGIN_P_REDDIT' => 'Reddit',
+    'OA_SOCIAL_LOGIN_P_SKYROCKCOM' => 'Skyrock.com',
+    'OA_SOCIAL_LOGIN_P_SOUNDCLOUD' => 'SoundCloud',
+    'OA_SOCIAL_LOGIN_P_STACKEXCHANGE' => 'StackExchange',
+    'OA_SOCIAL_LOGIN_P_STEAM' => 'Steam',
+    'OA_SOCIAL_LOGIN_P_TUMBLR' => 'Tumblr',
+    'OA_SOCIAL_LOGIN_P_TWITCHTV' => 'Twitch.tv',
+    'OA_SOCIAL_LOGIN_P_TWITTER' => 'Twitter',
+    'OA_SOCIAL_LOGIN_P_VIMEO' => 'Vimeo',
+    'OA_SOCIAL_LOGIN_P_VKONTAKTE' => 'VKontakte',
+    'OA_SOCIAL_LOGIN_P_WEIBO' => 'Weibo',
+    'OA_SOCIAL_LOGIN_P_WINDOWSLIVE' => 'Windows Live',
+    'OA_SOCIAL_LOGIN_P_WORDPRESSCOM' => 'WordPress.com',
+    'OA_SOCIAL_LOGIN_P_XING' => 'XING',
+    'OA_SOCIAL_LOGIN_P_YAHOO' => 'Yahoo',
+    'OA_SOCIAL_LOGIN_P_YOUTUBE' => 'YouTube'
 ));
