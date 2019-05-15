@@ -2,7 +2,6 @@
 /**
  * @package       OneAll Social Login
  * @copyright     Copyright 2011-2017 http://www.oneall.com
- * Nederlandse vertaling @ Solidjeuh <https://www.muziekpromo.net>
  * @license       GPL-2.0
  *
  * This program is free software; you can redistribute it and/or

@@ -24,9 +24,9 @@
  */
 
 /**
- * English translations by OneAll
- * http://www.oneall.com
- */
+ * Polish translations by Rozwad
+ * https://gwc.pl/forum
+*/
 if (!defined ('IN_PHPBB'))
 {
 	exit ();
@@ -38,5 +38,5 @@ if (empty ($lang) || !is_array ($lang))
 }
 
 $lang = array_merge ($lang, array(
-    'OA_SOCIAL_LOGIN_ACP_AUTH_SETTTING_INFO' => 'biedt de authenticatie met een gebruikersnaam/wachtwoord (Db Authenticatie) aan, evenals de login met een sociaal netwerk account. De verificatie van sociale netwerken kan worden ingesteld in EXTENSIES \ ONEALL SOCIAL LOGIN.',
+	'OA_SOCIAL_LOGIN_ACP_AUTH_SETTTING_INFO' => 'Dostarcza uwierzytelnienia przez nazwę użytkownika/hasło (uwierzytelnienie przez bazę danych, ang. Db Authentication) oraz login przez konto społecznościowe. Uwierzytelnienie przez konto społecznościowe może być skonfigurowane w zakładce ROZSZERZENIA \ ONEALL SOCIAL LOGIN.'
 ));

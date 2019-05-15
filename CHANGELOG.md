@@ -6,18 +6,17 @@ All notable changes to this project will be documented in this file. This projec
 ### Added
 - Mixer added as new provider
 
+## [4.5.3] - 2019-05-02
+- Add patch from ROZWADOWSKI Marek
+
 ## [4.5.2] - 2017-11-02
-### Added
 - Fix Social Link in UCP
 
 ## [4.5.1] - 2017-10-27
-### Added
 -  Fix french translations from Galixte (Raphaël M.)
 
 ## [4.5.0] - 2017-10-26
-### Added
 -  Spanisch translations ThE KuKa (Raúl Arroyo)
 
 ## [4.4.0] - 2017-10-23
-### Added
 - Tumblr added as new provider

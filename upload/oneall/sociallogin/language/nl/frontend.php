@@ -2,7 +2,6 @@
 /**
  * @package   	OneAll Social Login
  * @copyright 	Copyright 2011-2017 http://www.oneall.com
- * Nederlandse vertaling @ Solidjeuh <https://www.muziekpromo.net>
  * @license   	GPL-2.0
  *
  * This program is free software; you can redistribute it and/or
@@ -51,6 +50,6 @@ $lang = array_merge ($lang, array (
 	'OA_SOCIAL_LOGIN_ACCOUNT_ALREADY_LINKED' => 'Dit sociaal netwerk is reeds gekoppeld aan een andere forum gebruiker.',
     'OA_SOCIAL_LOGIN_ACCOUNT_LINKED' => 'Het sociale netwerk account werd gekoppeld aan uw account.',
     'OA_SOCIAL_LOGIN_ACCOUNT_UNLINKED' => 'Dit sociale netwerk account werd losgekoppeld van uw account.',
-	'OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_OTHER' => 'Het account is aangemaakt, maar de forum instellingen vereisen nog een account activatie.<br />Een activeringscode is verzonden naar uw e-mailadres',
-	'OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_ADMIN' => 'Het account is aangemaakt, maar de forum instellingen vereisen een account activatie door een beheerder.<br />Een e-mail is verzonden naar de beheerders en u wordt op de hoogte gebracht via e-mail zodra uw account is geactiveerd.',
+	'OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_OTHER' => 'Het account is aangemaakt, maar de forum instellingen vereisen nog een account activatie.<br>Een activeringscode is verzonden naar uw e-mailadres',
+	'OA_SOCIAL_LOGIN_ACCOUNT_INACTIVE_ADMIN' => 'Het account is aangemaakt, maar de forum instellingen vereisen een account activatie door een beheerder.<br>Een e-mail is verzonden naar de beheerders en u wordt op de hoogte gebracht via e-mail zodra uw account is geactiveerd.',
 ));
