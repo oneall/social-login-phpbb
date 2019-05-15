@@ -34,7 +34,7 @@ class acp_oa_social_login_info
         return array(
             'filename' => 'acp_oa_social_login',
             'title' => 'ACP_OA_SOCIAL_LOGIN',
-            'version' => '3.7.0',
+            'version' => '3.8.0',
             'modes' => array(
                 'index' => array(
                     'title' => 'ACP_OA_SOCIAL_LOGIN_SETTINGS',

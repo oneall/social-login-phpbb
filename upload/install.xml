@@ -24,8 +24,18 @@
 			</author>
 		</author-group>
 		<github><![CDATA[https://github.com/oneall/social-login-phpbb]]></github>
-		<mod-version>3.7.0</mod-version>
+		<mod-version>3.8.0</mod-version>
 		<history>
+			<entry>
+				<date>2019-05-15</date>
+				<rev-version>3.8.0</rev-version>
+				<changelog lang="en">
+					<change>Mixer Added</change>			
+				</changelog>
+				<changelog lang="fr">
+					<change>Mixer Ajouté</change>		
+				</changelog>
+			</entry>
 			<entry>
 				<date>2017-10-23</date>
 				<rev-version>3.7.0</rev-version>

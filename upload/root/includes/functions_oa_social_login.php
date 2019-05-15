@@ -30,8 +30,8 @@ if (!defined('IN_PHPBB'))
 // Oneall Social Login
 class oa_social_login
 {
-    const OA_SOCIAL_LOGIN_VERSION = '3.7.0';
-    const USER_AGENT = 'SocialLogin/3.7.0 phpBB/3.0.x (+http://www.oneall.com/)';
+    const OA_SOCIAL_LOGIN_VERSION = '3.8.0';
+    const USER_AGENT = 'SocialLogin/3.8.0 phpBB/3.0.x (+http://www.oneall.com/)';
 
     /**
      * Invert CamelCase -> camel_case
@@ -1651,6 +1651,9 @@ class oa_social_login
             ),
             'mailru' => array(
                 'name' => 'Mail.ru'
+            ),
+            'mixer' => array(
+                'name' => 'Mixer'
             ),
             'meetup' => array(
                 'name' => 'Meetup'

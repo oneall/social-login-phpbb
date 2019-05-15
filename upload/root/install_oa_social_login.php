@@ -254,6 +254,9 @@ $versions = array(
     ),
     '3.7.0' => array(
         // No database changes.
+    ),
+    '3.8.0' => array(
+        // No database changes.
     )
 );
 
