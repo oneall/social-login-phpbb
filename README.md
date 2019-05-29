@@ -1,5 +1,5 @@
 ## Available Versions
-* [Social Login for phpBB 3.0-3.0.X](https://github.com/oneall/social-login-phpbb/tree/phpbb/3.0-3.0.x)
+* [Social Login for phpBB 3.0.x](https://github.com/oneall/social-login-phpbb/tree/phpbb/3.0.x)
 * **Social Login for phpBB 3.1+**
 
 
