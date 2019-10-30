@@ -1,7 +1,7 @@
 <?php
 /**
  * @package       OneAll Social Login
- * @copyright     Copyright 2011-2017 http://www.oneall.com
+ * @copyright     Copyright 2011-Present http://www.oneall.com
  * @license       GPL-2.0
  *
  * This program is free software; you can redistribute it and/or
@@ -30,7 +30,7 @@ namespace oneall\sociallogin\core;
 class helper
 {
     // Version
-    const USER_AGENT = 'SocialLogin/4.6.0 phpBB/3.1.x (+http://www.oneall.com/)';
+    const USER_AGENT = 'SocialLogin/4.6.1 phpBB/3.1.x (+http://www.oneall.com/)';
 
     // @var \phpbb\config\config
     protected $config;
@@ -1994,7 +1994,7 @@ class helper
                 while (!$header_found && (list(, $header) = each($headers)))
                 {
                     // Try to parse a redirection header.
-                    if (preg_match("/(Location:|URI:)[^(\n)]*/", $header, $matches))
+                    if (preg_match("/(Location:|URI:)[^(\n)]*/i", $header, $matches))
                     {
                         // Sanitize redirection url.
                         $url_tmp = trim(str_replace($matches[1], "", $matches[0]));
@@ -2167,7 +2167,7 @@ class helper
             while (!$header_found && (list(, $header) = each($headers)))
             {
                 // Check for location header
-                if (preg_match("/(Location:|URI:)[^(\n)]*/", $header, $matches))
+                if (preg_match("/(Location:|URI:)[^(\n)]*/i", $header, $matches))
                 {
                     // Sanitize redirection url.
                     $url_tmp = trim(str_replace($matches[1], "", $matches[0]));
