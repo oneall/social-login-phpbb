@@ -3,7 +3,7 @@
 * [Social Login for phpBB 3.1+](https://github.com/oneall/social-login-phpbb/tree/phpbb/3.1+)
 
 
-# Social Login 3.8.0 for phpBB 3.0.x
+# Social Login 3.8.1 for phpBB 3.0.x
 
 Social Login for phpBB allows your users to login and register with 40+ social networks. 
 It increases your phpBB user registration rate by simplifying the registration process for 
@@ -68,8 +68,18 @@ https://www.phpbb.com/customise/db/mod/oa_social_login/
 * YouTube
 
 ## About Us
-Social Login is maintained by [OneAll](http://www.oneall.com/). OneAll, a technology company offering a set of 
-web-delivered tools and services for establishing and optimizing a site's connection with social networks.
+Social Login is maintained by [OneAll](https://www.oneall.com/), a technology company offering Social Network integration 
+and User Storage as a service. Easily integrate 40+ social networks with our web-delivered tools and reunite your 
+existing user data in a state-of-the-art security environment that is 100% compliant with all US & EU data protection laws. 
+
+**Social Network Integration**  
+https://www.oneall.com/services/social-network-integration/
+
+**User Engagement Solutions**  
+https://www.oneall.com/services/user-engagement-solutions/
+
+**Customer Identity Access And Management**  
+https://www.oneall.com/services/customer-identity-management/
 
 ## License
 The **GNU General Public License** (GPL) is available at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.

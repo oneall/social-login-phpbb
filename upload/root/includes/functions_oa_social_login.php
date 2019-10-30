@@ -1,7 +1,7 @@
 <?php
 /**
  * @package       OneAll Social Login Mod
- * @copyright     Copyright 2014 http://www.oneall.com - All rights reserved.
+ * @copyright     Copyright 2011-Present http://www.oneall.com - All rights reserved.
  * @license       GNU/GPL 2 or later
  *
  * This program is free software; you can redistribute it and/or
@@ -30,8 +30,8 @@ if (!defined('IN_PHPBB'))
 // Oneall Social Login
 class oa_social_login
 {
-    const OA_SOCIAL_LOGIN_VERSION = '3.8.0';
-    const USER_AGENT = 'SocialLogin/3.8.0 phpBB/3.0.x (+http://www.oneall.com/)';
+    const OA_SOCIAL_LOGIN_VERSION = '3.8.1';
+    const USER_AGENT = 'SocialLogin/3.8.1 phpBB/3.0.x (+http://www.oneall.com/)';
 
     /**
      * Invert CamelCase -> camel_case
@@ -1860,7 +1860,7 @@ class oa_social_login
                     while (!$header_found && (list(, $header) = each($result->http_headers)))
                     {
                         // Try to parse a redirection header.
-                        if (preg_match("/(Location:|URI:)[^(\n)]*/", $header, $matches))
+                        if (preg_match("/(Location:|URI:)[^(\n)]*/i", $header, $matches))
                         {
                             // Sanitize redirection url.
                             $url_tmp = trim(str_replace($matches[1], "", $matches[0]));
@@ -2001,7 +2001,7 @@ class oa_social_login
                 while (!$header_found && (list(, $header) = each($result->http_headers)))
                 {
                     // Check for location header
-                    if (preg_match("/(Location:|URI:)[^(\n)]*/", $header, $matches))
+                    if (preg_match("/(Location:|URI:)[^(\n)]*/i", $header, $matches))
                     {
                         // Found
                         $header_found = true;
@@ -2020,8 +2020,7 @@ class oa_social_login
             }
         }
 
-        // Done
-
+        // Done.
         return $result;
     }
 }

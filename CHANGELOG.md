@@ -1,10 +1,14 @@
 # Change Log
 
-All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
+All notable changes to this project will be documented in this file. 
+This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 ## [Unreleased]
 
+## [3.8.1] - 2019-10-30
+### Added
+- Download of avatars fixed
 
 ## [3.8.0] - 2019-05-15
 ### Added

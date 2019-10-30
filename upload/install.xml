@@ -24,8 +24,18 @@
 			</author>
 		</author-group>
 		<github><![CDATA[https://github.com/oneall/social-login-phpbb]]></github>
-		<mod-version>3.8.0</mod-version>
+		<mod-version>3.8.1</mod-version>
 		<history>
+            <entry>
+                <date>2019-10-30</date>
+                <rev-version>3.8.1</rev-version>
+                <changelog lang="en">
+                    <change>Avatar download fixed</change>            
+                </changelog>
+                <changelog lang="fr">
+                    <change>Correctif téléchargement avatars</change>       
+                </changelog>
+            </entry>
 			<entry>
 				<date>2019-05-15</date>
 				<rev-version>3.8.0</rev-version>
