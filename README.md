@@ -81,13 +81,13 @@ Social Login is maintained by [OneAll](https://www.oneall.com/), a technology co
 and User Storage as a service. Easily integrate 40+ social networks with our web-delivered tools and reunite your 
 existing user data in a state-of-the-art security environment that is 100% compliant with all US & EU data protection laws. 
 
-**Social Network Integration**
+**Social Network Integration**  
 https://www.oneall.com/services/social-network-integration/
 
-**User Engagement Solutions**
+**User Engagement Solutions**  
 https://www.oneall.com/services/user-engagement-solutions/
 
-**Customer Identity Access And Management**
+**Customer Identity Access And Management**  
 https://www.oneall.com/services/customer-identity-management/
 
 ## License
