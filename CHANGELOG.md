@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file. 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.6.2] - 2020-01-10
+### Fixed
+- Crash when deleting a user
+
 ## [4.6.1] - 2019-10-30
 ### Fixed
 - Retrieval of user avatar
