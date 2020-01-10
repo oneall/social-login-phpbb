@@ -1570,8 +1570,13 @@ class helper
             $user_inactive_time = 0;
         }
 
+        // On 3.3 max_pass_chars is empty by default
+        $min_pass_chars = (int) $this->config['min_pass_chars'];
+        $max_pass_chars = (int) $this->config['max_pass_chars'];
+        $max_pass_chars = $max_pass_chars < $min_pass_chars ? $min_pass_chars : $max_pass_chars;
+
         // Generate a random password.
-        $new_password = gen_rand_string_friendly(max(8, mt_rand((int) $this->config['min_pass_chars'], (int) $this->config['max_pass_chars'])));
+        $new_password = gen_rand_string_friendly(max(8, mt_rand($min_pass_chars, $max_pass_chars)));
 
         // Setup user details.
         $user_row = array(
