@@ -410,7 +410,7 @@ class sociallogin_acp_module
                 {
                     // Construct full API Domain.
                     $api_domain = $api_subdomain . '.api.oneall.com';
-                    $api_resource_url = ($api_connection_use_https ? 'https' : 'http') . '://' . $api_domain . '/site/allowed-domains.json';
+                    $api_resource_url = ($api_connection_use_https ? 'https' : 'http') . '://' . $api_domain . '/tools/ping.json';
 
                     // Domain
                     $phpbb_domain = ($config['server_name'] ?: $request->server('SERVER_NAME', 'phpbb.generated'));
@@ -419,7 +419,7 @@ class sociallogin_acp_module
                     $api_options = array();
                     $api_options['api_key'] = $api_key;
                     $api_options['api_secret'] = $api_secret;
-                    $api_options['method'] = 'PUT';
+                    $api_options['method'] = 'GET';
                     $api_options['data'] = json_encode(array(
                         'request' => array(
                             'allowed_domains' => array(
