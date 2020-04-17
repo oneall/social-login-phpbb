@@ -569,6 +569,7 @@ class sociallogin_acp_module
             'meetup' => $user->lang['OA_SOCIAL_LOGIN_P_MEETUP'],
             'odnoklassniki' => $user->lang['OA_SOCIAL_LOGIN_P_ODNOKLASSNIKI'],
             'openid' => $user->lang['OA_SOCIAL_LOGIN_P_OPENID'],
+            'patreon' => $user->lang['OA_SOCIAL_LOGIN_P_PATREON'],
             'paypal' => $user->lang['OA_SOCIAL_LOGIN_P_PAYPAL'],
             'pinterest' => $user->lang['OA_SOCIAL_LOGIN_P_PINTEREST'],
             'pixelpin' => $user->lang['OA_SOCIAL_LOGIN_P_PIXELPIN'],

@@ -60,6 +60,7 @@ $lang = array_merge($lang, array(
     'OA_SOCIAL_LOGIN_P_MEETUP' => 'Meetup',
     'OA_SOCIAL_LOGIN_P_ODNOKLASSNIKI' => 'Odnoklassniki',
     'OA_SOCIAL_LOGIN_P_OPENID' => 'OpenID',
+    'OA_SOCIAL_LOGIN_P_PATREON' => 'Patreon',
     'OA_SOCIAL_LOGIN_P_PAYPAL' => 'PayPal',
     'OA_SOCIAL_LOGIN_P_PINTEREST' => 'Pinterest',
     'OA_SOCIAL_LOGIN_P_PIXELPIN' => 'PixelPin',
