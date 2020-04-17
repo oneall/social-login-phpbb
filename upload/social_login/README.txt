@@ -66,6 +66,7 @@ networks and identity providers:
 - Meetup
 - Odnoklassniki
 - OpenID
+- Patreon
 - PayPal
 - Pinterest
 - PixelPin

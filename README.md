@@ -2,7 +2,7 @@
 * [Social Login for Drupal 7.x](https://github.com/oneall/social-login-drupal/tree/drupal/7.x)
 * **Social Login for Drupal 8.0+**
 
-# Social Login 2.8.4 for Drupal 8.0+
+# Social Login 2.9.0 for Drupal 8.0+
 Social Login for Drupal allows your users to login and register with 40+ social networks. 
 It increases your Drupal user registration rate by simplifying the registration process for 
 new users and provides permission-based social data retrieved from the social network profiles.
@@ -37,6 +37,7 @@ https://www.drupal.org/project/social_login
 * Mixer
 * Odnoklassniki
 * OpenID
+* Patreon
 * PayPal
 * Pinterest
 * PixelPin

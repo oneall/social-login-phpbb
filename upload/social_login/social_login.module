@@ -1179,6 +1179,9 @@ function social_login_get_available_providers() {
     'openid' => [
       'name' => 'OpenID'
     ],
+    'patreon' => [
+      'name' => 'Patreon'
+    ],
     'paypal' => [
       'name' => 'PayPal'
     ],

@@ -1,0 +1,1493 @@
+<?php
+
+/**
+ * @file
+ * Contains the core functions used by the OneAll Social Login Module.
+ */
+
+/**
+ * Calls the triggers for a given hook.
+ */
+function social_login_call_triggers($hook) {
+
+  // Retrieve triggers
+  $aids = trigger_get_assigned_actions ($hook);
+
+  // Any triggers found?
+  if (is_array ($aids)) {
+    $context = array(
+      'hook' => $hook
+    );
+
+    // We need to get the expected object if the action's type is not 'node'.
+    foreach ($aids as $aid => $info) {
+      $type = $info['type'];
+      if ($type != 'node') {
+        if (!isset($objects[$type])) {
+          $objects[$type] = _trigger_normalize_node_context($type, $node);
+        }
+        // Since we know about the node, we pass that info along to the action.
+        $context['node'] = $node;
+        $result = actions_do($aid, $objects[$type], $context);
+      }
+      else {
+        actions_do($aid, $node, $context);
+      }
+    }
+  }
+}
+
+/**
+ * Build the user agent used by our HTTP calls.
+ */
+function social_login_get_user_agent() {
+  $oa_core_info = drupal_parse_info_file(drupal_get_path('module', 'social_login_core') . '/social_login_core.info');
+
+  // If there is no version, then the module if not from drupal.org.
+  if (empty($oa_core_info['version'])) {
+    $oa_core_info_version = '2.2.0';
+  }
+  else {
+    $oa_core_info_version = str_replace(array('-', '_', ':'), '.', $oa_core_info['version']);
+  }
+
+  return 'SocialLogin/' . $oa_core_info_version . ' Drupal/' . $oa_core_info['core'] . ' (+http://www.oneall.com/)';
+}
+
+/**
+ * Implements hook_menu().
+ */
+function social_login_core_menu() {
+  // Setup callback handler.
+  $items['social_login/callback'] = array(
+    'title' => 'OneAll Social Login Callback',
+    'page callback' => 'social_login_core_callback_handler',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'social_login_core.module'
+  );
+  return $items;
+}
+
+/**
+ * Returns a list of disabled functions.
+ */
+function social_login_get_disabled_functions() {
+  $disabled_functions = trim(ini_get('disable_functions'));
+  if (drupal_strlen($disabled_functions) == 0) {
+    $disabled_functions = array();
+  }
+  else {
+    $disabled_functions = explode(',', $disabled_functions);
+    $disabled_functions = array_map('trim', $disabled_functions);
+  }
+  return $disabled_functions;
+}
+
+/**
+ * Checks if CURL can be used.
+ */
+function social_login_core_check_curl($protocol = 'https') {
+  if (in_array('curl', get_loaded_extensions()) && function_exists('curl_exec') && !in_array('curl_exec', social_login_get_disabled_functions())) {
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_URL, ((drupal_strtolower($protocol) == 'http' ? 'http' : 'https') . '://www.oneall.com/ping.html'));
+    curl_setopt($curl, CURLOPT_HEADER, 0);
+    curl_setopt($curl, CURLOPT_TIMEOUT, 30);
+    curl_setopt($curl, CURLOPT_VERBOSE, 0);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+    if (($http_data = curl_exec($curl)) !== FALSE) {
+      $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+      curl_close($curl);
+      if ($http_code == 200 && drupal_strtolower($http_data) == 'ok') {
+        return TRUE;
+      }
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Follows URL locations when safe_mode is enabled or open_basedir set.
+ */
+function social_login_core_curl_lookup_real_url($url, $max_redirects = 3, $timeout = 30) {
+  $curl = curl_init();
+  curl_setopt($curl, CURLOPT_URL, $url);
+  curl_setopt($curl, CURLOPT_HEADER, 1);
+  curl_setopt($curl, CURLOPT_REFERER, $url);
+  curl_setopt($curl, CURLOPT_AUTOREFERER, 1);
+  curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
+  curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 0);
+
+  $curl_result = curl_exec($curl);
+  $curl_status = curl_getinfo($curl);
+  curl_close($curl);
+
+  if (in_array($curl_status['http_code'], array(
+    301,
+    302
+  )) && $max_redirects > 0) {
+    list ($header) = explode("\r\n\r\n", $curl_result, 2);
+    if (preg_match("/(Location:|URI:)[^(\n)]*/", $header, $matches)) {
+      $url_tmp = trim(str_replace($matches[1], "", $matches[0]));
+      $url_parsed = parse_url($url_tmp);
+      if (!empty($url_parsed)) {
+        $url = social_login_core_curl_lookup_real_url($url_tmp, ($max_redirects - 1), $timeout);
+      }
+    }
+  }
+
+  return $url;
+}
+
+/**
+ * Checks if fsockopen can be used.
+ */
+function social_login_core_check_fsockopen($protocol = 'https') {
+  if (function_exists('drupal_http_request') && !in_array('drupal_http_request', social_login_get_disabled_functions())) {
+    $result = drupal_http_request((drupal_strtolower($protocol) == 'http' ? 'http' : 'https') . '://www.oneall.com/ping.html');
+    if (is_object($result) && property_exists($result, 'code') && $result->code == 200) {
+      if (property_exists($result, 'data')) {
+        if (drupal_strtolower($result->data) == 'ok') {
+          return TRUE;
+        }
+      }
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Sends an API request by using the given handler.
+ */
+function social_login_core_do_api_request($handler, $url, $options = array(), $timeout = 30) {
+  // FSOCKOPEN?
+  if (drupal_strtolower($handler) == 'fsockopen') {
+    // BASIC AUTH?
+    if (is_array($options) && isset($options['api_key']) && isset($options['api_secret'])) {
+      if (preg_match('/^(http(s)?:\/\/)(.+)$/i', $url, $matches)) {
+        $url = $matches[1] . $options['api_key'] . ':' . $options['api_secret'] . '@' . $matches[3];
+      }
+    }
+    $result = drupal_http_request($url, array(
+      'timeout' => $timeout,
+      'headers' => array(
+        'User-Agent' => social_login_get_user_agent()
+      )
+    ));
+    if (is_object($result)) {
+      // Done.
+      return array(
+        'http_code' => $result->code,
+        'http_data' => $result->data
+      );
+    }
+  }
+  // CURL?
+  else {
+    // Open_basedir is set or safe_mode is on, CURL cannot follow urls.
+    if (drupal_strlen(trim(ini_get('open_basedir'))) > 0 || in_array(drupal_strtolower(ini_get('safe_mode')), array(
+      'on',
+      1
+    ))) {
+      $allow_follow_location = FALSE;
+    }
+    else {
+      $allow_follow_location = TRUE;
+    }
+
+    // CURL may not follow urls, we need to lookup the final URL first.
+    if (!$allow_follow_location) {
+      $url = social_login_core_curl_lookup_real_url($url, 3, $timeout);
+    }
+
+    // Setup CURL.
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_HEADER, 0);
+
+    // BASIC AUTH?
+    if (is_array($options) && isset($options['api_key']) && isset($options['api_secret'])) {
+      curl_setopt($curl, CURLOPT_USERPWD, $options['api_key'] . ":" . $options['api_secret']);
+    }
+
+    // Setup CURL options.
+    curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
+    curl_setopt($curl, CURLOPT_VERBOSE, 0);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($curl, CURLOPT_FAILONERROR, 0);
+    curl_setopt($curl, CURLOPT_FOLLOWLOCATION, ($allow_follow_location ? 1 : 0));
+    curl_setopt($curl, CURLOPT_USERAGENT, social_login_get_user_agent());
+
+    $http_data = curl_exec($curl);
+    $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+    curl_close($curl);
+
+    // Done.
+    return array(
+      'http_code' => $http_code,
+      'http_data' => $http_data
+    );
+  }
+  return NULL;
+}
+
+/**
+ * This is the callback handler.
+ */
+function social_login_core_callback_handler() {
+  global $user;
+
+  // Read Settings.
+  $settings = social_login_core_get_settings();
+
+  // No need to do anything if we haven't received these arguments.
+  if (isset($_POST) && !empty($_POST['connection_token']) && !empty($_POST['oa_action']) && in_array($_POST['oa_action'], array('social_login', 'social_link'))) {
+
+    // Clear session.
+    social_login_core_clear_session();
+
+    // API Connection Credentials.
+    $api_subdomain = (!empty($settings['api_subdomain']) ? $settings['api_subdomain'] : '');
+    $api_key = (!empty($settings['api_key']) ? $settings['api_key'] : '');
+    $api_secret = (!empty($settings['api_secret']) ? $settings['api_secret'] : '');
+
+    // API Connection Handler.
+    $handler = (!empty($settings['http_handler']) ? $settings['http_handler'] : 'curl');
+    $handler = ($handler == 'fsockopen' ? 'fsockopen' : 'curl');
+
+    // API Connection Protocol.
+    $protocol = (!empty($settings['http_protocol']) ? $settings['http_protocol'] : 'https');
+    $protocol = ($protocol == 'http' ? 'http' : 'https');
+
+    // Automatic or manual registration?
+    $registration_method = (!empty($settings['registration_method']) ? $settings['registration_method'] : '');
+    $registration_method = (in_array($registration_method, array('manual','auto_random_email', 'auto_manual_email')) ? $registration_method : 'manual');
+
+    // Require approval?
+    $registration_approval = (!empty($settings['registration_approval']) ? $settings['registration_approval'] : '');
+    $registration_approval = (in_array($registration_approval, array('inherit', 'disable', 'enable')) ? $registration_approval : 'inherit');
+
+    // Account link?.
+    $registration_auto_link = (( ! empty($settings['registration_auto_link']) && $settings['registration_auto_link'] == 'disable') ? false : true);
+
+    // Retrieved connection_token.
+    $token = trim($_POST['connection_token']);
+
+    // Settings missing.
+    if (empty($api_subdomain) || empty($api_key) || empty($api_secret)) {
+      drupal_set_message(t('OneAll Social Login is not setup correctly, please request the administrator to verify the API Settings'), 'error');
+      watchdog('social_login_core', 'The API Settings are not filled out correctly', array(), WATCHDOG_ERROR);
+    }
+    // Settings filled out.
+    else {
+
+      // Retrieve connection details.
+      $data = social_login_core_do_api_request($handler, $protocol . '://' . $api_subdomain . '.api.oneall.com/connections/' . $token . '.json', array('api_key' => $api_key, 'api_secret' => $api_secret));
+
+      // Make sure we have received the correct format.
+      if (is_array($data) && !empty($data['http_data'])) {
+
+        $social_data = @drupal_json_decode($data['http_data']);
+
+        // Everything seems to be ok.
+        if (is_array($social_data) && isset($social_data['response']) && isset($social_data['response']['request']['status']['code']) && $social_data['response']['request']['status']['code'] == 200 && isset($social_data['response']['result']['data']['user'])) {
+
+          // The plugin that has been uses social_login/social_link.
+          $data = $social_data['response']['result']['data'];
+
+          // Save the social network data in a session.
+          $_SESSION['social_login_session_open'] = 1;
+          $_SESSION['social_login_session_time'] = time();
+          $_SESSION['social_login_social_data'] = serialize($social_data);
+          $_SESSION['social_login_origin'] = (!empty($_GET['origin']) ? $_GET['origin'] : '');
+
+          // Unique user_token.
+          $user_token = $data['user']['user_token'];
+
+          // Extract identity.
+          $identity = $data['user']['identity'];
+
+          // Unique identity_token.
+          $identity_token = $identity['identity_token'];
+
+          // Social Network that has been used to connect.
+          $provider_name = (!empty($identity['source']['name']) ? $identity['source']['name'] : t('Unkown'));
+
+          // Try restoring the user for the token.
+          if (($user_for_token = social_login_core_get_user_for_user_token($user_token)) === FALSE)
+          {
+              // No token found, try to match against existing accounts.
+              if ($registration_auto_link)
+              {
+                  // Do we have any emails in the profile data?
+                  if (isset($identity['emails']) && is_array($identity['emails']))
+                  {
+                      // Loop through email address.
+                      foreach ($identity['emails'] AS $email)
+                      {
+                          // Only use verified emails.
+                          if ( ! empty ($email['is_verified']))
+                          {
+                              // Get the account id for this email address.
+                              if (($user_link_uid = social_login_core_get_uid_for_email($email['value'])) !== FALSE)
+                              {
+                                  // Load user.
+                                  if (($user_for_token = user_load($user_link_uid)) !== FALSE)
+                                  {
+                                      // Found one, map the tokens.
+                                      social_login_core_map_identity_token_to_user_token($user_for_token, $identity_token, $user_token, $provider_name);
+
+                                      // Done.
+                                      break;
+                                  }
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+
+          // Existing user (Has already a OneAll user_token).
+          if (is_object($user_for_token) && !empty($user_for_token->uid)) {
+
+            // Social Login : Existing User.
+            if ($data['plugin']['key'] == 'social_login') {
+
+              // Make sure this social login user has confirmed his email, if necessary:
+              if (!empty($user_for_token->data['social_login_email_to_confirm'])) {
+                drupal_set_message(t('Please follow the activation link of the welcome message which has been sent to your e-mail address.'), 'warning');
+
+                // Clear Session
+                social_login_core_clear_session();
+              }
+              else {
+                // Make sure that the user has not been blocked.
+                $state['values']['name'] = $user_for_token->name;
+                user_login_name_validate(array(), $state);
+                if (!form_get_errors()) {
+
+                  // Login user.
+                  $form_state['uid'] = $user_for_token->uid;
+                  user_login_submit(array(), $form_state);
+
+                  // Clear Session
+                  social_login_core_clear_session();
+
+                  // Call Triggers.
+                  social_login_call_triggers ('user_login');
+                }
+                // The account is blocked.
+                else {
+                  // Clear Session
+                  social_login_core_clear_session();
+                }
+              }
+            }
+            // Social Link : Existing User.
+            elseif ($data['plugin']['key'] == 'social_link') {
+
+              // User is logged in.
+              if (is_object($user) && !empty($user->uid)) {
+
+                // The existing token does not match the current user!
+                if ($user_for_token->uid != $user->uid) {
+                  drupal_set_message(t('This @social_network account is already linked to another user.', array(
+                    '@social_network' => $provider_name
+                  )), 'error');
+                }
+                // The existing token matches the current user!
+                else {
+                  // Link identity.
+                  if ($data['plugin']['data']['action'] == 'link_identity') {
+                    social_login_core_map_identity_token_to_user_token($user, $identity_token, $user_token, $provider_name);
+                    drupal_set_message(t('The @social_network account has been linked to your account.', array(
+                      '@social_network' => $provider_name
+                    )), 'status');
+                  }
+                  // Unlink identity.
+                  else {
+                    social_login_core_unmap_identity_token($identity_token);
+                    drupal_set_message(t('The social network account has been unlinked from your account.'), 'status');
+                  }
+
+                  // Clear session.
+                  social_login_core_clear_session();
+
+                  // Redirect to profile.
+                  drupal_goto('user/' . $user->uid . '/edit');
+                }
+              }
+              // User is not logged in.
+              else {
+                // We cannot link if the user is not logged in.
+                drupal_set_message(t('You must be logged in to perform this action.'), 'error');
+
+                // Clear session.
+                social_login_core_clear_session();
+
+                // Redirect to home.
+                drupal_goto();
+              }
+            }
+          }
+          // New user (has no OneAll user_token).
+          else {
+
+            // Social Link : New User.
+            if ($data['plugin']['key'] == 'social_link') {
+
+              // User is logged in.
+              if (is_object($user) && !empty($user->uid)) {
+
+                // Link identity.
+                if ($data['plugin']['data']['action'] == 'link_identity') {
+                  social_login_core_map_identity_token_to_user_token($user, $identity_token, $user_token, $provider_name);
+                  drupal_set_message(t('The @social_network account has been linked to your account.', array(
+                    '@social_network' => $provider_name
+                  )), 'status');
+                }
+                // Unlink identity.
+                else {
+                  social_login_core_unmap_identity_token($identity_token);
+                  drupal_set_message(t('The social network account has been unlinked from your account.'), 'status');
+                }
+
+                // Clear session.
+                social_login_core_clear_session();
+
+                // Redirect to profile.
+                drupal_goto('user/' . $user->uid . '/edit');
+              }
+              // User is not logged in
+              else {
+                // We cannot link if the user is not logged in.
+                drupal_set_message(t('You must be logged in to perform this action.'), 'error');
+
+                // Clear session.
+                social_login_core_clear_session();
+
+                // Redirect to home.
+                drupal_goto();
+              }
+            }
+            // Social Login : New User
+            else
+
+              // New users may register.
+              if (variable_get('user_register', 1)) {
+
+                // Extract the user's email address.
+                $user_email = '';
+                $user_email_is_verified = NULL;
+                $user_email_is_random = NULL;
+
+                 // Do we have any emails in the profile data?
+                if (isset($identity['emails']) && is_array($identity['emails']))
+                {
+                    // Extract email address.
+                    foreach ($identity['emails'] AS $email)
+                    {
+                       $user_email = $email['value'];
+                       $user_email_is_verified = (!empty($email['is_verified']));
+                       $user_email_is_random = false;
+
+                       // Stop once we have found a verified email address.
+                       if ($user_email_is_verified)
+                       {
+                           break;
+                       }
+                    }
+                }
+
+                // The admin has opted for the automatic registration.
+                if ($registration_method != 'manual') {
+
+                  // No email address / Email address already exists.
+                  if (empty($user_email) || social_login_core_get_uid_for_email($user_email) !== FALSE) {
+
+                    // The admin wants users to fill out their email manually.
+                    if ($registration_method == 'auto_manual_email') {
+
+                      // We have to fall back to the default registration.
+                      $registration_method = 'manual';
+                    }
+                    // The admin has enabled the usage of random email addresses.
+                    else {
+
+                      // Create a bogus email.
+                      $user_email = social_login_core_create_random_email();
+
+                      // Flag - is used further down.
+                      $user_email_is_random = TRUE;
+                    }
+                  }
+                }
+
+                // Automatic registration is still enabled.
+                if ($registration_method != 'manual') {
+
+                  // If something goes wrong fall back to manual registration.
+                  $registration_method = 'manual';
+
+                  // Extract User Firstname.
+                  $user_first_name = (!empty($identity['name']['givenName']) ? $identity['name']['givenName'] : '');
+
+                  // Extract User Lastname.
+                  $user_last_name = (!empty($identity['name']['familyName']) ? $identity['name']['familyName'] : '');
+
+                  // Forge User Login.
+                  $user_login = '';
+                  if (!empty($identity['preferredUsername'])) {
+                    $user_login = $identity['preferredUsername'];
+                  }
+                  elseif (!empty($identity['displayName'])) {
+                    $user_login = $identity['displayName'];
+                  }
+                  elseif (!empty($identity['name']['formatted'])) {
+                    $user_login = $identity['name']['formatted'];
+                  }
+                  else {
+                    $user_login = trim($user_first_name . ' ' . $user_last_name);
+                  }
+
+                  // We absoluteny need a username.
+                  if (drupal_strlen(trim($user_login)) == 0) {
+                    $user_login = $provider_name . t('User');
+                  }
+
+                  // We absolutely need a unique username.
+                  if (social_login_core_get_uid_for_name(trim($user_login)) !== FALSE) {
+                    $i = 1;
+                    do {
+                      $user_login = $user_login . ($i++);
+                    } while ( social_login_core_get_uid_for_name($user_login) !== FALSE );
+                  }
+
+                  // We also need a password.
+                  $user_password = user_password(8);
+
+                  // Check the approval setting.
+                  switch ($registration_approval) {
+                    // No approval required.
+                    case 'disable' :
+                      $user_status = 1;
+                    break;
+
+                    // Manual approval required.
+                    case 'enable' :
+                      $user_status = 0;
+                    break;
+
+                    // Use the system-wide setting.
+                    default :
+                      $user_status = (variable_get('user_register') == 2 ? 0 : 1);
+                    break;
+                  }
+
+                  // Setup the default users roles.
+                  $user_roles = array(
+                    DRUPAL_AUTHENTICATED_RID => 'authenticated user'
+                  );
+
+                  // Check if at least one other module implements our hook.
+                  if (count(module_implements('social_login_core_default_user_roles')) > 0) {
+                    // Call modules that implement the hook.
+                    $user_roles = module_invoke_all('social_login_core_default_user_roles', $user_roles);
+                  }
+
+                  // Setup the user fields.
+                  $user_fields = array(
+                    'name' => $user_login,
+                    'mail' => $user_email,
+                    'pass' => $user_password,
+                    'status' => $user_status,
+                    'init' => $user_email,
+                    'roles' => $user_roles
+                  );
+
+                  // Create a new user.
+                  $account = user_save('', $user_fields);
+
+                  // The new account has been created correctly.
+                  if ($account !== FALSE) {
+
+                    // Disable Drupal legacy registration.
+                    $registration_method = 'auto';
+
+                    // Link the fresh account with OneAll.
+                    social_login_core_map_identity_token_to_user_token($account, $identity_token, $user_token, $provider_name);
+
+                    // If enabled: retrieve the picture and save it locally.
+                    if (!isset($settings['registration_retrieve_avatars']) or $settings['registration_retrieve_avatars'] != 'disable') {
+                      // Grab the social avatar and link it to the user account.
+                      social_login_core_link_social_network_avatar($social_data, $account);
+                    }
+
+                    // Log the new user in.
+                    if (($uid = user_authenticate($user_login, $user_password)) !== FALSE) {
+                      global $user;
+
+                      // Loads a user object.
+                      $user = user_load($uid);
+
+                      // Finalize the login process.
+                      $login_array = array(
+                        'name' => $user_login
+                      );
+                      user_login_finalize($login_array);
+
+                      // No approval required.
+                      if ($user_status == 1) {
+                        drupal_set_message(t('You have successfully created an account and linked it with your @social_network account.', array(
+                        '@social_network' => $provider_name
+                        )), 'status');
+                      }
+                      // Approval required.
+                      else {
+                        // Real email address used.
+                        if ($user_email_is_random !== TRUE) {
+                          $a = _user_mail_notify('register_pending_approval', $user);
+                          drupal_set_message(t('Thank you for applying for an account. Your account is currently pending approval by the site administrator.<br />You will receive an email once your account has been approved and you can then login with your @social_network account.', array(
+                            '@social_network' => $provider_name
+                            )), 'status');
+                        }
+                        // Random email address used.
+                        else {
+                          // We can't send an email to the user as the account has a random email address.
+                          drupal_set_message(t('Thank you for applying for an account. Your account is currently pending approval by the site administrator.<br />Once your account has been approved you can login with your @social_network account.', array(
+                            '@social_network' => $provider_name
+                          )), 'status');
+                        }
+                      }
+
+                    }
+                    // For some reason we could not log the user in.
+                    else {
+                      // Redirect to login page (login manually).
+                      drupal_set_message(t('Error while logging you in, please try to login manually.'), 'error');
+                      drupal_goto('user/login');
+                    }
+                  }
+                  // An error occured during user_save().
+                  else {
+                    // Redirect to registration page (register manually).
+                    drupal_set_message(t('Error while creating your user account, please try to register manually.'), 'error');
+                    drupal_goto('user/register');
+                  }
+                }
+
+                // Use the legacy registration form?
+                if ($registration_method == 'manual') {
+                  // Redirect to the registration page (+ prepopulate form).
+                  // See: social_login_core_form_user_register_form_alter.
+                  drupal_goto('user/register');
+                }
+              }
+              // Registration disabled.
+              else {
+                drupal_set_message(t('Only site administrators can create new user accounts.'), 'error');
+                drupal_goto();
+              }
+            }
+          }
+        }
+      else {
+        watchdog('social_login_core', 'Invalid JSON received from resource', array(), WATCHDOG_ERROR);
+      }
+    }
+  }
+
+  // Return to the main page.
+  drupal_goto();
+}
+
+/**
+ * Implements hook_user_insert().
+ */
+function social_login_core_user_insert(&$edit, $account, $category) {
+  // Check if we come from a valid session.
+  if (isset($_SESSION) && !empty($_SESSION['social_login_social_data'])) {
+    // Restore data.
+    $social_data = @unserialize($_SESSION['social_login_social_data']);
+
+    // Check format.
+    if (is_array($social_data) && isset($social_data['response']) && isset($social_data['response']['request']['status']['code']) && $social_data['response']['request']['status']['code'] == 200) {
+
+      // Retrieve required data.
+      $user_data = $social_data['response']['result']['data']['user'];
+
+      // Unique user_token.
+      $user_token = $user_data['user_token'];
+
+      // Unique identity_token.
+      $identity_token = $user_data['identity']['identity_token'];
+
+      // Social Network used to connect.
+      $provider_name = $user_data['identity']['source']['name'];
+
+      // Tie user to token.
+      if (!empty($user_token) && !empty($identity_token) && !empty($provider_name)) {
+        social_login_core_map_identity_token_to_user_token($account, $identity_token, $user_token, $provider_name);
+      }
+
+      // Read the OneAll Settings.
+      $settings = social_login_core_get_settings();
+
+      // Grabs the social network avatar and links it to a user account.
+      if (!empty($settings['registration_retrieve_avatars']) and $settings['registration_retrieve_avatars'] == 'enable') {
+        social_login_core_link_social_network_avatar($social_data, $account);
+      }
+
+      // Forces the approval setting for Social Login users.
+      if (!empty($settings['registration_approval']) and $settings['registration_approval'] != 'inherit') {
+        switch ($settings['registration_approval']) {
+          // Disable approval.
+          case 'disable' :
+            db_update('users')->fields(array(
+              'status' => 1
+            ))->condition('uid', $account->uid)->execute();
+          break;
+
+          // Enable approval.
+          case 'enable' :
+            db_update('users')->fields(array(
+              'status' => 0
+            ))->condition('uid', $account->uid)->execute();
+          break;
+        }
+      }
+      if (module_exists('rules')) {
+        $oa_fields_invoke = array(
+          'account' => $account
+        );
+        $oa_fields = social_login_core_profilefields($user_data);
+        foreach ($oa_fields as $name => $desc) {
+          $oa_fields_invoke[$name] = $desc['value'];
+        }
+        rules_invoke_event_by_args('social_login_core_user_insert', $oa_fields_invoke);
+      }
+    }
+
+    // Clear the session.
+    social_login_core_clear_session();
+  }
+}
+
+/**
+ * Implements hook_user_login().
+ */
+function social_login_core_user_login(&$edit, $account) {
+  // Check if we come from a valid session.
+  if (isset($_SESSION) && !empty($_SESSION['social_login_session_open']) && !empty($_SESSION['social_login_social_data'])) {
+    // Restore data.
+    $social_data = @unserialize($_SESSION['social_login_social_data']);
+
+    // Check format.
+    if (is_array($social_data) && isset($social_data['response']) && isset($social_data['response']['request']['status']['code']) && $social_data['response']['request']['status']['code'] == 200) {
+
+      // Retrieve required data.
+      $user_data = $social_data['response']['result']['data']['user'];
+
+      // Unique user_token.
+      $user_token = $user_data['user_token'];
+
+      // Unique identity_token.
+      $identity_token = $user_data['identity']['identity_token'];
+
+      // Social Network used to connect.
+      $provider_name = $user_data['identity']['source']['name'];
+
+      // Check if token is already linked.
+      $uid = social_login_core_get_uid_for_user_token($user_token);
+
+      // Already linked.
+      if (is_numeric($uid)) {
+        // Linked to a different user?
+        if ($account->uid != $uid) {
+          drupal_set_message(t('Sorry, but this @social_network account is already linked to another user on this website.', array(
+            '@social_network' => $provider_name
+          )), 'error');
+        }
+      }
+      // Not linked.
+      else {
+        // Link to this user.
+        if (social_login_core_map_identity_token_to_user_token($account, $identity_token, $user_token, $provider_name)) {
+          drupal_set_message(t('Your @social_network account has been linked to your account. You may now use @social_network to login.', array(
+            '@social_network' => $provider_name
+          )), 'status');
+        }
+      }
+    }
+    else {
+      watchdog('social_login_core', 'Invalid JSON received from resource', array(), WATCHDOG_ERROR);
+    }
+
+    // Restore to origin.
+    $origin = (isset($_SESSION['social_login_origin']) ? $_SESSION['social_login_origin'] : '');
+
+    // Clear session.
+    social_login_core_clear_session();
+
+    // Redirect to origin.
+    if (drupal_strlen(trim($origin)) > 0) {
+      foreach (module_implements('user_login') as $mod) {
+        if ($mod !== 'social_login_core') {
+          $fun = $mod . '_user_login';
+          if (function_exists($fun)) {
+            $fun($edit, $account, NULL);
+          }
+        }
+      }
+      drupal_goto($origin); // aborts hook processing.
+    }
+  }
+  if (preg_match('#user/reset/(\d+)/#', current_path(), $matches) === 1) {
+    $uid = $matches[1];
+    if (social_login_core_get_user_token_for_uid($uid) !== FALSE) {
+      $acct = user_load($uid);
+      if (!empty($acct->data['social_login_email_to_confirm'])) {
+        unset($acct->data['social_login_email_to_confirm']);
+        $acct = user_save($acct);
+      }
+    }
+  }
+}
+
+/**
+ * Grabs tge social network avatar and links it to a user account.
+ */
+function social_login_core_link_social_network_avatar($social_data, $account) {
+
+  // Read Settings.
+  $settings = social_login_core_get_settings();
+
+  // Check social data format.
+  if (is_array($social_data) && isset($social_data['response']) && isset($social_data['response']['request']['status']['code']) && $social_data['response']['request']['status']['code'] == 200) {
+
+    // Retrieve required data.
+    $user_data = $social_data['response']['result']['data']['user'];
+
+    // Check if we have a picture in the social network data.
+    if (!empty($user_data['identity']['pictureUrl']) and is_object($account) and !empty($account->uid)) {
+
+      // Picture source and target.
+      $picture_url = $user_data['identity']['pictureUrl'];
+      $picture_directory = file_default_scheme() . '://' . variable_get('user_picture_path', 'pictures');
+
+      // Prepare the picture directory.
+      if (file_prepare_directory($picture_directory, FILE_CREATE_DIRECTORY)) {
+
+        // Base name of the file.
+        $file_base_name = $picture_directory . '/picture-' . $account->uid . '-' . REQUEST_TIME;
+
+        // Check which api connection handler should be used.
+        $handler = (!empty($settings['http_handler']) ? $settings['http_handler'] : 'curl');
+        $handler = ($handler == 'fsockopen' ? 'fsockopen' : 'curl');
+
+        // Get the picture data by using the chosen handler.
+        $http_result = social_login_core_do_api_request($handler, $picture_url);
+
+        // Save the picture data locally.
+        $tmp_name = $file_base_name . '.tmp';
+        $tmp_path = file_stream_wrapper_uri_normalize($tmp_name);
+        $tmp_file = file_save_data($http_result['http_data'], $tmp_path, FILE_EXISTS_REPLACE);
+
+        // Get the picture details.
+        if (($file_info = image_get_info($tmp_path)) !== FALSE) {
+
+          // Rename the temporary file to the correct extension.
+          $real_name = $file_base_name . '.' . strtolower($file_info['extension']);
+          $real_path = file_stream_wrapper_uri_normalize($real_name);
+          $real_file = file_move($tmp_file, $real_path, FILE_EXISTS_REPLACE);
+
+          // Make sure that the picture isn't too large for the site settings.
+          $max_dimensions = variable_get('user_picture_dimensions', '85x85');
+          $errors = file_validate_image_resolution($real_file, $max_dimensions);
+
+          // Update the database.
+          if (count($errors) == 0) {
+
+            // Link the managed file to this user.
+            $real_file->uid = $account->uid;
+            $real_file = file_save($real_file);
+
+            // Link the file usage to user and file.
+            file_usage_add($real_file, 'user', 'user', $account->uid);
+
+            // Update user record.
+            db_update('users')->fields(array(
+              'picture' => $real_file->fid
+            ))->condition('uid', $account->uid)->execute();
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Unlinks an identity_token from an existing user account.
+ */
+function social_login_core_unmap_identity_token($identity_token, $clean_authmap = true) {
+
+    // Authmap identifier.
+    $aid = null;
+
+    // Fetch identities.
+    $result = db_select('oneall_social_login_identities', 'i')->fields('i', array('aid', 'oasliid'))->condition('i.identity_token', $identity_token, '=')->execute();
+    foreach ($result as $record)
+    {
+        // Kepp the aid.
+        $aid = $record->aid;
+
+        // Remove the identity token.
+        db_delete('oneall_social_login_identities')->condition('oasliid', $record->oasliid)->execute();
+    }
+
+    // Cleanup the authmap.
+    if ( $clean_authmap && ! empty ($aid))
+    {
+        // Count remaining identities.
+        $num_rows = db_select('oneall_social_login_identities', 'i')->condition('i.aid', $aid, '=')->countQuery()->execute()->fetchField();
+
+        // If no entries are left, remove the authmap entry too.
+        if ($num_rows == 0)
+        {
+            db_delete('authmap')->condition('module', 'oneall_social_login', '=')->condition('aid', $aid)->execute();
+        }
+    }
+}
+
+/**
+ * Links a user_token/identity_token to an existing user account.
+ */
+function social_login_core_map_identity_token_to_user_token($account, $identity_token, $user_token, $provider_name) {
+
+  // Start transaction.
+  $db_transaction = db_transaction();
+
+  try {
+    // Update authmaps.
+    user_set_authmaps($account, array(
+      'authname_oneall_social_login' => $user_token
+    ));
+
+    // Get the new authmap identifier.
+    $aid = db_select('authmap', 'a')->fields('a', array('aid'))->condition('module', 'oneall_social_login', '=')->condition('authname', $user_token, '=')->execute()->fetchField();
+
+    if (is_numeric($aid)) {
+
+      // Remove duplicate identities.
+      db_delete('oneall_social_login_identities')->condition('aid', $aid)->condition('identity_token', $identity_token)->execute();
+
+      // Add identity.
+      db_insert('oneall_social_login_identities')->fields(array(
+        'aid' => $aid,
+        'identity_token' => $identity_token,
+        'provider_name' => $provider_name
+      ))->execute();
+
+      // Success.
+      return TRUE;
+    }
+  }
+  catch (Exception $e) {
+    $db_transaction->rollback();
+    watchdog_exception('social_login_core', $e);
+  }
+
+  // Error.
+  return FALSE;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function social_login_core_form_alter(&$form, &$form_state) {
+  // Hook into login page.
+  if (is_array($form) && isset($form['#form_id']) && $form['#form_id'] == 'user_login') {
+    // Check if we come from a valid session.
+    if (isset($_SESSION) && !empty($_SESSION['social_login_social_data'])) {
+      // Which is not needed for the login form.
+      social_login_core_clear_session();
+    }
+  }
+}
+
+/**
+ * Implements hook_mail_alter().
+ * Cancels email confirmation for social login registrations.
+ */
+function social_login_core_mail_alter(&$message) {
+  if (variable_get('user_email_verification', FALSE) && in_array($message['key'], array(
+    'register_admin_created',
+    'register_no_approval_required'
+  ))) {
+    $acct = empty($message['params']['account']) ? FALSE : $message['params']['account'];
+    // If this is a social login user:
+    if ($acct !== FALSE && social_login_core_get_user_token_for_uid($acct->uid) !== FALSE) {
+      // block this social login user.
+      $acct->data['social_login_email_to_confirm'] = TRUE;
+      $acct = user_save($acct);
+    }
+  }
+}
+
+/**
+ * Implements hook_form_USER_REGISTER_form_alter().
+ */
+function social_login_core_form_user_register_form_alter(&$form, &$form_state) {
+
+  // Check if we come from a valid session.
+  if (isset($_SESSION) && !empty($_SESSION['social_login_session_open']) && !empty($_SESSION['social_login_social_data'])) {
+    // Restore data.
+    $social_data = @unserialize($_SESSION['social_login_social_data']);
+
+    // Check format.
+    if (is_array($social_data) && isset($social_data['response']) && isset($social_data['response']['request']['status']['code']) && $social_data['response']['request']['status']['code'] == 200) {
+
+      // Read settings.
+      $settings = social_login_core_get_settings();
+
+      // Convenience variables.
+      $data = $social_data['response']['result']['data'];
+      $identity = $data['user']['identity'];
+      $identity_id = $identity['id'];
+      $provider_name = $identity['source']['name'];
+
+      // Email.
+      $user_email = '';
+      $user_email_is_verified = FALSE;
+
+      // Do we have any emails in the profile data?
+      if (isset($identity['emails']) && is_array($identity['emails']))
+      {
+          // Extract email address.
+          foreach ($identity['emails'] AS $email)
+          {
+             $user_email = $email['value'];
+             $user_email_is_verified = (!empty($email['is_verified']));
+
+             // Stop once we have found a verified email address.
+             if ($user_email_is_verified)
+             {
+                 break;
+             }
+          }
+      }
+
+      // Login.
+      $user_login = '';
+      if (!empty($identity['preferredUsername'])) {
+        $user_login = $identity['preferredUsername'];
+      }
+      elseif (!empty($identity['displayName'])) {
+        $user_login = $identity['displayName'];
+      }
+      elseif (!empty($identity['name']['formatted'])) {
+        $user_login = $identity['name']['formatted'];
+      }
+      elseif (!empty($identity['name']['displayName'])) {
+        $user_login = $identity['name']['displayName'];
+      }
+
+      // Prepopulate.
+      $form['account']['name']['#default_value'] = $user_login;
+      $form['account']['mail']['#default_value'] = $user_email;
+
+      // To prepopulate custom fields, here is an example for field_first_name and field_last_name:
+      $user_firstname = empty($identity['name']['givenName']) ? '' : $identity['name']['givenName'];
+      $user_lastname = empty($identity['name']['familyName']) ? '' : $identity['name']['familyName'];
+      // If these fields were not provided, guess from displayName:
+      if (empty($user_firstname) or empty($user_lastname)) {
+        if (!empty($identity['displayName'])) {
+          $guess = explode(" ", $identity['displayName']);
+          if (count($guess) >= 2) {
+            $user_firstname = empty($user_firstname) ? $guess[0] : $user_firstname;
+            $user_lastname = empty($user_lastname) ? $guess[1] : $user_lastname;
+          }
+        }
+      }
+      $form['field_first_name'][LANGUAGE_NONE][0]['value']['#default_value'] = $user_firstname;
+      $form['field_last_name'][LANGUAGE_NONE][0]['value']['#default_value'] = $user_lastname;
+
+      // Tell the user what is going on.
+      $form['social_login_core_create_account'] = array(
+        '#type' => 'item',
+        '#weight' => -100,
+        '#title' => t('You have successfully connected to @social_network', array(
+          '@social_network' => $provider_name
+        )),
+        '#description' => t('Please complete the form to create your account. Once your account has been created, you can use @social_network to log in.', array(
+          '@social_network' => $provider_name
+        ))
+      );
+    }
+  }
+}
+
+/**
+ * Remove the session data.
+ */
+function social_login_core_clear_session() {
+  foreach (array(
+    'session_open',
+    'session_time',
+    'social_data',
+    'origin'
+  ) as $key) {
+    $key = 'social_login_' . $key;
+    if (isset($_SESSION[$key])) {
+      unset($_SESSION[$key]);
+    }
+  }
+}
+
+/**
+ * Return the user for a user_token.
+ */
+function social_login_core_get_user_for_user_token($user_token) {
+  $uid = social_login_core_get_uid_for_user_token($user_token);
+  if (is_numeric($uid)) {
+    if (($user = user_load($uid, FALSE)) !== FALSE) {
+      return $user;
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Return the uid for a user_token.
+ */
+function social_login_core_get_uid_for_user_token($user_token) {
+  $uid = db_query("SELECT uid FROM {authmap} WHERE module = :module AND authname = :authname", array(
+    ':module' => 'oneall_social_login',
+    ':authname' => $user_token
+  ))->fetchField();
+  return (is_numeric($uid) ? $uid : FALSE);
+}
+
+/**
+ * Return the user_token for a uid.
+ */
+function social_login_core_get_user_token_for_uid($uid) {
+  $user_token = db_query("SELECT authname FROM {authmap} WHERE module = :module AND uid = :uid", array(
+    ':module' => 'oneall_social_login',
+    ':uid' => $uid
+  ))->fetchField();
+  return (!empty($user_token) ? $user_token : FALSE);
+}
+
+/**
+ * Get the uid for a name.
+ */
+function social_login_core_get_uid_for_name($name) {
+  $uid = db_query("SELECT uid FROM {users} WHERE name = :name", array(
+    ':name' => $name
+  ))->fetchField();
+  return (!empty($uid) ? $uid : FALSE);
+}
+
+/**
+ * Get the uid for an email address.
+ */
+function social_login_core_get_uid_for_email($mail) {
+  $uid = db_query("SELECT uid FROM {users} WHERE mail = :mail", array(
+    ':mail' => $mail
+  ))->fetchField();
+  return (!empty($uid) ? $uid : FALSE);
+}
+
+/**
+ * Create a random email address.
+ */
+function social_login_core_create_random_email() {
+  do {
+    $email = md5(uniqid(rand(10000, 99999))) . "@example.com";
+  }
+  while ( social_login_core_get_uid_for_email($email) !== FALSE );
+  return $email;
+}
+
+/**
+ * Return the settings.
+ */
+function social_login_core_get_settings() {
+
+  // Container.
+  $settings = array();
+  $settings['enabled_providers'] = array();
+
+  // Read settings.
+  $results = db_query("SELECT setting, value FROM {oneall_social_login_settings}");
+  foreach ($results as $result) {
+    $settings[$result->setting] = $result->value;
+    if (drupal_substr($result->setting, 0, 8) == 'provider' && !empty($result->value)) {
+      $settings['enabled_providers'][] = drupal_substr($result->setting, 9, drupal_strlen($result->setting));
+    }
+  }
+  return $settings;
+}
+
+/**
+ * Add a Link to the footer.
+ */
+function social_login_core_preprocess_page(&$vars, $hook) {
+  if (is_array($vars['page']) && isset($vars['page']) && isset($vars['page']['footer'])) {
+    if (isset($vars['page']['footer']['system_powered-by']) && isset($vars['page']['footer']['system_powered-by']['#markup'])) {
+      $vars['page']['footer']['system_powered-by']['#markup'] .= '&nbsp; | &nbsp;' . l(t('Social Login'), 'http://www.oneall.com/services/social-login/') . ' ' . t('powered by') . ' ' . l(t('OneAll'), 'http://www.oneall.com/');
+    }
+  }
+}
+
+/**
+ * Return the list of available providers.
+ */
+function social_login_core_get_available_providers() {
+  $providers = array(
+    'amazon' => array(
+      'name' => 'Amazon'
+    ),
+    'battlenet' => array(
+      'name' => 'Battle.net',
+    ),
+    'blogger' => array(
+      'name' => 'Blogger'
+    ),
+    'discord' => array(
+      'name' => 'Discord'
+    ),
+    'disqus' => array(
+      'name' => 'Disqus'
+    ),
+    'draugiem' => array(
+      'name' => 'Draugiem',
+    ),
+    'dribbble' => array(
+      'name' => 'Dribbble',
+    ),
+    'facebook' => array(
+      'name' => 'Facebook'
+    ),
+    'foursquare' => array(
+      'name' => 'Foursquare'
+    ),
+    'github' => array(
+      'name' => 'Github.com'
+    ),
+    'google' => array(
+      'name' => 'Google'
+    ),
+    'instagram' => array(
+      'name' => 'Instagram'
+    ),
+    'linkedin' => array(
+      'name' => 'LinkedIn'
+    ),
+    'livejournal' => array(
+      'name' => 'LiveJournal'
+    ),
+    'mailru' => array(
+      'name' => 'Mail.ru'
+    ),
+    'meetup' => array(
+      'name' => 'Meetup'
+    ),
+    'mixer' => array(
+      'name' => 'Mixer'
+    ),
+    'odnoklassniki' => array(
+      'name' => 'Odnoklassniki'
+    ),
+    'openid' => array(
+      'name' => 'OpenID'
+    ),
+    'patreon' => array(
+      'name' => 'Patreon'
+    ),
+    'paypal' => array(
+      'name' => 'PayPal'
+    ),
+    'pinterest' => array(
+      'name' => 'Pinterest',
+    ),
+    'pixelpin' => array(
+      'name' => 'PixelPin',
+    ),
+    'reddit' => array(
+      'name' => 'Reddit'
+    ),
+    'skyrock' => array(
+      'name' => 'Skyrock.com'
+    ),
+    'stackexchange' => array(
+      'name' => 'StackExchange'
+    ),
+    'steam' => array(
+      'name' => 'Steam'
+    ),
+    'tumblr' => array(
+      'name' => 'Tumblr'
+    ),
+    'twitch' => array(
+      'name' => 'Twitch.tv'
+    ),
+    'twitter' => array(
+      'name' => 'Twitter'
+    ),
+    'vimeo' => array(
+      'name' => 'Vimeo'
+    ),
+    'vkontakte' => array(
+      'name' => 'VKontakte'
+    ),
+    'weibo' => array(
+      'name' => 'Weibo'
+    ),
+    'windowslive' => array(
+      'name' => 'Windows Live'
+    ),
+    'wordpress' => array(
+      'name' => 'WordPress.com'
+    ),
+    'xing' => array(
+      'name' => 'Xing'
+    ),
+    'yahoo' => array(
+      'name' => 'Yahoo'
+    ),
+    'youtube' => array(
+      'name' => 'YouTube'
+    )
+  );
+  return $providers;
+}
+
+/*
+ * Build a flat list social profile data. Used for the Rules module. Function called both when invoking the rule event and defining the event variables (without arguments).
+ */
+function social_login_core_profilefields($oauser = array()) {
+  $oaid = !empty($oauser['identity']) ? $oauser['identity'] : array();
+  return array(
+    'oneall_user_token' => array(
+      'value' => (!empty($oauser['user_token']) ? $oauser['user_token'] : ''),
+      'label' => t('User token'),
+      'type' => 'text',
+      'description' => 'OneAll user token.'
+    ),
+    'oneall_identity_token' => array(
+      'value' => (!empty($oaid['identity_token']) ? $oaid['identity_token'] : ''),
+      'label' => t('Identity token'),
+      'type' => 'text',
+      'description' => 'OneAll user identity token.'
+    ),
+    'oneall_identity_provider' => array(
+      'value' => (!empty($oaid['provider']) ? $oaid['provider'] : ''),
+      'label' => t('Social provider'),
+      'type' => 'text',
+      'description' => 'Social network.'
+    ),
+    'oneall_identity_id' => array(
+      'value' => (!empty($oaid['id']) ? $oaid['id'] : ''),
+      'label' => t('Social identity ID'),
+      'type' => 'text',
+      'description' => 'Social network identity ID.'
+    ),
+    'oneall_identity_displayname' => array(
+      'value' => (!empty($oaid['displayName']) ? $oaid['displayName'] : ''),
+      'label' => t('Display name'),
+      'type' => 'text',
+      'description' => 'Social network identity displayed name.'
+    ),
+    'oneall_identity_formattedname' => array(
+      'value' => (!empty($oaid['name']['formatted']) ? $oaid['name']['formatted'] : ''),
+      'label' => t('Formatted name'),
+      'type' => 'text',
+      'description' => 'Social network identity formatted full name.'
+    ),
+    'oneall_identity_givenname' => array(
+      'value' => (!empty($oaid['name']['givenName']) ? $oaid['name']['givenName'] : ''),
+      'label' => t('Given name'),
+      'type' => 'text',
+      'description' => 'Social network identity given name.'
+    ),
+    'oneall_identity_familyname' => array(
+      'value' => (!empty($oaid['name']['familyName']) ? $oaid['name']['familyName'] : ''),
+      'label' => t('Family name'),
+      'type' => 'text',
+      'description' => 'Social network identity family name.'
+    ),
+    'oneall_identity_preferredname' => array(
+      'value' => (!empty($oaid['preferredUsername']) ? $oaid['preferredUsername'] : ''),
+      'label' => t('Preferred name'),
+      'type' => 'text',
+      'description' => 'Social network identity preferred username.'
+    ),
+    'oneall_identity_profileurl' => array(
+      'value' => (!empty($oaid['profileUrl']) ? $oaid['profileUrl'] : ''),
+      'label' => t('Profile URL'),
+      'type' => 'text',
+      'description' => 'Social network profile URL.'
+    ),
+    'oneall_identity_thumbnailurl' => array(
+      'value' => (!empty($oaid['thumbnailUrl']) ? $oaid['thumbnailUrl'] : ''),
+      'label' => t('Thumbnail URL'),
+      'type' => 'text',
+      'description' => 'Social network identity thumbnail picture.'
+    ),
+    'oneall_identity_pictureurl' => array(
+      'value' => (!empty($oaid['pictureUrl']) ? $oaid['pictureUrl'] : ''),
+      'label' => t('Picture URL'),
+      'type' => 'text',
+      'description' => 'Social network identity picture URL.'
+    ),
+    'oneall_identity_gender' => array(
+      'value' => (!empty($oaid['gender']) ? $oaid['gender'] : ''),
+      'label' => t('Gender'),
+      'type' => 'text',
+      'description' => 'Social network identity gender.'
+    ),
+    'oneall_identity_birthday' => array(
+      'value' => (!empty($oaid['birthday']) ? $oaid['birthday'] : ''),
+      'label' => t('Birthday'),
+      'type' => 'text',
+      'description' => 'Social network identity birthday (string).'
+    ),
+    'oneall_identity_email' => array(
+      'value' => (!empty($oaid['emails'][0]['value']) ? $oaid['emails'][0]['value'] : ''),
+      'label' => t('Email'),
+      'type' => 'text',
+      'description' => 'Social network identity email (first one listed)'
+    ),
+    'oneall_identity_account_domain' => array(
+      'value' => (!empty($oaid['accounts'][0]['domain']) ? $oaid['accounts'][0]['domain'] : ''),
+      'label' => t('Social account'),
+      'type' => 'text',
+      'description' => 'Social network identity domain for account.'
+    ),
+    'oneall_identity_account_id' => array(
+      'value' => (!empty($oaid['accounts'][0]['userid']) ? $oaid['accounts'][0]['userid'] : ''),
+      'label' => t('Social account id'),
+      'type' => 'text',
+      'description' => 'Social network identity userid in domain.'
+    ),
+    'oneall_identity_account_name' => array(
+      'value' => (!empty($oaid['accounts'][0]['username']) ? $oaid['accounts'][0]['username'] : ''),
+      'label' => t('Social account name'),
+      'type' => 'text',
+      'description' => 'Social network identity username in domain.'
+    ),
+    'oneall_identity_language' => array(
+      'value' => (!empty($oaid['languages'][0]['value']) ? $oaid['languages'][0]['value'] : ''),
+      'label' => t('Spoken language'),
+      'type' => 'text',
+      'description' => 'Social network identity spoken language (first listed).'
+    )
+  );
+}

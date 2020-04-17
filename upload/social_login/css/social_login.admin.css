@@ -143,6 +143,10 @@ div.messages.social_login {
     background-position: -1297px -1px;
 }
 
+.social_login_provider.social_login_provider_patreon {
+    background-position: -1630px -1px;
+}
+
 .social_login_provider.social_login_provider_pixelpin {
     background-position: -1334px -1px;
 }
