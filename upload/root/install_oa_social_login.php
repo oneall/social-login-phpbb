@@ -1,7 +1,7 @@
 <?php
 /**
  * @package       OneAll Social Login Mod
- * @copyright     Copyright 2014 http://www.oneall.com - All rights reserved.
+ * @copyright     Copyright 2011-Present http://www.oneall.com - All rights reserved.
  * @license       GNU/GPL 2 or later
  *
  * This program is free software; you can redistribute it and/or
@@ -256,6 +256,9 @@ $versions = array(
         // No database changes.
     ),
     '3.8.0' => array(
+        // No database changes.
+    ),
+    '3.8.1' => array(
         // No database changes.
     ),
     '3.9.0' => array(
