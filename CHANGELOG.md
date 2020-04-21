@@ -1,5 +1,8 @@
 # Change Log
 
+## [2.13.0] - 2020-04-21
+- New providers added : Patreon
+
 ## [2.12] - 2019-05-06
 - Better HTTPS detection
 - Automatic link added

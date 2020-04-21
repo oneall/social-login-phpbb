@@ -45,7 +45,7 @@ function social_login_get_user_agent() {
 
   // If there is no version, then the module if not from drupal.org.
   if (empty($oa_core_info['version'])) {
-    $oa_core_info_version = '2.12';
+    $oa_core_info_version = '2.13.0';
   }
   else {
     $oa_core_info_version = str_replace(array('-', '_', ':'), '.', $oa_core_info['version']);
@@ -1307,6 +1307,9 @@ function social_login_core_get_available_providers() {
     ),
     'openid' => array(
       'name' => 'OpenID'
+    ),
+    'patreon' => array(
+      'name' => 'Patreon'
     ),
     'paypal' => array(
       'name' => 'PayPal'
