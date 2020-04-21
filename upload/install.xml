@@ -24,8 +24,18 @@
 			</author>
 		</author-group>
 		<github><![CDATA[https://github.com/oneall/social-login-phpbb]]></github>
-		<mod-version>3.8.0</mod-version>
+		<mod-version>3.9.0</mod-version>
 		<history>
+			<entry>
+				<date>2020-04-21</date>
+				<rev-version>3.9.0</rev-version>
+				<changelog lang="en">
+					<change>Patreon Added</change>			
+				</changelog>
+				<changelog lang="fr">
+					<change>Patreon Ajouté</change>		
+				</changelog>
+			</entry>
 			<entry>
 				<date>2019-05-15</date>
 				<rev-version>3.8.0</rev-version>
