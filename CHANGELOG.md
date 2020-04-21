@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file. 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.7.1] - 2020-04-21
+### Added
+- Italian translations EugyRdT
+
+## [4.7.0] - 2020-04-16
+### Added
+- Patreon added as new provider
+
 ## [4.6.2] - 2020-01-10
 ### Fixed
 - Crash when deleting a user
