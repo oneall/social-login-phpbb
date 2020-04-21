@@ -26,6 +26,9 @@ Solidjeuh (http://www.muziekpromo.net)
 ROZWADOWSKI Marek 
 * Bug fix
 
+EugyRdT (https://forumanicomio.eugy.it)
+* Italian translations
+
 Many Thanks!
 
 ## Installation guide
