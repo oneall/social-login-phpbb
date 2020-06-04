@@ -29,17 +29,21 @@ namespace oneall\sociallogin\auth\provider;
  */
 class oneall extends \phpbb\auth\provider\db
 {
-    /** @var \phpbb\db\driver\driver_interface $db */
-    protected $db;
-
     /**
      * Database Authentication Constructor
      *
      * @param \phpbb\db\driver\driver_interface $db
      */
-    public function __construct(\phpbb\db\driver\driver_interface $db)
+    public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request $request, \phpbb\user $user, \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container, $phpbb_root_path, $php_ex)
     {
         $this->db = $db;
+        $this->config = $config;
+        $this->passwords_manager = $passwords_manager;
+        $this->request = $request;
+        $this->user = $user;
+        $this->phpbb_root_path = $phpbb_root_path;
+        $this->php_ext = $php_ext;
+        $this->phpbb_container = $phpbb_container;
     }
 
     /**
