@@ -44,4 +44,5 @@ Thumbs.db
 # TOOLS #
 #########
 *.patch
+*.sh
 
