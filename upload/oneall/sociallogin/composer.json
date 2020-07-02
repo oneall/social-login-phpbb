@@ -24,7 +24,7 @@
 		 "phpbb/phpbb": "3.1.0-RC3"
 	}	,
 	"extra": {
-		"display-name": "OneAll Social Login",
+		"display-name": "Social Login",
 		"soft-require": {
 			"phpbb/phpbb": ">=3.1.0-RC2"
 		}
