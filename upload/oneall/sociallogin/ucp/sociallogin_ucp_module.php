@@ -49,7 +49,7 @@ class sociallogin_ucp_module
 				// Retrieve user_token.
 				if (($user_token = $helper->get_user_token_for_user_id ($user->data ['user_id'])) !== false)
 				{
-					$template->assign_var ('OA_SOCIAL_LINK_USER_TOKEN', addslashes ($user_token));
+					$template->assign_var ('OA_SOCIAL_LINK_USER_TOKEN', $user_token);
 				}
 
 				// Create callback uri.
@@ -58,7 +58,7 @@ class sociallogin_ucp_module
 				$callback_uri .= ('oa_social_login_login_token=' . $helper->create_login_token_for_user_id ($user->data ['user_id']));
 
 				// Assign callback uri.
-				$template->assign_var ('OA_SOCIAL_LINK_CALLBACK_URI', addslashes ($callback_uri));
+				$template->assign_var ('OA_SOCIAL_LINK_CALLBACK_URI', $callback_uri);
 
 				// Status.
 				switch ($request->variable('social_link_status', ''))

@@ -5,7 +5,7 @@
 	"homepage": "https://docs.oneall.com/plugins/guide/social-login-phpbb/",
 	"version": "4.7.2",
 	"keywords": ["phpBB", "Extension", "OneAll", "Social Login"],
-	"license": "GPL-2.0",
+	"license": "GPL-2.0-only",
 	"authors": [
 		{
 			"name": "OneAll",

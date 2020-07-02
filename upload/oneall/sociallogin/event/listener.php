@@ -167,8 +167,8 @@ class listener implements EventSubscriberInterface
             // Setup template placeholders
             $this->template->assign_vars(array(
                 'OA_SOCIAL_LOGIN_EMBED_LIBRARY' => 1,
-                'OA_SOCIAL_LOGIN_API_SUBDOMAIN' => addslashes($this->config['oa_social_login_api_subdomain']),
-                'OA_SOCIAL_LOGIN_CALLBACK_URI' => addslashes($this->helper->get_current_url()),
+                'OA_SOCIAL_LOGIN_API_SUBDOMAIN' => $this->config['oa_social_login_api_subdomain'],
+                'OA_SOCIAL_LOGIN_CALLBACK_URI' => $this->helper->get_current_url(),
                 'OA_SOCIAL_LOGIN_PROVIDERS' => implode("','", explode(",", $this->config['oa_social_login_providers'])),
                 'OA_SOCIAL_LOGIN_RAND' => mt_rand(99999, 9999999)
             ));
