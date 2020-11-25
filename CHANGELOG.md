@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file. 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.8.0] - 2020-11-25
+### Added
+- Apple added as new provider
+
 ## [4.7.2] - 2020-06-04
 ### Fixed
 - Admin authentification fixed when changing auth method

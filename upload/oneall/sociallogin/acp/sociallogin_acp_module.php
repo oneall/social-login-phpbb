@@ -549,6 +549,7 @@ class sociallogin_acp_module
         // Providers
         $providers = array(
             'amazon' => $user->lang['OA_SOCIAL_LOGIN_P_AMAZON'],
+            'apple' => $user->lang['OA_SOCIAL_LOGIN_P_APPLE'],
             'battlenet' => $user->lang['OA_SOCIAL_LOGIN_P_BATTLENET'],
             'blogger' => $user->lang['OA_SOCIAL_LOGIN_P_BLOGGER'],
             'storage' => $user->lang['OA_SOCIAL_LOGIN_P_STORAGE'],

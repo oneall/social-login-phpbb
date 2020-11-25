@@ -40,6 +40,7 @@ if (empty($lang) || !is_array($lang))
 // Social Login Providers.
 $lang = array_merge($lang, array(
     'OA_SOCIAL_LOGIN_P_AMAZON' => 'Amazon',
+    'OA_SOCIAL_LOGIN_P_APPLE' => 'Apple',
     'OA_SOCIAL_LOGIN_P_BATTLENET' => 'Battle.net',
     'OA_SOCIAL_LOGIN_P_BLOGGER' => 'Blogger',
     'OA_SOCIAL_LOGIN_P_STORAGE' => 'Cloud Storage',
