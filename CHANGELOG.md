@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [3.9.0] - 2020-11-25
+### Added
+- Apple added as new provider
+
 ## [3.8.1] - 2019-10-30
 ### Added
 - Download of avatars fixed

@@ -24,11 +24,11 @@
 			</author>
 		</author-group>
 		<github><![CDATA[https://github.com/oneall/social-login-phpbb]]></github>
-		<mod-version>3.9.0</mod-version>
+		<mod-version>3.10.0</mod-version>
 		<history>
 			<entry>
 				<date>2020-04-21</date>
-				<rev-version>3.9.0</rev-version>
+				<rev-version>3.10.0</rev-version>
 				<changelog lang="en">
 					<change>Patreon Added</change>			
 				</changelog>
