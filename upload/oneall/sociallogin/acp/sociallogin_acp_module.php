@@ -557,6 +557,7 @@ class sociallogin_acp_module
             'disqus' => $user->lang['OA_SOCIAL_LOGIN_P_DISQUS'],
             'draugiem' => $user->lang['OA_SOCIAL_LOGIN_P_DRAUGIEM'],
             'dribbble' => $user->lang['OA_SOCIAL_LOGIN_P_DRIBBBLE'],
+            'epicgames' => $user->lang['OA_SOCIAL_LOGIN_P_EPICGAMES'],
             'facebook' => $user->lang['OA_SOCIAL_LOGIN_P_FACEBOOK'],
             'foursquare' => $user->lang['OA_SOCIAL_LOGIN_P_FOURSQUARE'],
             'github' => $user->lang['OA_SOCIAL_LOGIN_P_GITHUBCOM'],
@@ -577,8 +578,10 @@ class sociallogin_acp_module
             'reddit' => $user->lang['OA_SOCIAL_LOGIN_P_REDDIT'],
             'skyrock' => $user->lang['OA_SOCIAL_LOGIN_P_SKYROCKCOM'],
             'soundcloud' => $user->lang['OA_SOCIAL_LOGIN_P_SOUNDCLOUD'],
+            'spotify' => $user->lang['OA_SOCIAL_LOGIN_P_SPOTIFY'],
             'stackexchange' => $user->lang['OA_SOCIAL_LOGIN_P_STACKEXCHANGE'],
             'steam' => $user->lang['OA_SOCIAL_LOGIN_P_STEAM'],
+            'strava' => $user->lang['OA_SOCIAL_LOGIN_P_STRAVA'],
             'tumblr' => $user->lang['OA_SOCIAL_LOGIN_P_TUMBLR'],
             'twitch' => $user->lang['OA_SOCIAL_LOGIN_P_TWITCHTV'],
             'twitter' => $user->lang['OA_SOCIAL_LOGIN_P_TWITTER'],
@@ -589,6 +592,7 @@ class sociallogin_acp_module
             'wordpress' => $user->lang['OA_SOCIAL_LOGIN_P_WORDPRESSCOM'],
             'xing' => $user->lang['OA_SOCIAL_LOGIN_P_XING'],
             'yahoo' => $user->lang['OA_SOCIAL_LOGIN_P_YAHOO'],
+            'yandex' => $user->lang['OA_SOCIAL_LOGIN_P_YANDEX'],
             'youtube' => $user->lang['OA_SOCIAL_LOGIN_P_YOUTUBE']
         );
 
