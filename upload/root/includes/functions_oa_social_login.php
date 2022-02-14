@@ -30,8 +30,8 @@ if (!defined('IN_PHPBB'))
 // Oneall Social Login
 class oa_social_login
 {
-    const OA_SOCIAL_LOGIN_VERSION = '3.10.0';
-    const USER_AGENT = 'SocialLogin/3.10.0 phpBB/3.0.x (+http://www.oneall.com/)';
+    const OA_SOCIAL_LOGIN_VERSION = '3.11.0';
+    const USER_AGENT = 'SocialLogin/3.11.0 phpBB/3.0.x (+http://www.oneall.com/)';
 
     /**
      * Invert CamelCase -> camel_case
@@ -1628,6 +1628,9 @@ class oa_social_login
             'dribbble' => array(
                 'name' => 'Dribbble'
             ),
+            'epicgames' => array(
+                'name' => 'Epic Games'
+            ),
             'facebook' => array(
                 'name' => 'Facebook'
             ),
@@ -1685,11 +1688,17 @@ class oa_social_login
             'soundcloud' => array(
                 'name' => 'SoundCloud'
             ),
+            'spotify' => array(
+                'name' => 'Spotify'
+            ),
             'stackexchange' => array(
                 'name' => 'StackExchange'
             ),
             'steam' => array(
                 'name' => 'Steam'
+            ),
+            'strava' => array(
+                'name' => 'Strava'
             ),
             'tumblr' => array(
                 'name' => 'Tumblr'
@@ -1720,6 +1729,9 @@ class oa_social_login
             ),
             'yahoo' => array(
                 'name' => 'Yahoo'
+            ),
+            'yandex' => array(
+                'name' => 'Yandex'
             ),
             'youtube' => array(
                 'name' => 'YouTube'
