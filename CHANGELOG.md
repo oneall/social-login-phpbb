@@ -3,9 +3,13 @@
 All notable changes to this project will be documented in this file. 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.9.2] - 2023-11-22
+### Fixed
+- Service renamed
+
 ## [4.9.1] - 2022-04-08
 ### Fixed
-- Windows Live renamed 
+- Windows Live renamed
 
 ## [4.9.0] - 2022-02-14
 ### Added
