@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   	OneAll Social Login
- * @copyright 	Copyright 2011-Present http://www.oneall.com
+ * @copyright 	Copyright 2011-Present https://www.oneall.com
  * @license   	GPL-2.0
  *
  * This program is free software; you can redistribute it and/or
@@ -19,13 +19,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,USA.
  *
  * The "GNU General Public License" (GPL) is available at
- * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *
  */
 
 /**
- * English translations by OneAll
- * http://www.oneall.com
+ * Nederlandse vertaling door SpIdErPiGgY
+ * https://www.amusementspaleis.online
  */
 if (!defined ('IN_PHPBB'))
 {
@@ -38,5 +38,5 @@ if (empty ($lang) || !is_array ($lang))
 }
 
 $lang = array_merge ($lang, array(
-    'OA_SOCIAL_LOGIN_ACP_AUTH_SETTTING_INFO' => 'biedt de authenticatie met een gebruikersnaam/wachtwoord (Db Authenticatie) aan, evenals de login met een sociaal netwerk account. De verificatie van sociale netwerken kan worden ingesteld in EXTENSIES \ ONEALL SOCIAL LOGIN.',
+	'OA_SOCIAL_LOGIN_ACP_AUTH_SETTTING_INFO' => 'biedt de authenticatie met een gebruikersnaam/wachtwoord (Db Authenticatie) aan, evenals de login met een sociaal netwerk account. De verificatie van sociale netwerken kan worden ingesteld in EXTENSIES \ ONEALL SOCIALE LOGIN.',
 ));
